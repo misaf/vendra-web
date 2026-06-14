@@ -1,0 +1,41 @@
+# Getting Started
+
+This section gets someone from zero to a working local Vendra setup.
+
+## Start here
+
+Follow the pages in this order:
+
+- [Installation](/getting-started/installation)
+- [Docker](/getting-started/docker)
+- [Configuration](/getting-started/configuration)
+- [First Run](/getting-started/first-run)
+
+## What this section covers
+
+- PHP, Composer, Node.js, npm, and database requirements
+- Docker-based setup through `vendra-docker`
+- Laravel environment setup
+- Composer module path workflow
+- Local development commands
+
+## Commands to document
+
+Core commands from the main Vendra app:
+
+- `composer install`
+- `php artisan migrate`
+- `npm install`
+- `npm run build`
+- `composer dev`
+
+For Docker-based environments, use the first-party Docker repository:
+
+- [misaf/vendra-docker](https://github.com/misaf/vendra-docker)
+
+## Common checks
+
+- Confirm `/admin` loads.
+- Confirm `/user` loads.
+- Confirm tenants, roles, and permissions are seeded or configured.
+- Confirm module providers are discovered.

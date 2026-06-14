@@ -1,0 +1,78 @@
+import { Cards } from 'nextra/components'
+
+# Vendra Docs
+
+<div className="not-prose mt-6 rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,rgba(9,9,11,0.04),rgba(0,0,0,0))] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(0,0,0,0))] md:p-12">
+  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.24em] text-neutral-500">
+    Laravel + Filament CMS
+  </p>
+  <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 md:text-6xl">
+    Documentation for Vendra CMS and its first-party module system.
+  </h1>
+  <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-600 dark:text-neutral-300 md:text-lg">
+    Vendra is a modular Laravel application for ecommerce and marketplace use
+    cases. The admin panel is built on Filament, and the domain features live in
+    first-party Composer modules that you maintain and support, including blog,
+    pages, FAQ, media, products, users, permissions, transactions, and public
+    JSON:API packages.
+  </p>
+  <div className="mt-8 flex flex-wrap gap-3">
+    <a
+      href="/cms"
+      className="inline-flex items-center rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
+    >
+      Browse CMS
+    </a>
+    <a
+      href="/modules"
+      className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:text-neutral-950 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-500 dark:hover:text-white"
+    >
+      View modules
+    </a>
+  </div>
+</div>
+
+## What this docs set covers
+
+- CMS admin areas from the Filament panel
+- First-party Vendra modules from `app-modules.bk`
+- Commerce, user, permission, reporting, and tenant modules
+- Public read-only JSON:API resources
+
+## Key pages
+
+<Cards num={2}>
+  <Cards.Card title="About" href="/about" arrow>
+    The project shape, runtime stack, and panel structure.
+  </Cards.Card>
+  <Cards.Card title="CMS" href="/cms" arrow>
+    Admin workflows for content, media, users, settings, and reports.
+  </Cards.Card>
+  <Cards.Card title="Modules" href="/modules" arrow>
+    The module inventory grouped by content, commerce, access, API, and platform.
+  </Cards.Card>
+  <Cards.Card title="Getting Started" href="/getting-started" arrow>
+    Native and Docker setup for the source Vendra application.
+  </Cards.Card>
+  <Cards.Card title="API Reference" href="/api-reference" arrow>
+    JSON:API servers and read-only resources exposed by module API packages.
+  </Cards.Card>
+</Cards>
+
+## Recommended reading order
+
+1. Read [About](/about) for the system overview.
+2. Use [CMS](/cms) to understand the Filament admin areas.
+3. Use [Modules](/modules) to find the package responsible for a feature.
+4. Use [API Reference](/api-reference) for public JSON:API resources.
+
+## Current status
+
+The docs reflect the current source tree at `/Users/misaf/Documents/Projects/vendra`
+and the first-party supported module set under `app-modules.bk`.
+
+- Source app: Laravel 13, Filament 5, PHP 8.3+
+- Docker stack: `https://github.com/misaf/vendra-docker`
+- Active package list: root `composer.json`
+- First-party module source: `app-modules.bk/*`
+- Admin groups: user, billing, transaction, content, report, and settings

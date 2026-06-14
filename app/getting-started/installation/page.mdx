@@ -1,0 +1,55 @@
+# Installation
+
+Install the main Vendra application before working with CMS or module docs.
+
+## Requirements
+
+- PHP 8.3+
+- Composer
+- Node.js and npm
+- MySQL or another Laravel-supported database
+
+## Local setup
+
+Use this path when running PHP, Composer, Node.js, npm, and the database
+directly on your machine.
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+npm install
+npm run build
+```
+
+## Docker setup
+
+If you want to run Vendra through Docker, use the first-party Docker repository:
+
+- [misaf/vendra-docker](https://github.com/misaf/vendra-docker)
+
+The Docker stack provides MySQL, Redis, PHP-FPM, nginx, Horizon, and optional
+Pulse services. It clones `misaf/vendra` during image builds and can run
+migrations, tenant provisioning, and first-party module seeders at startup.
+
+See [Docker](/getting-started/docker) for the exact `.env` flags and commands.
+
+## Module workflow
+
+The root app uses first-party Composer packages such as `misaf/vendra-blog`,
+`misaf/vendra-product`, and `misaf/vendra-permission`.
+
+Local module development is configured through path repositories:
+
+```json
+{
+  "type": "path",
+  "url": "app-modules/*",
+  "options": {
+    "symlink": true
+  }
+}
+```
+
+The inspected first-party module source is currently under `app-modules.bk`.

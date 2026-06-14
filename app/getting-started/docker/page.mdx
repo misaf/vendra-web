@@ -1,0 +1,176 @@
+# Docker
+
+Use the first-party Docker repository when you want a container-based Vendra
+environment:
+
+- [misaf/vendra-docker](https://github.com/misaf/vendra-docker)
+
+## What it provides
+
+`vendra-docker` is a Docker Compose stack for the Vendra Laravel application.
+It builds the runtime around the main `misaf/vendra` repository and keeps
+container infrastructure separate from the CMS source.
+
+Services:
+
+- `mysql`: MySQL database
+- `redis`: Redis cache and queue backend
+- `php`: Laravel PHP-FPM runtime
+- `nginx`: HTTPS web server
+- `horizon`: Laravel Horizon worker
+- `pulse`: optional Laravel Pulse worker
+
+## Setup
+
+Create the Docker environment file:
+
+```sh
+cp .env.example .env
+```
+
+Important values to review first:
+
+```env
+APP_URL=https://vendra.test
+VENDRA_REPOSITORY=https://github.com/misaf/vendra.git
+VENDRA_REF=master
+RUN_LARAVEL_FRESH_INSTALL=false
+RUN_LARAVEL_MIGRATIONS=true
+RUN_LARAVEL_SEEDERS=true
+NGINX_HTTPS_PORT=443
+NGINX_SERVER_NAME="vendra.test panel.houshang-flowers.test"
+DB_DATABASE=vendra
+DB_USERNAME=vendra
+DB_PASSWORD=change-this-app-db-password
+DB_ROOT_PASSWORD=change-this-root-db-password
+QUEUE_CONNECTION=redis
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+```
+
+The PHP and nginx images clone `VENDRA_REPOSITORY` at `VENDRA_REF` during build.
+The PHP container mounts `.env` into the Laravel app at startup.
+
+## Commands
+
+Build the images:
+
+```sh
+docker compose build
+```
+
+Start the stack:
+
+```sh
+docker compose up -d
+```
+
+Generate an app key if `APP_KEY` is empty:
+
+```sh
+docker compose exec php sh -lc 'cd "$LARAVEL_APP_PATH" && php artisan key:generate --show'
+```
+
+Copy the printed key into `.env`, then restart the stack.
+
+Follow worker logs:
+
+```sh
+docker compose logs -f horizon pulse
+```
+
+Start the optional Pulse worker:
+
+```sh
+docker compose --profile pulse up -d pulse
+```
+
+Gracefully restart Horizon:
+
+```sh
+docker compose exec php sh -c 'cd "$LARAVEL_APP_PATH" && php artisan horizon:terminate'
+```
+
+Gracefully restart Pulse:
+
+```sh
+docker compose exec php sh -c 'cd "$LARAVEL_APP_PATH" && php artisan pulse:restart'
+```
+
+## Database Startup Modes
+
+For normal usage, keep:
+
+```env
+RUN_LARAVEL_FRESH_INSTALL=false
+RUN_LARAVEL_MIGRATIONS=true
+RUN_LARAVEL_SEEDERS=true
+```
+
+On startup, the main `php` service checks migration status. If migrations are
+pending and `RUN_LARAVEL_MIGRATIONS=true`, it runs:
+
+```sh
+php artisan migrate --force
+```
+
+If migrations were applied successfully and `RUN_LARAVEL_SEEDERS=true`, it runs
+the Vendra seed/provision commands.
+
+Use fresh install only for a disposable or intentionally reset database:
+
+```env
+RUN_LARAVEL_FRESH_INSTALL=true
+RUN_LARAVEL_SEEDERS=true
+```
+
+This runs `php artisan migrate:fresh --force`, which drops existing tables.
+Do not enable it on a database that contains data you want to keep.
+
+## Seeded Data
+
+When seeders run, the PHP entrypoint provisions Vendra and seeds first-party
+modules:
+
+```sh
+php artisan vendra-tenant:provision vendra ${APP_URL} admin admin@gmail.com --password=123123123
+php artisan vendra-permission:seed vendra all
+php artisan vendra-user:seed vendra all
+php artisan vendra-currency:seed vendra all
+php artisan vendra-product:seed vendra all
+php artisan vendra-faq:seed vendra all
+php artisan vendra-custom-page:seed vendra all
+php artisan vendra-tagger:seed vendra all
+php artisan vendra-language:seed vendra all
+```
+
+Worker services such as `horizon` and `pulse` do not run migrations or seeders.
+
+## Domains and Database Access
+
+`APP_URL` is the primary tenant/domain value. `NGINX_SERVER_NAME` can include
+multiple nginx domains.
+
+Add local hosts as needed:
+
+```txt
+127.0.0.1 vendra.test
+127.0.0.1 panel.houshang-flowers.test
+```
+
+MySQL is published using `MYSQL_HOST` and `MYSQL_PORT`. Keep
+`MYSQL_HOST=127.0.0.1` to bind the database to localhost on the server.
+
+For remote database access, use an SSH tunnel:
+
+```sh
+ssh -L 3307:127.0.0.1:3306 user@your-server-ip
+```
+
+Then connect to `127.0.0.1:3307` from your database client.
+
+## Repository Split
+
+Keeping Docker in a separate first-party repository avoids mixing application
+code with infrastructure wiring. It also lets the Docker stack evolve without
+forcing every CMS or module change to touch deployment/runtime files.

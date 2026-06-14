@@ -1,0 +1,56 @@
+# Endpoints
+
+The inspected API modules register read-only JSON:API resources under `/api/v1`.
+
+## Blog
+
+Server: `vendra-blog`
+
+- `GET /api/v1/blog-post-categories`
+- `GET /api/v1/blog-posts`
+
+Relationships:
+
+- `blog-post-categories.blogPosts`
+- `blog-post-categories.multimedia`
+- `blog-posts.blogPostCategory`
+- `blog-posts.multimedia`
+
+## FAQ
+
+Server: `vendra-faq`
+
+- `GET /api/v1/faq-categories`
+- `GET /api/v1/faqs`
+
+Relationships:
+
+- `faq-categories.faqs`
+- `faq-categories.multimedia`
+- `faqs.faqCategory`
+- `faqs.multimedia`
+
+## Product
+
+Server: `vendra-product`
+
+- `GET /api/v1/product-categories`
+- `GET /api/v1/products`
+- `GET /api/v1/product-prices`
+
+Relationships:
+
+- `product-categories.products`
+- `product-categories.productPrices`
+- `product-categories.multimedia`
+- `products.productCategory`
+- `products.productPrices`
+- `products.latestProductPrice`
+- `products.multimedia`
+- `product-prices.product`
+
+## Multimedia
+
+Server: `vendra-multimedia`
+
+- `GET /api/v1/multimedia`

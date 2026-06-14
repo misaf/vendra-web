@@ -1,0 +1,35 @@
+# Users & Permissions
+
+User management is split across user, profile, document, phone, and permission
+modules.
+
+## Users
+
+Modules:
+
+- `misaf/vendra-user`
+- `misaf/vendra-user-profile`
+- `misaf/vendra-user-profile-phone`
+- `misaf/vendra-user-profile-document`
+
+Resources include users, user profiles, profile balances, profile documents,
+and profile phones. Phone and document status enums include approved, pending,
+and rejected states.
+
+## Roles and permissions
+
+Module: `misaf/vendra-permission`
+
+Resources:
+
+- Roles
+- Permissions
+
+The permission module integrates with Spatie Permission and Laravel Pennant.
+Feature keys control access to the module, role management, permission
+management, and bulk role assignment.
+
+## Super admin
+
+The admin panel uses the configured `vendra-permission.super_admin_role` value
+for local developer logins and super-admin checks.

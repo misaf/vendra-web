@@ -1,0 +1,16 @@
+# Errors
+
+Vendra API modules use Laravel JSON:API, so errors should follow JSON:API error
+document conventions.
+
+## Common cases
+
+- `404` when a resource does not exist
+- `400` for malformed query parameters
+- `405` for methods not allowed on read-only resources
+- `500` for unhandled server errors
+
+## Read-only behavior
+
+The inspected routes call `readOnly()`, so create, update, and delete requests
+should not be documented as supported unless the API modules change.

@@ -1,0 +1,34 @@
+# Configuration
+
+This page collects important Vendra configuration areas.
+
+## Application
+
+- `config/app.php`
+- `config/database.php`
+- `config/cache.php`
+- `config/queue.php`
+- `config/session.php`
+- `config/services.php`
+
+## Modules
+
+- `config/app-modules.php` defines module namespace, vendor, and module directory.
+- `config/vendra-permission.php` controls super-admin role and feature gates.
+- `config/jsonapi.php` registers JSON:API servers.
+- `config/media-library.php` supports media handling.
+- `config/settings.php` supports typed settings.
+
+## Panels
+
+The admin panel is configured in:
+
+```txt
+app/Providers/Filament/AdminPanelProvider.php
+```
+
+The user panel is configured in:
+
+```txt
+app/Providers/Filament/UserPanelProvider.php
+```

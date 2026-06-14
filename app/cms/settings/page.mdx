@@ -1,0 +1,31 @@
+# Settings
+
+Vendra settings live in the main application and selected modules.
+
+## General settings
+
+The admin panel uses `App\Settings\GeneralSettings` for brand name and site
+title behavior.
+
+Admin pages in the main app include:
+
+- General Settings
+- Perfect Money Settings
+- CoinPayments Settings
+
+## Tenant settings
+
+Module: `misaf/vendra-tenant`
+
+The tenant module provides the tenant model used by the admin panel and the
+Spatie multitenancy middleware.
+
+## Permission settings
+
+Module: `misaf/vendra-permission`
+
+Important configuration includes:
+
+- `vendra-permission.super_admin_role`
+- feature toggles backed by Laravel Pennant
+- role and permission model bindings for Spatie Permission
