@@ -6,5 +6,7 @@ export default {
   controller: 'Controller',
   storefront: 'Storefront',
   api: 'APIs',
-  operations: 'Operations'
+  operations: 'Operations',
+  faq: 'FAQ',
+  blog: 'Blog'
 }

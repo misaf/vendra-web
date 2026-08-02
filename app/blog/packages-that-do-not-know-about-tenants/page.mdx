@@ -1,0 +1,109 @@
+---
+title: "Contracts over concretes: the constraint we pay for every day"
+date: "2026-06-23"
+author: "Misaf"
+description: "Forty-odd first-party packages do tenant-aware work and none of them imports the tenant model. A note on a technology choice that costs us regularly and has paid for itself twice."
+tags: ["platform", "packages"]
+---
+
+# Contracts over concretes: the constraint we pay for every day
+
+<Panel title="Why this note exists">
+  This is a technology choice, not a rule handed down. It has a running cost, it
+  gets questioned by every developer who joins, and the argument for it is worth
+  writing down once.
+</Panel>
+
+The Laravel platform is a thin host over a large catalog of first-party
+`misaf/vendra-*` packages. Nearly all of them do tenant-aware work. None of them
+imports the concrete tenant model.
+
+Instead they depend on provider-neutral contracts from `vendra-support`, and the
+host binds the concrete resolver and adapters. A package asks "who is the
+current tenant" through an interface it owns, and never learns which
+implementation answered.
+
+## The cost is real
+
+The cheap version is one `use` statement in the Product package. You get
+autocomplete, you get the actual model, you get relationships, and you are done
+in a minute.
+
+With the contract you get an interface, a binding to write in the host, and an
+adapter when the shapes do not line up. Every new package pays this. Every
+developer asks about it in their first week, and the honest first answer is
+"yes, it is more work."
+
+## What it bought
+
+**Panels that operate across tenants.** Only the Admin panel enters a single
+tenant context. Console and Reseller are central by necessity — they exist to
+work across properties. A catalog that hard-coded tenant scoping could not serve
+them at all, and we would have discovered that after writing the catalog, not
+before.
+
+**Test suites that stay small.** A package coupled to the concrete provider
+drags the whole tenancy stack into its own tests. With a contract, a package
+test binds a fake and runs.
+
+**A tenancy change that stayed a host change.** This is the one that settles the
+argument. Adjusting how tenants resolve has, so far, meant rebinding in the
+host — not a search-and-replace across forty packages, each with its own release
+line and its own consumers.
+
+## The conventions that travel with it
+
+The same reasoning produces the rest of the package rules:
+
+<DefList
+  items={[
+    {
+      term: 'One domain model',
+      description:
+        'API packages map existing domain objects to API Platform resources rather than inventing a parallel model that then has to be kept in sync by hand.'
+    },
+    {
+      term: 'README is the contract',
+      description:
+        'Each package README is the user-facing feature and usage contract — the thing consumers are entitled to rely on, not a summary of the code.'
+    },
+    {
+      term: 'Publish only what is documented',
+      description:
+        'Publishable resources and configuration stay a deliberate list, because everything published becomes something someone depends on.'
+    },
+    {
+      term: 'Shared navigation taxonomy',
+      description:
+        'Filament resources use the cluster and navigation taxonomy from Support, so forty independent packages produce one coherent admin instead of forty menu opinions.'
+    }
+  ]}
+/>
+
+## Where the constraint does not help
+
+It does not make the canonical API's tenant resolution safe. That API serves all
+properties from one host and identifies the tenant from request headers — a
+routing decision, and no amount of contract discipline inside the packages
+changes it. That has [its own note](/faq/a-domain-hint-is-not-an-identity).
+
+It also does not move quota enforcement. Property quota is checked inside a
+transaction with the reseller row locked, in the host, because it is about the
+host's own domain model rather than any one package's. Contracts are for
+behaviour that packages need; they are not a reason to push host concerns into
+packages.
+
+<NextSteps
+  items={[
+    {
+      href: '/platform/packages',
+      title: 'Package catalog',
+      description: 'The catalog and the conventions in full.'
+    },
+    {
+      href: '/platform/tenancy',
+      title: 'Panels and tenancy',
+      description: 'How each panel resolves tenants.'
+    }
+  ]}
+/>

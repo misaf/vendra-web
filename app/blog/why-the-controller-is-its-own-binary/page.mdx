@@ -1,0 +1,100 @@
+---
+title: "Why provisioning is a Go binary and not an artisan command"
+date: "2026-06-16"
+author: "Misaf"
+description: "A note on the technology split: Laravel could shell out to Docker itself. The reason it does not is a single line in the threat model."
+tags: ["controller", "architecture"]
+---
+
+# Why provisioning is a Go binary and not an artisan command
+
+<Panel title="Why this note exists">
+  A reasonable question from anyone reading the repository list for the first
+  time: the platform is already a full application with a queue. Why is there a
+  second language and a second deployable just to start containers?
+</Panel>
+
+Laravel could do it. `Process::run('docker compose up')` is three lines, ships
+with the framework, and would delete an entire repository from the ecosystem.
+
+We did not, for one reason.
+
+## The Laravel web process never gets the Docker socket
+
+Access to the Docker socket is root on the host, in practice. Any process
+holding it can start a privileged container mounting the host filesystem — the
+socket is not a container API so much as a "become the machine" API.
+
+The Laravel application is the part of the system exposed to the public
+internet, running three Filament panels, a canonical API, and a large catalog of
+first-party packages. It is where sessions live, where uploads land, where
+third-party dependencies run. It is, by a wide margin, the most likely component
+to have an exploitable bug.
+
+Handing that process the Docker socket means every vulnerability in any of it
+becomes host compromise instead of application compromise. Everything else about
+this design follows from refusing that.
+
+<Flow
+  label="Who can mutate Docker"
+  nodes={['Laravel queue job', 'Provisioner API', 'Controller', 'Docker']}
+/>
+
+Laravel expresses *intent* over an authenticated HTTP call. The provisioner
+decides whether that intent is legitimate and is the only thing that touches
+Docker.
+
+## What the boundary lets us do
+
+Once provisioning is a separate service, its attack surface can be made
+genuinely small, in a way a web framework's never can:
+
+- Three endpoints. Health, capabilities, and create — not a general Docker
+  proxy.
+- Bearer authentication, compared in constant time, on an internal Docker
+  network that is never published.
+- Requests capped at 1 MiB; property and certificate mutations serialized.
+- Logs that exclude tokens, request payloads, and generated environment values.
+- A schema check on the complete property configuration, with request identity
+  required to match the encoded configuration exactly.
+
+Each of those is easy to state and easy to audit precisely because the service
+does one thing. The equivalent list for "the part of Laravel that provisions"
+would have no natural boundary.
+
+Go is a good fit for the job — a static binary an operator installs and runs,
+with no runtime to keep in sync with the host — but the language is the smaller
+half of the decision. The separation is the point; Go is how it is convenient.
+
+## What it costs
+
+A second repository, a second release artifact in every compatibility set, and
+an asynchronous provisioning path. That last one is the real tax: creating a
+property is not a request-response operation, so Laravel records a durable
+deployment record first and reconciles the result when the job completes. Every
+UI that touches provisioning has to show pending state honestly.
+
+We would rather explain a pending state than explain a host compromise.
+
+## What is next
+
+Template support is deliberately narrow — `vendra-storefront-florist` is the
+accepted family today, with per-property image digests selectable within it.
+Widening that is the main thing the capabilities endpoint exists to describe,
+and the main upcoming change to this boundary. The rule it will not relax: the
+provisioner validates, and nothing else gets the socket.
+
+<NextSteps
+  items={[
+    {
+      href: '/controller/provisioning',
+      title: 'Provisioner API',
+      description: 'The three endpoints and the request lifecycle.'
+    },
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description: 'Where the boundary sits in the provisioning path.'
+    }
+  ]}
+/>

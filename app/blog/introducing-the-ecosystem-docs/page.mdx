@@ -1,0 +1,71 @@
+---
+title: "Introducing the ecosystem documentation"
+date: "2026-08-02"
+author: "Misaf"
+description: "Three repositories, one documentation site — and the checks that keep it honest."
+tags: ["announcement", "docs"]
+---
+
+# Introducing the ecosystem documentation
+
+Vendra is three cooperating repositories: a modular Laravel platform, a Go
+infrastructure controller, and a runtime-configured Next.js storefront. Each has
+its own README, and each README is good at describing its own repository. None
+of them could explain how the three fit together.
+
+That gap is what this site is for.
+
+## What it covers
+
+<FeatureGrid
+  items={[
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description:
+        'The request path, asynchronous provisioning, and who owns which state.'
+    },
+    {
+      href: '/getting-started',
+      title: 'Getting started',
+      description:
+        'Local development from source, and a production host installation.'
+    }
+  ]}
+/>
+
+## Documentation that fails the build
+
+Prose drifts from code silently. Nothing breaks, no test goes red, and the docs
+quietly become fiction. So this site validates itself against the things it
+describes:
+
+<DefList
+  items={[
+    {
+      term: 'check:drift',
+      description:
+        'Compares the provisioner OpenAPI spec, the storefront property schema, and the first-party package directory against the pages documenting them — in both directions.'
+    },
+    {
+      term: 'check:links',
+      description:
+        'Resolves every internal link and every sidebar entry against the real route tree.'
+    },
+    {
+      term: 'check:html',
+      description:
+        'Catches invalid nesting in the prerendered output before it becomes a hydration error.'
+    }
+  ]}
+/>
+
+Drift is reported both ways deliberately. A contract item missing from the docs
+is an undocumented feature. A documented item missing from the contract is
+worse: it sends a reader looking for something that no longer exists.
+
+## Where things live
+
+Repository READMEs remain the source for package-level implementation detail.
+Anything that spans repositories — architecture, provisioning, operations —
+lives here.
