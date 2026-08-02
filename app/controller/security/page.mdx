@@ -1,31 +1,139 @@
+---
+description: "The Docker socket boundary, exposed ports, TLS and HSTS behavior, what to back up, and how to recover a Vendra host."
+---
+
+import { Callout } from 'nextra/components'
+
 # Security and recovery
+
+<Lede>
+  The Docker socket is the most sensitive thing on the host. Only one container
+  gets write access to it.
+</Lede>
 
 ## Docker boundary
 
-Only the provisioner gets the write-capable Docker socket. Traefik uses an
-endpoint-restricted read-only socket proxy. Laravel web, API, Horizon, scheduler,
-and monitoring containers receive neither.
+<Boundary
+  doTitle="Receives a socket"
+  dontTitle="Receives no socket"
+  dos={[
+    'Provisioner — write-capable Docker socket',
+    'Traefik — endpoint-restricted read-only socket proxy'
+  ]}
+  donts={[
+    'Laravel web and API containers',
+    'Horizon and the scheduler',
+    'Monitoring containers'
+  ]}
+/>
 
-Traefik publishes ports 80 and 443. Its unauthenticated dashboard and MySQL are
-bound to `127.0.0.1` by default; access them remotely through SSH tunnels. Redis
-and the provisioner publish no host ports.
+## Exposed ports
+
+<DefList
+  items={[
+    {
+      term: 'Traefik',
+      meta: 'public',
+      description: 'Publishes ports 80 and 443.'
+    },
+    {
+      term: 'Traefik dashboard · MySQL',
+      meta: '127.0.0.1',
+      description:
+        'Bound to loopback by default. Reach them remotely through SSH tunnels.'
+    },
+    {
+      term: 'Redis · provisioner',
+      meta: 'no host ports',
+      description: 'Reachable only on the internal Docker network.'
+    }
+  ]}
+/>
+
+<Callout type="warning">
+  The Traefik dashboard is unauthenticated. Its loopback binding is the only
+  thing protecting it — do not publish it.
+</Callout>
 
 ## TLS and headers
 
 Public deployments use ACME. Local deployments use a persistent generated CA.
-HSTS is enabled for one year only with ACME and disabled in self-signed mode so
-browsers retain their certificate-warning bypass. Customer storefront domains do
-not receive `includeSubDomains`; platform subdomains do.
 
-## Backups and recovery
+<DefList
+  items={[
+    {
+      term: 'HSTS',
+      description:
+        'Enabled for one year with ACME only. Disabled in self-signed mode so browsers retain their certificate-warning bypass.'
+    },
+    {
+      term: 'includeSubDomains',
+      description:
+        'Applied to platform subdomains. Customer storefront domains do not receive it.'
+    }
+  ]}
+/>
 
-Back up:
+## Backups
 
-1. the Laravel database and persistent media,
-2. `/etc/vendra` configuration/secrets,
-3. `<state_dir>/acme` for public certificate continuity,
-4. optionally the non-secret `properties.yml` inventory.
+<DefList
+  items={[
+    {
+      term: 'Laravel database and media',
+      tag: { tone: 'red', label: 'Required' },
+      description: 'The authoritative business state.'
+    },
+    {
+      term: '/etc/vendra',
+      tag: { tone: 'red', label: 'Required' },
+      description: 'Configuration and secrets.'
+    },
+    {
+      term: '<state_dir>/acme',
+      tag: { tone: 'amber', label: 'Recommended' },
+      description: 'Public certificate and account continuity.'
+    },
+    {
+      term: 'properties.yml',
+      tag: { tone: 'neutral', label: 'Optional' },
+      description: 'The non-secret property inventory.'
+    }
+  ]}
+/>
 
-Generated runtime property directories are disposable. Restore authoritative
-data and configuration, install the matching controller binary, run `vendra
-stack up`, then execute Laravel's storefront reconciliation to replay the fleet.
+Generated runtime property directories are disposable.
+
+## Recovery
+
+<Steps
+  items={[
+    {
+      title: 'Restore authoritative data and configuration',
+      body: 'Database, media, /etc/vendra, and ACME state.'
+    },
+    {
+      title: 'Install the matching controller binary',
+      body: 'Version skew between binary and rendered state causes avoidable failures.'
+    },
+    { title: 'Run vendra stack up', body: 'Converge the host to desired state.' },
+    {
+      title: 'Reconcile storefronts from Laravel',
+      body: 'Replay the fleet from the authoritative deployment records.'
+    }
+  ]}
+/>
+
+<NextSteps
+  items={[
+    {
+      href: '/operations',
+      title: 'Operations runbook',
+      description: 'Daily checks and the full recovery outline.'
+    },
+    {
+      href: '/controller/configuration',
+      title: 'Configuration',
+      description: 'Where secrets belong and how precedence works.'
+    }
+  ]}
+/>

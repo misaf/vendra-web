@@ -1,17 +1,71 @@
+---
+description: "Vendra's two API boundaries: the public Laravel JSON:API and the internal Go provisioner contract, with separate credentials and threat models."
+---
+
+import { Callout } from 'nextra/components'
+
 # API landscape
 
-Vendra exposes two unrelated API boundaries. Do not mix their credentials or
-threat models.
+<Lede>
+  Vendra exposes two unrelated API boundaries. They have different audiences,
+  different credentials, and different threat models.
+</Lede>
 
-| API | Audience | Host/path | Authentication |
-| --- | --- | --- | --- |
-| Laravel/API Platform | Storefronts and application clients | `https://api.<base>/api` | Resource-specific user auth; tenant routing currently uses origin/domain context |
-| Go provisioner | Laravel queue only | internal `provisioner:8080/v1` | Shared bearer token |
+<Callout type="error">
+  Do not mix their credentials. The provisioner token and any storefront
+  credential are unrelated secrets and must never be interchanged.
+</Callout>
+
+## The two boundaries
+
+<FeatureGrid
+  items={[
+    {
+      href: '/api/storefront',
+      title: 'Laravel / API Platform',
+      description:
+        'Public JSON:API for storefronts and application clients. Resource-specific user auth; tenant routing currently uses origin and domain context.',
+      meta: 'https://api.<base>/api'
+    },
+    {
+      href: '/api/provisioner',
+      title: 'Go provisioner',
+      description:
+        'Internal contract called only by the Laravel queue, authenticated with a shared bearer token.',
+      meta: 'provisioner:8080/v1'
+    }
+  ]}
+/>
+
+<div className="mt-5 flex flex-wrap gap-2">
+  <Tag tone="emerald">Public</Tag>
+  <Tag>Internal</Tag>
+</div>
+
+## Laravel API
 
 The Laravel API publishes OpenAPI documentation at `/api/docs`. Domain endpoints
-follow the Filament navigation taxonomy, for example `/api/catalog/products`.
+follow the Filament navigation taxonomy — for example `/api/catalog/products`.
 API packages own their resources and mapping logic.
 
-The Go provisioner's exact machine contract is checked into
-`vendra-controller/api/openapi.yaml` and should be used for generated clients or
-contract tests.
+## Provisioner API
+
+The Go provisioner’s exact machine contract is checked into
+`vendra-controller/api/openapi.yaml`. Use that file for generated clients or
+contract tests rather than transcribing fields from these pages.
+
+<NextSteps
+  items={[
+    {
+      href: '/api/storefront',
+      title: 'Storefront API and tenancy',
+      description:
+        'Request context, CORS, and the current tenant-resolution limitation.'
+    },
+    {
+      href: '/api/provisioner',
+      title: 'Provisioner contract',
+      description: 'Contract rules, limits, and token handling.'
+    }
+  ]}
+/>

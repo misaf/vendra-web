@@ -1,5 +1,5 @@
 export default {
-  index: 'Controller overview',
+  index: 'Overview',
   configuration: 'Configuration',
   cli: 'CLI reference',
   provisioning: 'Provisioner API',

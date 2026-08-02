@@ -1,28 +1,87 @@
+---
+description: "The internal bearer-authenticated provisioner API: its three endpoints and the storefront request lifecycle."
+---
+
+import { Callout } from 'nextra/components'
+
 # Provisioner API
 
-The provisioner is an internal, bearer-authenticated HTTP API. Its OpenAPI file
-defines three endpoints:
+<Lede>
+  An internal, bearer-authenticated HTTP API with three endpoints. It is not a
+  public API and must stay on an internal Docker network.
+</Lede>
 
-| Endpoint | Purpose |
-| --- | --- |
-| `GET /health` | Process health |
-| `GET /v1/capabilities` | Supported templates and controller capabilities |
-| `POST /v1/storefronts` | Validate, render, start, and report a storefront |
+<Tag tone="emerald">Internal only</Tag> <Tag>Bearer authenticated</Tag>
 
-Requests are limited to 1 MiB, and property/certificate mutations are serialized.
-Bearer comparison is constant-time. Logs exclude tokens, request payloads, and
-generated environment values.
+## Endpoints
+
+<DefList
+  items={[
+    { term: 'GET /health', description: 'Process health.' },
+    {
+      term: 'GET /v1/capabilities',
+      description: 'Supported templates and controller capabilities.'
+    },
+    {
+      term: 'POST /v1/storefronts',
+      description: 'Validate, render, start, and report a storefront.'
+    }
+  ]}
+/>
+
+Requests are limited to 1 MiB, and property and certificate mutations are
+serialized. Bearer comparison is constant-time. Logs exclude tokens, request
+payloads, and generated environment values.
 
 ## Storefront request lifecycle
 
-```text
-Laravel job -> POST /v1/storefronts -> validate identity and schema
-            -> render property -> pull image -> compose up --wait
-            <- status + reference + image digest
-```
+<Steps
+  items={[
+    {
+      title: 'POST /v1/storefronts',
+      body: 'Laravel’s queued job sends the request with its bearer token.'
+    },
+    {
+      title: 'Validate identity and schema',
+      body: 'Request identity must match the encoded configuration exactly.'
+    },
+    { title: 'Render property', body: 'Write the per-property Compose project.' },
+    { title: 'Pull image', body: 'Unless no_pull is set.' },
+    {
+      title: 'compose up --wait',
+      body: 'Wait for the container to report healthy.'
+    },
+    {
+      title: 'Respond',
+      body: 'Return status, controller reference, and resolved image digest.'
+    }
+  ]}
+/>
 
-The currently accepted template family is `vendra-storefront-florist`; the
+The currently accepted template family is `vendra-storefront-florist`. The
 request can still select a different compatible image digest per property.
 
-The token used by Laravel must match `VENDRA_PROVISIONER_TOKEN` in the controller
-environment. Keep the API on an internal Docker network; it is not a public API.
+## Authentication
+
+The token used by Laravel must match `VENDRA_PROVISIONER_TOKEN` in the
+controller environment.
+
+<Callout type="error">
+  Keep this API on an internal Docker network. It exposes container creation and
+  is not designed to face the public internet.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/api/provisioner',
+      title: 'Provisioner contract',
+      description: 'Contract rules, limits, and token handling in detail.'
+    },
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description: 'Where this API sits in the provisioning path.'
+    }
+  ]}
+/>
