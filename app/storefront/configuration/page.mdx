@@ -44,6 +44,11 @@ import { Callout } from 'nextra/components'
 }
 ```
 
+{/* `scripts/check-drift.mjs` reads the optional field names out of the
+    paragraph below. It anchors on that opening phrase at the start of a line,
+    and on the backticks. Keep both when rewording, or the check will report
+    the whole list as undocumented. */}
+
 Optional fields include `ogImage`, `heroImage`, `aboutImage`, `messages`,
 `checkout`, `currency`, and `trustSeal`. Runtime messages are deep-merged over
 the brand-neutral base catalog, per locale.
