@@ -26,15 +26,31 @@ async function collect(pattern, cwd) {
   return out
 }
 
+// Content pages are MDX; the blog index and tag listings are hand-written TSX.
 const pages = await collect('**/page.mdx', appDir)
+const tsxPages = await collect('**/page.tsx', appDir)
 
 /** `overview/architecture/page.mdx` -> `/overview/architecture`, `page.mdx` -> `/` */
-const routes = new Set(
-  pages.map(file => {
-    const route = file.replace(/(^|\/)page\.mdx$/, '')
-    return route === '' ? '/' : `/${route}`
-  })
-)
+function toRoute(file) {
+  const route = file.replace(/(^|\/)page\.(mdx|tsx)$/, '')
+  return route === '' ? '/' : `/${route}`
+}
+
+const routes = new Set([...pages, ...tsxPages].map(toRoute))
+
+/**
+ * Dynamic segments cannot be matched literally, so `/blog/tags/[tag]` becomes a
+ * prefix that any single extra segment satisfies. The set of tags that actually
+ * exist is enforced by `generateStaticParams`, not here.
+ */
+const dynamicPrefixes = [...routes]
+  .filter(route => route.includes('['))
+  .map(route => route.slice(0, route.indexOf('[')))
+
+const matchesDynamic = path =>
+  dynamicPrefixes.some(
+    prefix => path.startsWith(prefix) && !path.slice(prefix.length).includes('/')
+  )
 
 const problems = []
 
@@ -45,12 +61,12 @@ const problems = []
 const sources = [
   ...pages.map(file => ['app', file]),
   ...(await collect('**/*.{jsx,tsx}', appDir)).map(file => ['app', file]),
-  ...(await collect('**/*.{ts,tsx}', resolve(root, 'lib'))).map(file => [
-    'lib',
-    file
-  ]),
   ...(await collect('**/*.{ts,tsx}', resolve(root, 'components'))).map(file => [
     'components',
+    file
+  ]),
+  ...(await collect('**/*.{ts,tsx}', resolve(root, 'lib'))).map(file => [
+    'lib',
     file
   ])
 ]
@@ -62,7 +78,9 @@ for (const [dir, file] of sources) {
   for (const [, href] of text.matchAll(linkPattern)) {
     if (!href.startsWith('/')) continue // external, anchor, or relative
     const [path] = href.split('#')
-    if (path && !routes.has(path)) problems.push(`${dir}/${file}\n    -> ${href}`)
+    if (path && !routes.has(path) && !matchesDynamic(path)) {
+      problems.push(`${dir}/${file}\n    -> ${href}`)
+    }
   }
 }
 

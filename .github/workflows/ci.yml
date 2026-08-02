@@ -22,10 +22,10 @@ jobs:
 
       - run: npm ci
 
-      # Typecheck, internal links, contract drift, script self-tests, the
-      # production build (which static-exports to out/ and generates the
-      # Pagefind index via postbuild), then HTML nesting validation of that
-      # exported output.
+      # Typecheck, internal links, contract drift, blog frontmatter, script
+      # self-tests, the production build (which static-exports to out/ and
+      # generates the Pagefind index via postbuild), then HTML nesting
+      # validation of that exported output.
       #
       # NEXT_PUBLIC_SITE_URL is intentionally unset here: this job validates
       # that the site builds, it does not publish. The deploy job below supplies

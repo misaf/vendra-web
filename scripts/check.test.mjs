@@ -276,6 +276,88 @@ describe('check-html', () => {
 })
 
 /* -------------------------------------------------------------------------- */
+/* check-blog                                                                 */
+/* -------------------------------------------------------------------------- */
+
+function blogFixture(posts) {
+  const dir = temporaryDir('vendra-blog-')
+  for (const [slug, contents] of Object.entries(posts)) {
+    mkdirSync(resolve(dir, slug), { recursive: true })
+    writeFileSync(resolve(dir, slug, 'page.mdx'), contents)
+  }
+  return dir
+}
+
+const post = (fields, body = '# Title\n') =>
+  `---\n${fields}\n---\n\n${body}`
+
+describe('check-blog', () => {
+  it('passes against the real posts', () => {
+    const { code, output } = run('check-blog.mjs')
+    assert.equal(code, 0, output)
+    assert.match(output, /valid frontmatter|no posts yet/)
+  })
+
+  it('accepts a complete post', () => {
+    const dir = blogFixture({
+      hello: post('title: "Hello"\ndate: "2026-01-02"\ntags: ["a"]')
+    })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 0, output)
+    assert.match(output, /1 posts have valid frontmatter/)
+  })
+
+  // The whole reason this check exists.
+  it('rejects a post with no date', () => {
+    const dir = blogFixture({ hello: post('title: "Hello"') })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /missing "date"/)
+  })
+
+  it('rejects a malformed date', () => {
+    const dir = blogFixture({
+      hello: post('title: "Hello"\ndate: "Jan 2 2026"')
+    })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /is not YYYY-MM-DD/)
+  })
+
+  it('rejects an impossible date', () => {
+    const dir = blogFixture({
+      hello: post('title: "Hello"\ndate: "2026-02-31"')
+    })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /not a real date/)
+  })
+
+  it('rejects a missing title', () => {
+    const dir = blogFixture({ hello: post('date: "2026-01-02"') })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /missing "title"/)
+  })
+
+  it('rejects tags that are not an array', () => {
+    const dir = blogFixture({
+      hello: post('title: "Hello"\ndate: "2026-01-02"\ntags: operations')
+    })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /tags must be an array/)
+  })
+
+  it('rejects a post with no frontmatter at all', () => {
+    const dir = blogFixture({ hello: '# Just a heading\n' })
+    const { code, output } = run('check-blog.mjs', { VENDRA_BLOG_DIR: dir })
+    assert.equal(code, 1)
+    assert.match(output, /no frontmatter block/)
+  })
+})
+
+/* -------------------------------------------------------------------------- */
 /* check-links                                                                */
 /* -------------------------------------------------------------------------- */
 
