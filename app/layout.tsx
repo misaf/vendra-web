@@ -6,7 +6,7 @@ import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Anchor } from 'nextra/components'
 import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
-import { navGroups, navMore, navSections, sectionLabel } from '../lib/navigation'
+import { navGroups, navSections, sectionLabel } from '../lib/navigation'
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 
@@ -210,7 +210,6 @@ export default async function RootLayout({
             {section.label}
           </Anchor>
         ))}
-        <NavMenu label="More" items={navMore} />
       </span>
     </Navbar>
   )

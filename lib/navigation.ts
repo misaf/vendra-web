@@ -83,13 +83,18 @@ export const navGroups: NavGroup[] = [
   }
 ]
 
-/** Top-level sections shown flat in the navbar, after the groups. */
+/**
+ * Top-level sections shown flat in the navbar, after the groups.
+ *
+ * Blog and FAQ sit here rather than in a "More" menu, and are not part of the
+ * Learn or Reference groups: they are their own sections of the site, not
+ * documentation. `app/_meta.tsx` keeps them out of the docs sidebar to match.
+ */
 export const navSections: NavSection[] = [
   section('examples'),
   section('ui'),
   section('showcase'),
-  section('pro')
+  section('pro'),
+  section('blog'),
+  section('faq')
 ]
-
-/** Secondary links, collected under a "More" menu. */
-export const navMore: NavSection[] = [section('blog'), section('faq')]
