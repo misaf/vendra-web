@@ -1,10 +1,33 @@
+---
+description: "Build and publish the tenant-neutral storefront image, integrate it with the controller, and update a running property."
+---
+
+import { Callout } from 'nextra/components'
+
 # Build and deployment
+
+<Lede>
+  The published container is tenant-neutral. One image serves the whole fleet,
+  and property identity arrives only at container start.
+</Lede>
 
 ## Shared image model
 
-The published container is tenant-neutral. Production property identity arrives
-only through `STOREFRONT_CONFIG_BASE64`. Fleet-wide browser settings can be build
-arguments; tenant-specific API and storage URLs must remain runtime/server-side.
+<Boundary
+  doTitle="Safe as build arguments"
+  dontTitle="Must stay runtime, server-side"
+  dos={[
+    'Fleet-wide browser settings',
+    'NEXT_PUBLIC_MAP_* map configuration',
+    'Theme composition'
+  ]}
+  donts={[
+    'Tenant-specific API URLs',
+    'Storage URLs',
+    'Property identity and branding',
+    'Any credential'
+  ]}
+/>
 
 ```bash
 docker build \
@@ -13,14 +36,21 @@ docker build \
 docker push ghcr.io/your-org/vendra-storefront:<version>
 ```
 
-Deploy the resulting digest, not a moving tag.
+<Callout type="warning">
+  Deploy the resulting digest, not a moving tag. A tag that moves underneath a
+  running fleet makes rollbacks guesswork.
+</Callout>
 
 ## Controller integration
 
 The production property Compose template is embedded in the controller binary.
-It injects property configuration, canonical API URL, optional integrations,
-certificate trust, health checks, and Traefik labels. This repository's Compose
-file is local integration tooling, not a competing production definition.
+It injects property configuration, the canonical API URL, optional integrations,
+certificate trust, health checks, and Traefik labels.
+
+<Callout type="info">
+  This repository’s own Compose file is local integration tooling, not a
+  competing production definition.
+</Callout>
 
 ## Update a property
 
@@ -31,5 +61,24 @@ vendra property render <slug> <domain> \
 vendra property restart <slug>
 ```
 
-Removing controller state does not delete the backend tenant. Likewise, deleting
-a tenant is a separate business-data operation from stopping its storefront.
+## Removal is not deletion
+
+Removing controller state does not delete the backend tenant. Deleting a tenant
+is a separate business-data operation from stopping its storefront.
+
+<Flow nodes={['property remove', 'Container gone', 'Tenant still in Laravel']} />
+
+<NextSteps
+  items={[
+    {
+      href: '/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'Rolling a new digest across the fleet.'
+    },
+    {
+      href: '/controller/cli',
+      title: 'CLI reference',
+      description: 'The full property lifecycle command set.'
+    }
+  ]}
+/>

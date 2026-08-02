@@ -1,12 +1,24 @@
+---
+description: "The required storefront property configuration shape and the complete runtime environment contract."
+---
+
+import { Callout } from 'nextra/components'
+
 # Property configuration
 
-Production injects a base64-encoded JSON object as
-`STOREFRONT_CONFIG_BASE64`. A production container refuses to run without it;
-falling back to the bundled example could expose another tenant's branding.
+<Lede>
+  Production injects a base64-encoded JSON object as `STOREFRONT_CONFIG_BASE64`.
+  A production container refuses to run without it.
+</Lede>
+
+<Callout type="error">
+  The refusal is deliberate. Falling back to the bundled example configuration
+  could serve another tenant’s branding on a live domain.
+</Callout>
 
 ## Required shape
 
-```json
+```json filename="property.json"
 {
   "slug": "acme",
   "theme": "default",
@@ -34,7 +46,7 @@ falling back to the bundled example could expose another tenant's branding.
 
 Optional fields include `ogImage`, `heroImage`, `aboutImage`, `messages`,
 `checkout`, `currency`, and `trustSeal`. Runtime messages are deep-merged over
-the brand-neutral base catalog per locale.
+the brand-neutral base catalog, per locale.
 
 Generate a configuration with:
 
@@ -44,13 +56,71 @@ npm run property:config <slug> -- --json
 
 ## Environment contract
 
-| Variable | Scope | Purpose |
-| --- | --- | --- |
-| `VENDRA_API_URL` | Server runtime | Canonical API origin; `/api` is normalized |
-| `STOREFRONT_CONFIG_BASE64` | Server runtime | Complete property identity and presentation config |
-| `STORAGE_BASE_URL` | Server runtime, optional | Media origin override |
-| `CONTACT_*` | Server runtime, optional | Deployment-specific contact overrides |
-| `NESHAN_SERVICE_KEY` | Server runtime, optional | Reverse-geocoding service key |
-| `NEXT_PUBLIC_MAP_*` | Build time | Fleet-wide browser map configuration |
+<DefList
+  items={[
+    {
+      term: 'VENDRA_API_URL',
+      tag: { tone: 'emerald', label: 'Required' },
+      meta: 'Server runtime',
+      description: 'Canonical API origin. The /api suffix is normalized.'
+    },
+    {
+      term: 'STOREFRONT_CONFIG_BASE64',
+      tag: { tone: 'emerald', label: 'Required' },
+      meta: 'Server runtime',
+      description: 'Complete property identity and presentation configuration.'
+    },
+    {
+      term: 'STORAGE_BASE_URL',
+      meta: 'Server runtime, optional',
+      description: 'Media origin override.'
+    },
+    {
+      term: 'CONTACT_*',
+      meta: 'Server runtime, optional',
+      description: 'Deployment-specific contact overrides.'
+    },
+    {
+      term: 'NESHAN_SERVICE_KEY',
+      meta: 'Server runtime, optional',
+      description: 'Reverse-geocoding service key.'
+    },
+    {
+      term: 'VENDRA_STOREFRONT_KEY',
+      meta: 'Server runtime, optional',
+      description: 'Opaque storefront credential sent as X-Storefront-Key.'
+    },
+    {
+      term: 'VENDRA_STOREFRONT_KEY_HEADER',
+      meta: 'Server runtime, optional',
+      description:
+        'Header name for the credential. Defaults to X-Storefront-Key.'
+    },
+    {
+      term: 'NEXT_PUBLIC_MAP_*',
+      tag: { tone: 'amber', label: 'Build time' },
+      meta: 'Baked into the image',
+      description: 'Fleet-wide browser map configuration.'
+    }
+  ]}
+/>
 
-Never place secrets in `NEXT_PUBLIC_*`; Next.js inlines them into client assets.
+<Callout type="error">
+  Never place secrets in `NEXT_PUBLIC_*`. Next.js inlines those values into
+  client assets, where anyone can read them.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/storefront/deployment',
+      title: 'Build and deployment',
+      description: 'How this configuration reaches a running container.'
+    },
+    {
+      href: '/api/storefront',
+      title: 'Storefront API and tenancy',
+      description: 'What the credential is for, and why it is not yet verified.'
+    }
+  ]}
+/>

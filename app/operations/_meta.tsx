@@ -1,5 +1,5 @@
 export default {
-  index: 'Operations runbook',
+  index: 'Runbook',
   upgrades: 'Upgrades and releases',
   troubleshooting: 'Troubleshooting'
 }
