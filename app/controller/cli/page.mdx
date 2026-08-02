@@ -1,0 +1,38 @@
+# CLI reference
+
+## Stack lifecycle
+
+```bash
+vendra init
+vendra stack up
+vendra stack status
+vendra stack ps
+vendra stack urls
+vendra stack logs <service>
+vendra stack restart
+vendra stack down
+```
+
+`stack up` renders manifests, ensures the network, prepares certificates,
+validates Compose, pulls when enabled, starts projects, and waits for health.
+
+For local source images, use `no_pull: true` in configuration and `--no-pull`
+for direct CLI operations.
+
+## Property lifecycle
+
+```bash
+vendra property add <slug> <domain> --configuration config.json
+vendra property render <slug> <domain> --configuration config.json
+vendra property up <slug>
+vendra property restart <slug>
+vendra property down <slug>
+vendra property ls
+vendra property sync
+vendra property remove <slug>
+```
+
+`add` refuses existing state; `render` is idempotent. `ls` exposes drift between
+the safe registry and rendered directories. `sync` can re-render entries only
+when their existing `.env` still contains configuration; otherwise replay the
+authoritative deployment from Laravel.

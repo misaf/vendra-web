@@ -1,0 +1,17 @@
+# API landscape
+
+Vendra exposes two unrelated API boundaries. Do not mix their credentials or
+threat models.
+
+| API | Audience | Host/path | Authentication |
+| --- | --- | --- | --- |
+| Laravel/API Platform | Storefronts and application clients | `https://api.<base>/api` | Resource-specific user auth; tenant routing currently uses origin/domain context |
+| Go provisioner | Laravel queue only | internal `provisioner:8080/v1` | Shared bearer token |
+
+The Laravel API publishes OpenAPI documentation at `/api/docs`. Domain endpoints
+follow the Filament navigation taxonomy, for example `/api/catalog/products`.
+API packages own their resources and mapping logic.
+
+The Go provisioner's exact machine contract is checked into
+`vendra-controller/api/openapi.yaml` and should be used for generated clients or
+contract tests.

@@ -1,0 +1,31 @@
+# Operations runbook
+
+## Daily checks
+
+```bash
+vendra stack status
+vendra stack ps
+vendra property ls
+```
+
+Investigate unhealthy services with `vendra stack logs <service>`. A storefront
+must pass both its Docker health check and Traefik's `/api/health` probe.
+
+## Backup scope
+
+- Laravel database and persistent media
+- `/etc/vendra/controller.yaml` and protected environment/secrets
+- controller ACME state for certificate/account continuity
+- deployment image digests and matching controller binary version
+
+Generated Compose manifests can be recreated. The safe property registry cannot
+recreate encoded property configuration by itself; Laravel's deployment records
+remain authoritative.
+
+## Recovery outline
+
+1. Restore the database, media, configuration, secrets, and ACME state.
+2. Install the matching `vendra` binary.
+3. Run `vendra stack up` and verify platform health.
+4. Reconcile storefront deployments from Laravel.
+5. Confirm domains, certificates, tenant-specific API data, and both locales.

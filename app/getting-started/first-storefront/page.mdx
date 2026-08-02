@@ -1,0 +1,43 @@
+# First storefront
+
+The property slug and domain must agree in Laravel, the controller command, and
+the encoded storefront configuration.
+
+## Generate configuration
+
+From the storefront repository:
+
+```bash
+npm run property:config <slug> -- --json > /tmp/<slug>.json
+```
+
+The configuration requires identity, localized name, business type, currency,
+address, contact, and social fields. `ogImage` may be empty. The controller
+validates the complete shape before creating a container.
+
+## Render and start manually
+
+```bash
+sudo vendra property add <slug> <domain> \
+  --image ghcr.io/your-org/storefront@sha256:<digest> \
+  --configuration /tmp/<slug>.json \
+  --config /etc/vendra/controller.yaml
+sudo vendra property up <slug>
+```
+
+Normal production onboarding uses the Laravel Console property form and queued
+provisioner job instead of these manual commands.
+
+## Verify
+
+```bash
+sudo vendra property ls
+sudo vendra stack status
+sudo vendra stack logs <slug>
+curl -I https://<domain>/en
+curl https://api.<base-domain>/up
+```
+
+Check both `/en` and `/fa`, API-backed products/blog/FAQ, light and dark themes,
+and the `/api/health` endpoint. Rendering a shell is not proof that canonical API
+requests resolve the correct tenant.

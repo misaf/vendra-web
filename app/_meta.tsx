@@ -1,9 +1,10 @@
 export default {
   index: 'Home',
-  about: 'About',
-  cms: 'CMS',
-  modules: 'Modules',
+  overview: 'Overview',
   'getting-started': 'Getting Started',
-  features: 'Features',
-  'api-reference': 'API Reference'
+  platform: 'Platform',
+  controller: 'Controller',
+  storefront: 'Storefront',
+  api: 'APIs',
+  operations: 'Operations'
 }

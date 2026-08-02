@@ -1,0 +1,31 @@
+# Security and recovery
+
+## Docker boundary
+
+Only the provisioner gets the write-capable Docker socket. Traefik uses an
+endpoint-restricted read-only socket proxy. Laravel web, API, Horizon, scheduler,
+and monitoring containers receive neither.
+
+Traefik publishes ports 80 and 443. Its unauthenticated dashboard and MySQL are
+bound to `127.0.0.1` by default; access them remotely through SSH tunnels. Redis
+and the provisioner publish no host ports.
+
+## TLS and headers
+
+Public deployments use ACME. Local deployments use a persistent generated CA.
+HSTS is enabled for one year only with ACME and disabled in self-signed mode so
+browsers retain their certificate-warning bypass. Customer storefront domains do
+not receive `includeSubDomains`; platform subdomains do.
+
+## Backups and recovery
+
+Back up:
+
+1. the Laravel database and persistent media,
+2. `/etc/vendra` configuration/secrets,
+3. `<state_dir>/acme` for public certificate continuity,
+4. optionally the non-secret `properties.yml` inventory.
+
+Generated runtime property directories are disposable. Restore authoritative
+data and configuration, install the matching controller binary, run `vendra
+stack up`, then execute Laravel's storefront reconciliation to replay the fleet.

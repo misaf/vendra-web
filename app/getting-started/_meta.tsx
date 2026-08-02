@@ -1,7 +1,6 @@
 export default {
-  index: 'Overview',
-  installation: 'Installation',
-  docker: 'Docker',
-  configuration: 'Configuration',
-  'first-run': 'First Run'
+  index: 'Choose a workflow',
+  local: 'Local ecosystem',
+  production: 'Production host',
+  'first-storefront': 'First storefront'
 }

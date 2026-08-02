@@ -1,0 +1,30 @@
+# Upgrades and releases
+
+The ecosystem consists of independent repositories. Record a tested compatibility
+set of controller binary, platform image, provisioner image, and storefront image
+digests before production rollout.
+
+## Platform upgrade
+
+```bash
+composer update --with-all-dependencies
+php artisan migrate --force
+php artisan optimize:clear
+composer test
+composer stan
+```
+
+Keep first-party Vendra packages on the same release line. Review package-specific
+instructions before publishing configuration or assets.
+
+## Host rollout
+
+1. Back up the database, media, `/etc/vendra`, and ACME state.
+2. Install the tested controller binary.
+3. Replace image digests in `controller.yaml`.
+4. Run `vendra stack up`.
+5. Check health, logs, panels, queue processing, and scheduled work.
+6. Roll storefront digests property-by-property when the image contract changed.
+
+Prefer backward-compatible consumers first: deploy code that accepts both old
+and new fields before producers begin sending only the new contract.

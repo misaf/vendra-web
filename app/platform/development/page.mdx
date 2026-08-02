@@ -1,0 +1,43 @@
+# Platform development and testing
+
+## Setup
+
+```bash
+cd vendra
+composer setup
+composer dev
+```
+
+`composer setup` installs PHP and JavaScript dependencies, creates `.env`,
+generates the application key, migrates the database, and builds frontend assets.
+`composer dev` starts the web server, queue listener, logs, and Vite watcher.
+
+Packages are linked through Composer path repositories under `packages/*`. Run
+`composer dump-autoload` when discovery or class maps appear stale.
+
+## Checks
+
+```bash
+# Optimized project test script: clears configuration and runs in parallel
+composer test
+
+# Targeted test while iterating
+php artisan test --parallel --compact --filter=testName
+
+# Static analysis and formatting
+composer stan
+vendor/bin/pint --dirty --format agent
+```
+
+Prefer the smallest relevant scope while iterating, then use `composer test` for
+the complete parallel suite. Omit parallelism only for shared mutable resources,
+race debugging, or other tests that cannot be isolated.
+
+## Common resets
+
+```bash
+composer dump-autoload
+php artisan package:discover
+php artisan config:clear
+php artisan optimize:clear
+```

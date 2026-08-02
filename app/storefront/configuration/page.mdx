@@ -1,0 +1,56 @@
+# Property configuration
+
+Production injects a base64-encoded JSON object as
+`STOREFRONT_CONFIG_BASE64`. A production container refuses to run without it;
+falling back to the bundled example could expose another tenant's branding.
+
+## Required shape
+
+```json
+{
+  "slug": "acme",
+  "theme": "default",
+  "domain": "shop.example.com",
+  "siteUrl": "https://shop.example.com",
+  "name": { "en": "Acme", "fa": "آکمه" },
+  "businessType": "Florist",
+  "priceCurrency": "IRR",
+  "address": { "locality": "Tehran", "country": "IR" },
+  "contact": {
+    "mobilePhone": "09120000000",
+    "officePhone": "02100000000",
+    "email": "hello@example.com",
+    "hoursOpen": "08:00",
+    "hoursClose": "21:00",
+    "mapQuery": "35.7,51.4"
+  },
+  "social": {
+    "whatsappPhone": "+989120000000",
+    "telegramUsername": "acme",
+    "instagramUsername": "acme"
+  }
+}
+```
+
+Optional fields include `ogImage`, `heroImage`, `aboutImage`, `messages`,
+`checkout`, `currency`, and `trustSeal`. Runtime messages are deep-merged over
+the brand-neutral base catalog per locale.
+
+Generate a configuration with:
+
+```bash
+npm run property:config <slug> -- --json
+```
+
+## Environment contract
+
+| Variable | Scope | Purpose |
+| --- | --- | --- |
+| `VENDRA_API_URL` | Server runtime | Canonical API origin; `/api` is normalized |
+| `STOREFRONT_CONFIG_BASE64` | Server runtime | Complete property identity and presentation config |
+| `STORAGE_BASE_URL` | Server runtime, optional | Media origin override |
+| `CONTACT_*` | Server runtime, optional | Deployment-specific contact overrides |
+| `NESHAN_SERVICE_KEY` | Server runtime, optional | Reverse-geocoding service key |
+| `NEXT_PUBLIC_MAP_*` | Build time | Fleet-wide browser map configuration |
+
+Never place secrets in `NEXT_PUBLIC_*`; Next.js inlines them into client assets.

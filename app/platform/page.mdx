@@ -1,0 +1,28 @@
+# Laravel platform
+
+`vendra` is a Laravel 13 application and Composer monorepo. It is the business
+control plane: tenants, resellers, subscriptions, content, catalog data, users,
+public APIs, and storefront deployment records all live here.
+
+## Composition-root design
+
+The host application is deliberately thin. First-party packages define domain
+models, contracts, actions, events, and Filament resources. The host connects
+those packages to concrete panels, tenant resolution, reseller billing, wallet
+transactions, notifications, and queued provisioning.
+
+## Main workflows
+
+- Tenant provisioning creates an inactive tenant, domain, owner, and role, then
+  completes setup asynchronously before marking it ready.
+- Subscription charging uses durable payment rows, idempotency keys, queued
+  retries, and reconciliation states.
+- Storefront provisioning persists desired state before calling the controller.
+- API Platform resources expose package-owned JSON:API endpoints below `/api`;
+  OpenAPI documentation is available at `/api/docs`.
+
+## Operational processes
+
+The production platform Compose project runs Laravel/FrankenPHP, MySQL, Redis,
+Horizon, the scheduler, Pulse ingestion, and the provisioner. Laravel application
+containers do not receive the Docker socket.

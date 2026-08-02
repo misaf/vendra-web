@@ -1,41 +1,30 @@
-# Getting Started
+import { Cards } from 'nextra/components'
 
-This section gets someone from zero to a working local Vendra setup.
+# Getting started
 
-## Start here
+Choose the workflow that matches your goal. The platform's native development
+loop and the complete Docker ecosystem are complementary, not interchangeable.
 
-Follow the pages in this order:
+<Cards num={2}>
+  <Cards.Card title="Develop the Laravel platform" href="/platform/development" arrow>
+    Run Composer setup and the application development processes locally.
+  </Cards.Card>
+  <Cards.Card title="Run the complete ecosystem" href="/getting-started/local" arrow>
+    Build local images and let the controller run Traefik, platform, and storefronts.
+  </Cards.Card>
+  <Cards.Card title="Install a production host" href="/getting-started/production" arrow>
+    Configure Docker, DNS, secrets, digest-pinned images, and ACME.
+  </Cards.Card>
+  <Cards.Card title="Create a storefront" href="/getting-started/first-storefront" arrow>
+    Generate a valid property configuration and bring its container online.
+  </Cards.Card>
+</Cards>
 
-- [Installation](/getting-started/installation)
-- [Docker](/getting-started/docker)
-- [Configuration](/getting-started/configuration)
-- [First Run](/getting-started/first-run)
+## Requirements by workflow
 
-## What this section covers
-
-- PHP, Composer, Node.js, npm, and database requirements
-- Docker-based setup through `vendra-docker`
-- Laravel environment setup
-- Composer module path workflow
-- Local development commands
-
-## Commands to document
-
-Core commands from the main Vendra app:
-
-- `composer install`
-- `php artisan migrate`
-- `npm install`
-- `npm run build`
-- `composer dev`
-
-For Docker-based environments, use the first-party Docker repository:
-
-- [misaf/vendra-docker](https://github.com/misaf/vendra-docker)
-
-## Common checks
-
-- Confirm `/admin` loads.
-- Confirm `/user` loads.
-- Confirm tenants, roles, and permissions are seeded or configured.
-- Confirm module providers are discovered.
+| Workflow | Requirements |
+| --- | --- |
+| Laravel development | PHP 8.3+, Composer, Node.js/npm, supported database |
+| Storefront development | Node.js/npm; canonical API optional for UI-only work |
+| Controller development | Go version from `go.mod`, Docker Compose v2 |
+| Production host | Linux, Docker Engine, Compose v2, `vendra` binary, DNS, registry access |

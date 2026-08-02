@@ -1,0 +1,28 @@
+# Provisioner API
+
+The provisioner is an internal, bearer-authenticated HTTP API. Its OpenAPI file
+defines three endpoints:
+
+| Endpoint | Purpose |
+| --- | --- |
+| `GET /health` | Process health |
+| `GET /v1/capabilities` | Supported templates and controller capabilities |
+| `POST /v1/storefronts` | Validate, render, start, and report a storefront |
+
+Requests are limited to 1 MiB, and property/certificate mutations are serialized.
+Bearer comparison is constant-time. Logs exclude tokens, request payloads, and
+generated environment values.
+
+## Storefront request lifecycle
+
+```text
+Laravel job -> POST /v1/storefronts -> validate identity and schema
+            -> render property -> pull image -> compose up --wait
+            <- status + reference + image digest
+```
+
+The currently accepted template family is `vendra-storefront-florist`; the
+request can still select a different compatible image digest per property.
+
+The token used by Laravel must match `VENDRA_PROVISIONER_TOKEN` in the controller
+environment. Keep the API on an internal Docker network; it is not a public API.

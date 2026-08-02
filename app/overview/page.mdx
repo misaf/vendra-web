@@ -1,0 +1,26 @@
+# Ecosystem map
+
+Vendra is split into three runtime products and this documentation site.
+
+| Repository | Runtime | Owns |
+| --- | --- | --- |
+| `vendra` | Laravel application | Tenants, resellers, commerce and content data, admin panels, queues, billing, public API |
+| `vendra-controller` | Go CLI and HTTP service | Host initialization, Compose rendering, containers, networks, TLS, property lifecycle |
+| `vendra-storefront-florist` | Next.js application | Public storefront UI, runtime property branding, API proxying, localized presentation |
+| `vendra-ecosystem-docs` | Nextra site | Cross-repository architecture and operator guidance |
+
+## Sources of truth
+
+- Laravel's database is authoritative for tenants and storefront deployments.
+- The controller's `controller.yaml` is authoritative for host-level desired state.
+- Each generated property `.env` contains its runtime configuration; the safe
+  `properties.yml` registry contains only slug, domain, image, and theme.
+- `properties/schema.json` in the storefront defines the property configuration shape.
+- `vendra-controller/api/openapi.yaml` defines the internal provisioner API.
+
+## Choose your path
+
+- Application engineer: start with [Platform](/platform) and [Storefront](/storefront).
+- Infrastructure engineer: start with [Controller](/controller) and [Operations](/operations).
+- New installation: follow [Getting Started](/getting-started).
+- Integration work: read [APIs](/api), including the current tenant-resolution limitation.

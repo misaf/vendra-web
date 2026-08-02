@@ -1,0 +1,40 @@
+# Architecture
+
+## Request path
+
+Traefik is the only public edge. It terminates TLS and routes the platform hosts
+and customer storefront domains. A storefront serves pages from its own Next.js
+container and reads commerce/content data from the canonical Laravel API.
+
+```text
+Customer domain ─> Traefik ─> property Next.js container
+                                     │
+                                     ├─ server fetch ───────────────┐
+Browser ─> same-origin /api/proxy ───┘                              │
+                                                                    v
+                                                   https://api.<base>/api
+```
+
+## Provisioning path
+
+Creating a property is intentionally asynchronous:
+
+1. Laravel creates the tenant and durable `StorefrontDeployment` record.
+2. A queued job sends an authenticated request to the Go provisioner.
+3. The provisioner validates the complete property configuration.
+4. The controller renders a per-property Compose project, pulls its image, and
+   waits for `/api/health`.
+5. Laravel records the returned status, reference, and image digest.
+
+The Laravel web process never receives the Docker socket. Only the provisioner
+can mutate Docker state.
+
+## State ownership
+
+| State | Owner | Recovery source |
+| --- | --- | --- |
+| Tenants, domains, billing, deployment requests | Laravel database | Database backup |
+| Host config and secrets | Operator | `/etc/vendra` backup or secret manager |
+| ACME account/certificates | Controller state | `<state_dir>/acme` backup |
+| Generated Compose/property files | Controller | Re-render and reconcile |
+| Cart, favorites, demo orders | Visitor browser | Not durable server state |

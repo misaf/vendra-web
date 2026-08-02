@@ -1,0 +1,34 @@
+# Repository boundaries
+
+## Platform rules
+
+The Laravel host is a thin composition root. Domain behavior belongs in
+first-party `misaf/vendra-*` packages. Packages depend on contracts from
+`vendra-support`; only the host connects concrete tenants, resellers, wallets,
+notifications, and panel providers.
+
+## Controller rules
+
+All Docker and Compose execution flows through the controller's shared internal
+packages. Renderers and HTTP handlers do not invoke shell commands directly.
+Runtime manifests are generated artifacts and must not be edited by hand.
+
+## Storefront rules
+
+Feature code lives under `src/modules/<feature>`, shared infrastructure under
+`src/shared`, and route composition under `src/themes/<theme>/pages`. Code in
+`src/` must remain property-neutral. Brand data and copy arrive through the
+validated runtime property configuration.
+
+## Cross-repository changes
+
+Changes to provisioning or storefront configuration commonly require coordinated
+updates to all three repositories:
+
+1. Define or update the storefront schema and runtime behavior.
+2. Update Laravel's configuration producer and persisted deployment contract.
+3. Update controller validation and its embedded Compose template.
+4. Update this documentation and verify one configuration against one published image.
+
+Release the consumer before or together with the producer when compatibility is
+not backward-compatible.

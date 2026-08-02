@@ -1,0 +1,31 @@
+# Storefront API and tenancy
+
+All storefronts call one canonical Laravel API host. The request host therefore
+cannot identify a property.
+
+## Current request context
+
+Server calls and the same-origin proxy provide:
+
+- `Origin`: the property's public origin
+- `X-Storefront-Domain`: its registered tenant domain
+- optionally `X-Storefront-Key`: an opaque server-only credential
+- `Authorization: Bearer …`: a separate end-user identity when present
+
+The backend currently resolves the tenant from `Origin` or `Referer` matched to
+an active tenant domain. Dynamic CORS uses the same active-domain inventory.
+
+## Security limitation
+
+`Origin`, `Referer`, and `X-Storefront-Domain` can be forged outside a browser.
+Although the storefront can send `X-Storefront-Key`, Laravel does not validate it
+yet and the controller does not provision a credential automatically.
+
+Treat current header-based selection as tenant routing, not proof of tenant
+identity. Before exposing tenant-sensitive mutations through this path:
+
+1. issue a per-storefront secret or signed identity,
+2. store only a verifier or safely encrypted credential server-side,
+3. validate it before accepting the domain hint,
+4. rotate and revoke it through the deployment lifecycle,
+5. keep end-user authorization independent from storefront authentication.

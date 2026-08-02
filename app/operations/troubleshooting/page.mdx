@@ -1,0 +1,37 @@
+# Troubleshooting
+
+## Storefront renders empty data sections
+
+- Confirm the property domain is active in Laravel.
+- Check the storefront server logs and browser network panel separately.
+- In local self-signed mode, accept/trust both API and storefront certificates.
+- Verify `VENDRA_API_URL` and the encoded configuration domain.
+
+## Property provisioning fails
+
+- Inspect the Laravel deployment record and queued-job logs.
+- Inspect `platform-provisioner-1` logs for Docker/registry errors.
+- Confirm the bearer token matches on both sides.
+- Confirm the requested image exists and the host can pull its architecture.
+- For local tags, set `no_pull: true` and use exactly matching image names.
+
+## Container never becomes healthy
+
+- Call `/api/health` inside or through the property route.
+- Decode and validate `STOREFRONT_CONFIG_BASE64` without logging secrets.
+- Confirm certificate trust through `NODE_EXTRA_CA_CERTS` in self-signed mode.
+- Check that the configured image supports the requested `default` theme.
+
+## Laravel changes appear stale
+
+```bash
+composer dump-autoload
+php artisan package:discover
+php artisan config:clear
+php artisan optimize:clear
+```
+
+## Frontend changes appear stale
+
+Run `npm run property` after changing property/schema data, then restart the dev
+server or rebuild the image. `NEXT_PUBLIC_*` changes always require a rebuild.

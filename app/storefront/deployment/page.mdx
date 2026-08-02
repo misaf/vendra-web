@@ -1,0 +1,35 @@
+# Build and deployment
+
+## Shared image model
+
+The published container is tenant-neutral. Production property identity arrives
+only through `STOREFRONT_CONFIG_BASE64`. Fleet-wide browser settings can be build
+arguments; tenant-specific API and storage URLs must remain runtime/server-side.
+
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_MAP_PROVIDER=osm \
+  -t ghcr.io/your-org/vendra-storefront:<version> .
+docker push ghcr.io/your-org/vendra-storefront:<version>
+```
+
+Deploy the resulting digest, not a moving tag.
+
+## Controller integration
+
+The production property Compose template is embedded in the controller binary.
+It injects property configuration, canonical API URL, optional integrations,
+certificate trust, health checks, and Traefik labels. This repository's Compose
+file is local integration tooling, not a competing production definition.
+
+## Update a property
+
+```bash
+vendra property render <slug> <domain> \
+  --image ghcr.io/your-org/storefront@sha256:<new-digest> \
+  --configuration /tmp/<slug>.json
+vendra property restart <slug>
+```
+
+Removing controller state does not delete the backend tenant. Likewise, deleting
+a tenant is a separate business-data operation from stopping its storefront.

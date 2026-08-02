@@ -11,13 +11,13 @@ export default async function RootLayout({ children }) {
           <span className="inline-flex size-7 items-center justify-center rounded-lg bg-neutral-950 text-xs font-semibold text-white dark:bg-neutral-50 dark:text-neutral-950">
             V
           </span>
-          <span className="font-semibold tracking-tight">Vendra</span>
+          <span className="font-semibold tracking-tight">Vendra Ecosystem</span>
         </span>
       }
     >
-      <Anchor href="/about">About</Anchor>
-      <Anchor href="/cms">CMS</Anchor>
-      <Anchor href="/modules">Modules</Anchor>
+      <Anchor href="/platform">Platform</Anchor>
+      <Anchor href="/controller">Controller</Anchor>
+      <Anchor href="/storefront">Storefront</Anchor>
       <Anchor href="/getting-started">Getting Started</Anchor>
     </Navbar>
   )

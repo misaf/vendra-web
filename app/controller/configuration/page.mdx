@@ -1,0 +1,33 @@
+# Controller configuration
+
+Configuration precedence is command flags, process environment, controller
+environment file, YAML, then defaults.
+
+## Important YAML keys
+
+| Key | Purpose |
+| --- | --- |
+| `state_dir` | Generated projects, property registry, certificates, and ACME state |
+| `base_domain` | Platform DNS base |
+| `network` | Shared external Traefik network |
+| `listen` | Internal provisioner listen address |
+| `health_timeout` | Maximum wait for Compose health |
+| `certificate_mode` | `acme` for public hosts or `self-signed` locally |
+| `images.*` | Platform, optional website, fallback storefront, and provisioner images |
+| `no_pull` | Use locally available application images instead of explicit pulls |
+
+Use digest-pinned images in production. A property's request-level image
+overrides the fallback storefront image, allowing different storefront digests
+to coexist.
+
+## Secrets
+
+Store secrets in `/etc/vendra/controller.env` with mode `0600`, including:
+
+- `VENDRA_PROVISIONER_TOKEN`
+- Laravel `APP_KEY`
+- database credentials
+- mail credentials and other runtime secrets
+
+Process environment values override this file. Never commit it or place secrets
+in `controller.yaml`.

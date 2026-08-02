@@ -1,78 +1,79 @@
-import { Cards } from 'nextra/components'
+import { Cards, Callout } from 'nextra/components'
 
-# Vendra Docs
+# Vendra Ecosystem
 
 <div className="not-prose mt-6 rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,rgba(9,9,11,0.04),rgba(0,0,0,0))] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(0,0,0,0))] md:p-12">
-  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.24em] text-neutral-500">
-    Laravel + Filament CMS
-  </p>
+  <div className="mb-4 text-sm font-semibold uppercase tracking-[0.24em] text-neutral-500">
+    Platform · Control plane · Storefront
+  </div>
   <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 md:text-6xl">
-    Documentation for Vendra CMS and its first-party module system.
+    Build, deploy, and operate the complete Vendra commerce ecosystem.
   </h1>
-  <p className="mt-6 max-w-2xl text-base leading-7 text-neutral-600 dark:text-neutral-300 md:text-lg">
-    Vendra is a modular Laravel application for ecommerce and marketplace use
-    cases. The admin panel is built on Filament, and the domain features live in
-    first-party Composer modules that you maintain and support, including blog,
-    pages, FAQ, media, products, users, permissions, transactions, and public
-    JSON:API packages.
-  </p>
+  <div className="mt-6 max-w-2xl text-base leading-7 text-neutral-600 dark:text-neutral-300 md:text-lg">
+    Vendra combines a modular Laravel platform, a Go infrastructure controller,
+    and a runtime-configured Next.js storefront. This documentation explains
+    how those repositories cooperate and where each responsibility belongs.
+  </div>
   <div className="mt-8 flex flex-wrap gap-3">
     <a
-      href="/cms"
+      href="/getting-started"
       className="inline-flex items-center rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
     >
-      Browse CMS
+      Get started
     </a>
     <a
-      href="/modules"
+      href="/overview/architecture"
       className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:text-neutral-950 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-500 dark:hover:text-white"
     >
-      View modules
+      View architecture
     </a>
   </div>
 </div>
 
-## What this docs set covers
+<Callout type="info">
+  These pages are derived from the current `vendra`, `vendra-controller`, and
+  `vendra-storefront-florist` repositories. Repository READMEs remain the source
+  for package-level implementation details.
+</Callout>
 
-- CMS admin areas from the Filament panel
-- First-party Vendra modules from `app-modules.bk`
-- Commerce, user, permission, reporting, and tenant modules
-- Public read-only JSON:API resources
+## Explore the ecosystem
 
-## Key pages
-
-<Cards num={2}>
-  <Cards.Card title="About" href="/about" arrow>
-    The project shape, runtime stack, and panel structure.
+<Cards num={3}>
+  <Cards.Card title="Platform" href="/platform" arrow>
+    Laravel 13, Filament panels, tenancy, billing, and first-party packages.
   </Cards.Card>
-  <Cards.Card title="CMS" href="/cms" arrow>
-    Admin workflows for content, media, users, settings, and reports.
+  <Cards.Card title="Controller" href="/controller" arrow>
+    Go CLI, provisioner API, Docker Compose projects, TLS, and recovery.
   </Cards.Card>
-  <Cards.Card title="Modules" href="/modules" arrow>
-    The module inventory grouped by content, commerce, access, API, and platform.
+  <Cards.Card title="Storefront" href="/storefront" arrow>
+    Next.js architecture, runtime property configuration, themes, and features.
   </Cards.Card>
   <Cards.Card title="Getting Started" href="/getting-started" arrow>
-    Native and Docker setup for the source Vendra application.
+    Choose local source development or a production host installation.
   </Cards.Card>
-  <Cards.Card title="API Reference" href="/api-reference" arrow>
-    JSON:API servers and read-only resources exposed by module API packages.
+  <Cards.Card title="APIs" href="/api" arrow>
+    Public JSON:API behavior and the internal storefront provisioner contract.
+  </Cards.Card>
+  <Cards.Card title="Operations" href="/operations" arrow>
+    Health checks, upgrades, backups, recovery, and troubleshooting.
   </Cards.Card>
 </Cards>
 
-## Recommended reading order
+## System at a glance
 
-1. Read [About](/about) for the system overview.
-2. Use [CMS](/cms) to understand the Filament admin areas.
-3. Use [Modules](/modules) to find the package responsible for a feature.
-4. Use [API Reference](/api-reference) for public JSON:API resources.
+```text
+Visitors ──HTTPS──> Traefik ──> Next.js storefront ──> canonical Laravel API
+Operators ────────> vendra CLI ──> Docker Compose projects
+Laravel queue ────> provisioner API ──> per-property storefront containers
+```
 
-## Current status
+Laravel owns business state. The controller owns host runtime state. The
+storefront owns presentation and browser-local demo state. Keeping those
+boundaries explicit is the central architectural rule.
 
-The docs reflect the current source tree at `/Users/misaf/Documents/Projects/vendra`
-and the first-party supported module set under `app-modules.bk`.
+## Current stack
 
-- Source app: Laravel 13, Filament 5, PHP 8.3+
-- Docker stack: `https://github.com/misaf/vendra-docker`
-- Active package list: root `composer.json`
-- First-party module source: `app-modules.bk/*`
-- Admin groups: user, billing, transaction, content, report, and settings
+- Platform: PHP 8.3+, Laravel 13, Filament 5, Livewire 4
+- Controller: Go, Docker Engine, Docker Compose v2, Traefik
+- Storefront: Next.js 16, React 19, TypeScript, Tailwind CSS 4
+- Documentation: Next.js 16, Nextra 4

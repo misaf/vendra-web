@@ -1,0 +1,26 @@
+# Package catalog
+
+First-party packages live under `vendra/packages`. Packages on the same release
+line use aligned `self.version` constraints.
+
+| Area | Packages |
+| --- | --- |
+| Foundation | Support, API, Tenant, Testing |
+| Catalog and sales | Product, Attribute, Currency, Cart, Transaction, Subscription |
+| Content and marketing | Blog, Custom Page, FAQ, Multimedia, Tagger, Newsletter, Affiliate |
+| Customers and access | User, User Profile, Address, Phone, Document, Verification, Permission, Socialite |
+| Operations/localization | Activity Log, Authify Log, Developer Logins, Language, Localization |
+| API modules | Affiliate, Attribute, Blog, Cart, Custom Page, FAQ, Multimedia, and Product API packages |
+
+## Package conventions
+
+- Each package README is its user-facing feature and usage contract.
+- Package resources and configuration are published only when documented.
+- Filament resources use the shared cluster/navigation taxonomy from Support.
+- API packages map domain objects to API Platform resources; they do not invent a
+  second domain model.
+- Tenant-aware behavior is activated through contracts rather than hard-coded
+  dependencies on the concrete tenant provider.
+
+For package implementation details, read the package's own README and tests in
+the platform repository.

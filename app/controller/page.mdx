@@ -1,0 +1,29 @@
+# Go controller
+
+`vendra-controller` is Vendra's infrastructure control plane. It builds two
+binaries from shared internal packages:
+
+- `vendra`: host CLI for stack and property lifecycle.
+- `provisioner`: authenticated internal HTTP service called by Laravel.
+
+## Managed projects
+
+- `proxy`: Traefik plus a restricted Docker socket proxy.
+- `platform`: database, Redis, Laravel services, monitoring, and provisioner.
+- `website`: optional public ecosystem website.
+- one Compose project per storefront property.
+
+Generated runtime state lives under `state_dir` (`/var/lib/vendra` by default).
+Do not edit embedded/rendered Compose manifests directly; rendering replaces them.
+
+## Build locally
+
+```bash
+cd vendra-controller
+go build -o ./bin/vendra ./cmd/vendra
+./bin/vendra version
+go test ./...
+```
+
+Production hosts should install a versioned binary artifact rather than a source
+checkout and Go toolchain.

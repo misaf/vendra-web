@@ -1,0 +1,27 @@
+# Next.js storefront
+
+`vendra-storefront-florist` is a bilingual English/Persian storefront template
+built with Next.js 16 and React 19. A shared production image is configured per
+property at container start.
+
+## Code structure
+
+| Location | Responsibility |
+| --- | --- |
+| `src/app/[locale]` | Locale-aware App Router entry points |
+| `src/themes/<theme>/pages` | Server route composition, metadata, and initial loading |
+| `src/modules/<feature>` | Feature UI, hooks, mapping, queries, and types |
+| `src/shared` | UI primitives, API client, property access, SEO, and infrastructure |
+| `properties/<slug>` | Development property config and localized overrides |
+
+Code outside a feature module imports through that module's `index.ts`. Shared
+code and base messages must remain property-neutral. Persian routes preserve RTL
+behavior and use a Persian UI font.
+
+## Data path
+
+Server components call the canonical API directly. Browser reads use same-origin
+`/api/proxy/*`; media uses `/api/storage/*`. This keeps API/storage origins and
+the optional storefront credential out of the browser bundle.
+
+The image exposes `/api/health`, which Docker and Traefik both check.

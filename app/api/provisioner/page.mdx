@@ -1,0 +1,26 @@
+# Provisioner contract
+
+Laravel calls the provisioner through a queued job using a bearer token. The
+request carries template, property identity, selected image, and encoded runtime
+configuration. The response reports readiness, a controller reference, and the
+resolved image digest.
+
+## Contract rules
+
+- Request bodies are capped at 1 MiB.
+- Slugs contain lowercase letters, digits, and internal hyphens.
+- Configuration `slug` and `domain` must exactly match request identity.
+- The full storefront-required schema is validated before rendering.
+- Property and certificate mutations are serialized.
+- The controller waits for container health before reporting success.
+- Retry/reconciliation state is owned by Laravel, not the provisioner.
+
+## Authentication
+
+Configure the same long random value as `STOREFRONT_PROVISIONER_TOKEN` on both
+sides. Keep the service internal to the platform network. This bearer credential
+is unrelated to the proposed per-storefront API credential.
+
+Consult `api/openapi.yaml` in the controller repository whenever request or
+response fields change; this documentation intentionally describes behavior
+rather than duplicating the full schema.

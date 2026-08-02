@@ -1,0 +1,32 @@
+# Panels and tenancy
+
+## Filament panels
+
+| Panel | Host | Scope | Purpose |
+| --- | --- | --- | --- |
+| Admin | tenant host | Tenant-aware | Per-property back office |
+| Console | `console.<base>` | Central | Platform administration across tenants |
+| Reseller | `reseller.<base>` | Central | Reseller self-service and property management |
+
+Only Admin enters a single tenant context per request. Console and Reseller must
+remain outside tenancy because they operate across properties.
+
+## Domain model
+
+A host-owned `Reseller` has many tenant properties, one owner login, and
+subscription records. Property quota is enforced inside a transaction while the
+reseller row is locked, preventing concurrent creates from exceeding the plan.
+
+Domain packages do not import the concrete tenant model. They use provider-neutral
+contracts from `vendra-support`; the host binds the concrete resolver and adapters.
+
+## Canonical API tenant resolution
+
+Panel hosts identify tenants through the request host. The canonical API serves
+all properties from `api.<base>`, so it currently falls back to an active tenant
+domain found in `Origin` or `Referer`.
+
+This is routing context, not authentication: non-browser callers can forge those
+headers. The storefront transport can send `X-Storefront-Domain` and an opaque
+`X-Storefront-Key`, but backend verification is not implemented yet. Do not rely
+on those headers as an authorization boundary until that work lands.
