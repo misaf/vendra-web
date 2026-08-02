@@ -405,3 +405,70 @@ export function FaqList({
     </div>
   )
 }
+
+/* -------------------------------------------------------------------------- */
+/* Team                                                                       */
+/* -------------------------------------------------------------------------- */
+
+export type TeamMember = {
+  name: string
+  role: string
+  /** Public path to a square portrait. Served from `public/team/`. */
+  photo: string
+  /** One line on what they actually do. */
+  bio?: string
+  href?: string
+}
+
+/**
+ * The people behind Vendra.
+ *
+ * Deliberately distinct from `LogoWall`, which is the customer social-proof
+ * band ("used by"). Faces belong here and names of companies belong there;
+ * putting a person in the logo wall would read as that person's employer
+ * endorsing the product.
+ *
+ * Portraits are plain <img> at 2x the rendered size, cropped square at build
+ * time rather than by CSS, so the circle never crops a face badly on a narrow
+ * viewport.
+ */
+export function TeamGrid({ members }: { members: TeamMember[] }) {
+  return (
+    <div className="vw-team">
+      {members.map(member => {
+        const portrait = (
+          <>
+            <img
+              className="vw-team-photo"
+              src={member.photo}
+              alt={`${member.name}, ${member.role}`}
+              width={320}
+              height={320}
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="vw-team-name">{member.name}</div>
+            <div className="vw-team-role">{member.role}</div>
+            {member.bio ? <p className="vw-team-bio">{member.bio}</p> : null}
+          </>
+        )
+
+        return member.href ? (
+          <a
+            key={member.name}
+            className="vw-team-member vw-team-link"
+            href={member.href}
+            rel="noreferrer"
+            target="_blank"
+          >
+            {portrait}
+          </a>
+        ) : (
+          <div key={member.name} className="vw-team-member">
+            {portrait}
+          </div>
+        )
+      })}
+    </div>
+  )
+}

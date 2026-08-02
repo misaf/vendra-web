@@ -4,9 +4,10 @@ import {
   LogoWall,
   Notice,
   PricingTable,
-  Section
+  Section,
+  TeamGrid
 } from '../../components/marketing'
-import type { Plan } from '../../components/marketing'
+import type { Plan, TeamMember } from '../../components/marketing'
 
 export const metadata: Metadata = {
   title: 'Vendra Pro',
@@ -74,6 +75,28 @@ const plans: Plan[] = [
       'Custom procurement, invoicing, and terms'
     ],
     cta: { href: '/faq', label: 'Request a quote' }
+  }
+]
+
+
+/*
+ * TODO — the second member's name and role are placeholders. Replace `name`
+ * and `role` below, and rename `public/team/team-member-2.jpg` to match, once
+ * they are confirmed. The photo itself is final.
+ */
+const team: TeamMember[] = [
+  {
+    name: 'Misaf',
+    role: 'Founder',
+    photo: '/team/misaf.jpg',
+    bio: 'Builds the platform, the controller, and most of what is written about them.',
+    href: 'https://github.com/misaf'
+  },
+  {
+    name: 'TODO: name',
+    role: 'TODO: role',
+    photo: '/team/team-member-2.jpg',
+    bio: 'TODO: one line on what they do.'
   }
 ]
 
@@ -151,7 +174,7 @@ export default function ProPage() {
       <Section tone="muted">
         <div className="vw-section-head vw-align-center">
           <div className="vendra-eyebrow">Used by</div>
-          <h2 className="vw-section-title">Teams running on Vendra</h2>
+          <h2 className="vw-section-title">Companies building on Vendra</h2>
           <p className="vw-section-lede">
             Placeholder names — swap for real customers, with permission, before
             launch.
@@ -166,6 +189,15 @@ export default function ProPage() {
             'One More'
           ]}
         />
+      </Section>
+
+      <Section
+        eyebrow="Who you are buying from"
+        title="The people behind Vendra"
+        lede="A Pro subscription is a support relationship, so it is worth knowing who is on the other end of it."
+        align="center"
+      >
+        <TeamGrid members={team} />
       </Section>
 
       <Section

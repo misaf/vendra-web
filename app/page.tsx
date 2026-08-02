@@ -180,7 +180,7 @@ export default async function Landing() {
       <Section tone="muted">
         <div className="vw-section-head vw-align-center">
           <div className="vendra-eyebrow">Used by</div>
-          <h2 className="vw-section-title">Teams running on Vendra</h2>
+          <h2 className="vw-section-title">Companies building on Vendra</h2>
           <p className="vw-section-lede">
             {/* TODO: replace with real customers once they have agreed to be
                 named. Rendered as text rather than logos so these read as the

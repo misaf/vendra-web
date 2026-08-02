@@ -1526,3 +1526,58 @@ pre {
   background: var(--vendra-muted);
   color: var(--vendra-fg);
 }
+
+/* -- Team ------------------------------------------------------------------ */
+
+.vw-team {
+  display: grid;
+  gap: 2rem 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.vw-team-member {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.vw-team-photo {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  border: 1px solid var(--vendra-line);
+  object-fit: cover;
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.vw-team-link:hover .vw-team-photo {
+  border-color: var(--vendra-accent);
+  transform: translateY(-2px);
+}
+
+.vw-team-name {
+  margin-top: 1rem;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.vw-team-role {
+  margin-top: 0.2rem;
+  color: var(--vendra-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.vw-team-bio {
+  margin-top: 0.6rem;
+  max-width: 22rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
