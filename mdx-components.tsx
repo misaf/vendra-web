@@ -1,12 +1,38 @@
-import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs' // nextra-theme-blog or your custom theme
- 
-// Get the default MDX components
+import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs'
+import {
+  Boundary,
+  ChipRow,
+  CommandList,
+  DefList,
+  FeatureGrid,
+  Flow,
+  Hero,
+  Lede,
+  NextSteps,
+  Panel,
+  StatRow,
+  Steps,
+  Tag
+} from './components/vendra'
+
 const themeComponents = getThemeComponents()
- 
-// Merge components
+
 export function useMDXComponents(components) {
   return {
     ...themeComponents,
+    Boundary,
+    ChipRow,
+    CommandList,
+    DefList,
+    FeatureGrid,
+    Flow,
+    Hero,
+    Lede,
+    NextSteps,
+    Panel,
+    StatRow,
+    Steps,
+    Tag,
     ...components
   }
 }
