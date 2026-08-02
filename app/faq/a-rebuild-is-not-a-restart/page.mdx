@@ -1,0 +1,104 @@
+---
+title: "“I changed the variable and restarted — why is it still wrong?”"
+date: "2026-07-30"
+author: "Arefeh"
+description: "The most common ticket we get, by a wide margin. The value really did change; the container just cannot see it."
+tags: ["storefront", "operations"]
+---
+
+# “I changed the variable and restarted — why is it still wrong?”
+
+<Panel title="The question">
+  Some version of this arrives most weeks:
+
+  > I updated the environment value, restarted the container, and the storefront
+  > is still showing the old one. Is the restart not picking up the file?
+</Panel>
+
+The restart worked. The value in the file is correct. The storefront still shows
+the old one, and nothing is broken.
+
+The distinction that matters is **when** a value is read. Some are read when the
+container starts, and a restart is enough. Others are read when the image is
+*built*, and by the time a container starts, they are no longer variables at
+all — they have been compiled into the JavaScript that ships to the browser.
+
+<DefList
+  items={[
+    {
+      term: 'NEXT_PUBLIC_*',
+      tag: { tone: 'red', label: 'Rebuild' },
+      description:
+        'Inlined into the bundle at build time. A restart cannot change these, because there is no longer a variable to change.'
+    },
+    {
+      term: 'Server-side values',
+      tag: { tone: 'amber', label: 'Restart' },
+      description:
+        'Read by the running process. A restart is enough.'
+    },
+    {
+      term: 'Property configuration',
+      tag: { tone: 'amber', label: 'Re-run' },
+      description:
+        'Run `npm run property` after changing property or schema data, then restart or rebuild.'
+    }
+  ]}
+/>
+
+## How to tell which one you have
+
+Look at the prefix. Anything beginning `NEXT_PUBLIC_` is destined for the
+browser, and anything destined for the browser has to be in the bundle the
+browser downloads. That bundle is produced once, by `next build`.
+
+So the test is not "did I restart", it is "did a build run after my change".
+
+## Why it is like this
+
+This comes up often enough that people ask whether it could just read the file
+at runtime instead. It could — for server-side values, it already does. But a
+`NEXT_PUBLIC_` value is one the *browser* needs, and the browser never reads
+your container's environment. Something has to put the value into the JavaScript
+before it is served, and that something is the build.
+
+The alternative is shipping a second request on every page load so the browser
+can ask what the values are. That trades a rebuild you do occasionally for
+latency every visitor pays forever.
+
+## What to do
+
+<Steps
+  items={[
+    {
+      title: 'Change the value',
+      body: 'In the environment the build will run with — not only in the running container.'
+    },
+    {
+      title: 'Rebuild the image',
+      body: 'This is the step that is usually missing.'
+    },
+    {
+      title: 'Roll the property',
+      body: 'One property first, then the rest — a bad digest should cost you one shop, not the fleet.'
+    }
+  ]}
+/>
+
+If it is still wrong after a rebuild, then it is a real bug and we would like to
+see it. Send the ticket — the next question tells you what to put in it.
+
+<NextSteps
+  items={[
+    {
+      href: '/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'Stale frontend and backend changes, and what clears each.'
+    },
+    {
+      href: '/storefront/configuration',
+      title: 'Property configuration',
+      description: 'The environment contract and the required shape.'
+    }
+  ]}
+/>

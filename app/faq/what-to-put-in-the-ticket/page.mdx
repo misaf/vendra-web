@@ -1,0 +1,104 @@
+---
+title: "“What should I put in the ticket?”"
+date: "2026-08-02"
+author: "Arefeh"
+description: "Four facts turn a two-day thread into a one-reply answer. None of them is the screenshot."
+tags: ["operations", "support"]
+---
+
+# “What should I put in the ticket?”
+
+<Panel title="The question">
+  Asked, gratifyingly, by people who have noticed the first reply is always the
+  same:
+
+  > What do you need from me so this does not take three round trips?
+</Panel>
+
+Four things. A ticket with these is usually answered on the first reply; a
+ticket without them costs a day per missing item, because each one is a question
+we have to ask and you have to go and find.
+
+<ChipRow
+  items={[
+    'The compatibility set',
+    'Which property',
+    'What you expected',
+    'Whether it reproduces'
+  ]}
+  dot
+/>
+
+## 1. The compatibility set
+
+Not "the latest version" — there is no single version number for the ecosystem,
+and "latest" resolves differently depending on when you pulled. What identifies
+what you are running is the set of four artifacts that were tested together,
+recorded by digest, plus the controller binary version.
+
+Without it we are debugging a system whose composition we are guessing at.
+
+## 2. Which property
+
+The fleet is one Compose project per property. "The storefront is down" is not
+locatable; a property name is.
+
+If you do not know which, `vendra property ls` will tell you the inventory and
+show registry drift at the same time — which occasionally answers the ticket
+before you file it.
+
+## 3. What you expected
+
+This sounds like paperwork and is the single most useful line in a ticket.
+
+Half of what reaches us is working as designed, and the useful reply is a link
+to why. But we can only recognise that case if we know what you thought would
+happen. "The page is empty" and "the page is empty and it had products
+yesterday" are different tickets with different first steps.
+
+## 4. Whether it reproduces on another property
+
+This splits the search space in half before we have looked at anything. One
+property failing points at that property's configuration or data. Every property
+failing points at the platform, the edge, or the digest you just rolled.
+
+## What to run before sending
+
+<CommandList
+  items={[
+    { cmd: 'vendra stack status', description: 'Overall stack health.' },
+    { cmd: 'vendra stack ps', description: 'Container-level state.' },
+    {
+      cmd: 'vendra property ls',
+      description: 'Property inventory and registry drift.'
+    },
+    {
+      cmd: 'vendra stack logs <service>',
+      description: 'For anything the first two report unhealthy.'
+    }
+  ]}
+/>
+
+Paste the output as text rather than a screenshot where you can — we grep it.
+
+## One thing that is not worth waiting for
+
+Do not hold a ticket back because you have not finished diagnosing it. A partial
+report with the four facts above is more useful to us than a complete theory
+without them, and an early ticket on a fleet-wide symptom is worth a great deal
+more than a well-researched one an hour later.
+
+<NextSteps
+  items={[
+    {
+      href: '/operations',
+      title: 'Operations runbook',
+      description: 'The daily checks these commands come from.'
+    },
+    {
+      href: '/faq/there-is-no-version-number',
+      title: 'Which version are we on?',
+      description: 'Why the compatibility set is the answer.'
+    }
+  ]}
+/>

@@ -1,0 +1,115 @@
+---
+title: "“Can you just restore last night's backup?”"
+date: "2026-08-01"
+author: "Arefeh"
+description: "Usually yes — but not from the property registry alone, and not in any order you like. What a restore actually needs, in the order it needs it."
+tags: ["operations", "backups"]
+---
+
+# “Can you just restore last night's backup?”
+
+<Panel title="The question">
+  Asked in the worst hour of somebody's week:
+
+  > We have the registry and the Compose files. Can you rebuild the host from
+  > those and get the shops back?
+</Panel>
+
+Not from those two, no. They are the parts that can be regenerated, which is
+exactly why they are the parts people have kept.
+
+A restore needs the state that **cannot** be reconstructed from anything else.
+
+<DefList
+  items={[
+    {
+      term: 'Laravel database and media',
+      tag: { tone: 'red', label: 'Authoritative' },
+      description: 'Cannot be rebuilt from the host. This is the shop.'
+    },
+    {
+      term: '/etc/vendra/controller.yaml and secrets',
+      tag: { tone: 'red', label: 'Authoritative' },
+      description: 'Host desired state and protected environment values.'
+    },
+    {
+      term: 'Controller ACME state',
+      tag: { tone: 'amber', label: 'Continuity' },
+      description: 'Certificate and account continuity across a rebuild.'
+    },
+    {
+      term: 'Image digests and binary version',
+      tag: { tone: 'amber', label: 'Continuity' },
+      description: 'The set that was tested together and was actually running.'
+    }
+  ]}
+/>
+
+Generated Compose manifests are not on that list. They can be recreated, and
+they will be.
+
+## The registry is not a backup
+
+This is the misunderstanding behind most of these tickets. The safe property
+registry looks like a complete inventory of the fleet, and in a sense it is —
+but it cannot recreate encoded property configuration by itself. Laravel's
+deployment records are authoritative.
+
+Backing up the registry and not the database gives you a list of shops you can
+no longer build.
+
+## Order matters
+
+A restore is not one operation, and doing it out of order tends to produce a
+host that looks up and serves the wrong thing.
+
+<Steps
+  items={[
+    {
+      title: 'Restore state',
+      body: 'Database, media, configuration, secrets, and ACME state.'
+    },
+    {
+      title: 'Install the matching vendra binary',
+      body: 'Match the version that produced the state you restored — not the newest one.'
+    },
+    {
+      title: 'Run vendra stack up',
+      body: 'Then verify platform health before touching the fleet.'
+    },
+    {
+      title: 'Reconcile storefront deployments from Laravel',
+      body: 'This replays the fleet from the authoritative records.'
+    },
+    {
+      title: 'Verify end to end',
+      body: 'Domains, certificates, tenant-specific API data, and both locales.'
+    }
+  ]}
+/>
+
+Step two is the one that gets skipped. Restoring yesterday's state and then
+installing today's binary is not a restore — it is an upgrade performed during
+an incident, with no way to tell which of the two changes broke what.
+
+## The honest answer about timing
+
+We cannot tell you how long a restore takes without knowing the size of the
+database and the number of properties. What we can tell you is that the last
+step is not optional: a stack that reports healthy has not been verified until
+real tenant data has been fetched through a real domain over a real certificate.
+
+<NextSteps
+  items={[
+    {
+      href: '/operations',
+      title: 'Operations runbook',
+      description: 'Backup scope and the full recovery outline.'
+    },
+    {
+      href: '/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'Why the binary and the images move together.'
+    }
+  ]}
+/>

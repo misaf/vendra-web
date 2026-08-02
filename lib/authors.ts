@@ -28,6 +28,10 @@ const authors: Record<string, Author> = {
     name: 'Misaf',
     avatar: `${basePath}/authors/misaf.jpg`,
     href: 'https://github.com/misaf'
+  },
+  Arefeh: {
+    name: 'Arefeh',
+    avatar: `${basePath}/authors/arefeh.jpg`
   }
 }
 
