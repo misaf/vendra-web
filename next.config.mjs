@@ -2,7 +2,11 @@ import nextra from 'nextra'
 import { basePath } from './lib/base-path.mjs'
 
 // Set up Nextra with its configuration
-const withNextra = nextra({})
+const withNextra = nextra({
+  // Adds `readingTime` to each MDX page's frontmatter. Blog posts surface it;
+  // docs pages ignore it.
+  readingTime: true
+})
 
 // Export the final Next.js config with Nextra included
 export default withNextra({
