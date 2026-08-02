@@ -1,0 +1,835 @@
+/* Tailwind theme + utilities only. Nextra's bundled stylesheet already ships a
+   preflight/base layer, so importing full `tailwindcss` here would reset twice. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@source '.';
+@source '../mdx-components.tsx';
+@source '../components';
+
+/* ==========================================================================
+   Tokens
+   ========================================================================== */
+
+@theme {
+  --text-display: 3.25rem;
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.03em;
+}
+
+:root {
+  --nextra-primary-hue: 161deg;
+  --nextra-primary-saturation: 57%;
+  --nextra-primary-lightness: 40%;
+
+  --x-font-sans: var(--font-inter), var(--font-vazirmatn), ui-sans-serif,
+    system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+  --x-font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --vendra-accent: hsl(
+    var(--nextra-primary-hue),
+    var(--nextra-primary-saturation),
+    var(--nextra-primary-lightness)
+  );
+
+  /* One border + three surface steps drive every component below, so light and
+     dark stay in sync without per-component dark: variants. */
+  --vendra-line: rgb(9 9 11 / 0.09);
+  --vendra-line-strong: rgb(9 9 11 / 0.15);
+  --vendra-surface: rgb(255 255 255 / 0.6);
+  --vendra-surface-raised: rgb(255 255 255 / 0.95);
+  --vendra-muted: rgb(9 9 11 / 0.035);
+
+  --vendra-fg: rgb(9 9 11);
+  --vendra-fg-muted: rgb(82 82 91);
+  --vendra-fg-subtle: rgb(113 113 122);
+}
+
+.dark {
+  --nextra-primary-hue: 161deg;
+  --nextra-primary-saturation: 62%;
+  --nextra-primary-lightness: 55%;
+
+  --vendra-line: rgb(255 255 255 / 0.1);
+  --vendra-line-strong: rgb(255 255 255 / 0.17);
+  --vendra-surface: rgb(255 255 255 / 0.035);
+  --vendra-surface-raised: rgb(255 255 255 / 0.07);
+  --vendra-muted: rgb(255 255 255 / 0.045);
+
+  --vendra-fg: rgb(250 250 250);
+  --vendra-fg-muted: rgb(190 190 196);
+  --vendra-fg-subtle: rgb(148 148 156);
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+:is(h1, h2, h3, h4, h5, h6) {
+  letter-spacing: -0.02em;
+}
+
+:lang(fa),
+[lang='fa'] {
+  font-family: var(--font-vazirmatn), var(--font-inter), ui-sans-serif,
+    system-ui, sans-serif;
+  letter-spacing: 0;
+}
+
+::selection {
+  background: hsla(
+    var(--nextra-primary-hue),
+    var(--nextra-primary-saturation),
+    var(--nextra-primary-lightness),
+    0.25
+  );
+}
+
+:focus-visible {
+  outline: 2px solid var(--vendra-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Nextra chrome
+   ========================================================================== */
+
+.nextra-navbar {
+  backdrop-filter: blur(10px);
+}
+
+.nextra-toc {
+  opacity: 0.92;
+}
+
+/* Page title: larger and tighter than the theme default. */
+main h1 {
+  font-size: 2.5rem;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+/* One rule per section: a hairline above the heading. Nextra's own underline
+   would otherwise bracket every h2 with two lines. */
+main h2 {
+  margin-top: 3.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--vendra-line);
+  border-bottom: 0;
+}
+
+code.nextra-code {
+  font-variant-ligatures: none;
+  border-radius: 0.375rem;
+  background: hsla(
+    var(--nextra-primary-hue),
+    var(--nextra-primary-saturation),
+    var(--nextra-primary-lightness),
+    0.08
+  );
+  padding: 0.15em 0.4em;
+  font-size: 0.86em;
+}
+
+code.nextra-code::before,
+code.nextra-code::after {
+  content: none;
+}
+
+:not(pre) > code {
+  white-space: nowrap;
+}
+
+/* Reference components lay code out in a grid column, so it must wrap rather
+   than overflow into the neighbouring column. */
+.vendra-command-cmd,
+.vendra-def-code {
+  white-space: normal;
+}
+
+pre {
+  border-radius: 0.75rem;
+  border: 1px solid var(--vendra-line);
+  background: linear-gradient(180deg, rgb(9 9 11 / 0.03), rgb(9 9 11 / 0));
+}
+
+.dark pre {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(0 0 0 / 0));
+}
+
+.nextra-callout {
+  border-radius: 0.75rem;
+  border-width: 1px;
+}
+
+.nextra-cards {
+  gap: 1rem;
+}
+
+.nextra-card {
+  border-radius: 0.875rem;
+  border: 1px solid var(--vendra-line);
+  box-shadow: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.nextra-card:hover {
+  border-color: var(--vendra-accent);
+  transform: translateY(-1px);
+}
+
+/* Nextra emits a card's description <p> before its title, so cards read
+   bottom-up. Reorder so the title leads. */
+.nextra-card > p {
+  order: 2;
+  margin-top: 0.5rem;
+}
+
+.nextra-table-container {
+  border-radius: 0.75rem;
+  border: 1px solid var(--vendra-line);
+  overflow: hidden;
+}
+
+.nextra-table-container table {
+  margin: 0;
+  border: 0;
+}
+
+.nextra-table-container th {
+  background: var(--vendra-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.nextra-search .x\:cursor-pointer {
+  border-radius: 0.5rem;
+}
+
+/* ==========================================================================
+   Page furniture
+   ========================================================================== */
+
+.vendra-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--vendra-fg-subtle);
+}
+
+.vendra-lede {
+  margin-top: 1rem;
+  max-width: 46rem;
+  font-size: 1.0625rem;
+  line-height: 1.75rem;
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-hero-lede {
+  margin-top: 1.5rem;
+  max-width: 42rem;
+  font-size: 1rem;
+  line-height: 1.75rem;
+  color: var(--vendra-fg-muted);
+}
+
+@media (min-width: 768px) {
+  .vendra-hero-lede {
+    font-size: 1.125rem;
+  }
+}
+
+/* MDX wraps block children in a <p>, so Lede and Hero render a <div> and the
+   inner paragraph inherits their typography instead of Nextra's. */
+.vendra-lede > p,
+.vendra-hero-lede > p {
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+}
+
+.vendra-gradient-text {
+  background-image: linear-gradient(
+    110deg,
+    hsl(
+      var(--nextra-primary-hue),
+      var(--nextra-primary-saturation),
+      calc(var(--nextra-primary-lightness) + 6%)
+    ),
+    hsl(
+      calc(var(--nextra-primary-hue) + 28deg),
+      var(--nextra-primary-saturation),
+      calc(var(--nextra-primary-lightness) + 10%)
+    )
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ==========================================================================
+   Hero
+   ========================================================================== */
+
+.vendra-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--vendra-line);
+  border-radius: 1.5rem;
+  background-color: var(--vendra-surface);
+}
+
+.vendra-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image:
+    linear-gradient(to right, var(--vendra-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--vendra-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    #000 30%,
+    transparent 75%
+  );
+}
+
+.vendra-hero::after {
+  content: '';
+  position: absolute;
+  inset: -40% 40% 40% -20%;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    hsla(
+      var(--nextra-primary-hue),
+      var(--nextra-primary-saturation),
+      var(--nextra-primary-lightness),
+      0.16
+    ),
+    transparent 65%
+  );
+}
+
+/* ==========================================================================
+   Labels
+   ========================================================================== */
+
+.vendra-tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.vendra-tag-neutral {
+  border-color: var(--vendra-line-strong);
+  background: var(--vendra-muted);
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-tag-emerald {
+  border-color: color-mix(in srgb, var(--vendra-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--vendra-accent) 12%, transparent);
+  color: var(--vendra-accent);
+}
+
+.vendra-tag-amber {
+  border-color: rgb(217 119 6 / 0.3);
+  background: rgb(245 158 11 / 0.12);
+  color: rgb(180 83 9);
+}
+
+.dark .vendra-tag-amber {
+  color: rgb(252 211 77);
+}
+
+.vendra-tag-red {
+  border-color: rgb(220 38 38 / 0.3);
+  background: rgb(239 68 68 / 0.12);
+  color: rgb(185 28 28);
+}
+
+.dark .vendra-tag-red {
+  color: rgb(252 165 165);
+}
+
+.vendra-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  border: 1px solid var(--vendra-line-strong);
+  background: var(--vendra-surface-raised);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-chip-dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  flex: none;
+  border-radius: 9999px;
+  background: var(--vendra-accent);
+}
+
+/* ==========================================================================
+   Buttons and surfaces
+   ========================================================================== */
+
+.vendra-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.vendra-btn-primary {
+  background: rgb(9 9 11);
+  color: rgb(250 250 250);
+}
+
+.vendra-btn-primary:hover {
+  background: rgb(38 38 38);
+}
+
+.dark .vendra-btn-primary {
+  background: rgb(250 250 250);
+  color: rgb(9 9 11);
+}
+
+.dark .vendra-btn-primary:hover {
+  background: rgb(212 212 212);
+}
+
+.vendra-btn-secondary {
+  border-color: var(--vendra-line-strong);
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-btn-secondary:hover {
+  border-color: var(--vendra-accent);
+  color: var(--vendra-fg);
+}
+
+.vendra-panel {
+  border: 1px solid var(--vendra-line);
+  border-radius: 1rem;
+  background: var(--vendra-surface);
+}
+
+/* ==========================================================================
+   Navigation grids
+   ========================================================================== */
+
+.vendra-feature {
+  display: block;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.875rem;
+  background: var(--vendra-surface);
+  padding: 1.125rem 1.25rem;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.vendra-feature:hover {
+  border-color: var(--vendra-accent);
+  background: var(--vendra-surface-raised);
+  transform: translateY(-1px);
+}
+
+.vendra-feature-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--vendra-fg);
+}
+
+.vendra-feature-arrow {
+  color: var(--vendra-fg-subtle);
+  transition:
+    transform 0.15s ease,
+    color 0.15s ease;
+}
+
+.vendra-feature:hover .vendra-feature-arrow,
+.vendra-next-item:hover .vendra-feature-arrow {
+  color: var(--vendra-accent);
+  transform: translateX(2px);
+}
+
+.vendra-feature-desc {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-feature-meta {
+  margin-top: 0.75rem;
+  font-family: var(--x-font-mono);
+  font-size: 0.75rem;
+  color: var(--vendra-fg-subtle);
+}
+
+.vendra-next {
+  border-top: 1px solid var(--vendra-line);
+  padding-top: 1.5rem;
+}
+
+.vendra-next-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.75rem;
+  padding: 0.875rem 1rem;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.vendra-next-item:hover {
+  border-color: var(--vendra-accent);
+  background: var(--vendra-surface);
+}
+
+.vendra-next-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--vendra-fg);
+}
+
+.vendra-next-desc {
+  font-size: 0.8125rem;
+  line-height: 1.375rem;
+  color: var(--vendra-fg-subtle);
+}
+
+/* ==========================================================================
+   Steps
+   ========================================================================== */
+
+.vendra-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: none;
+}
+
+.vendra-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.75rem 1fr;
+  gap: 0.875rem;
+  padding-bottom: 1.5rem;
+}
+
+.vendra-step:last-child {
+  padding-bottom: 0;
+}
+
+/* Connector line between markers. */
+.vendra-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 0.875rem;
+  top: 2rem;
+  bottom: 0.25rem;
+  width: 1px;
+  background: var(--vendra-line-strong);
+}
+
+.vendra-step-marker {
+  display: flex;
+  height: 1.75rem;
+  width: 1.75rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--vendra-line-strong);
+  background: var(--vendra-surface-raised);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--vendra-accent);
+}
+
+.vendra-step-body {
+  padding-top: 0.1875rem;
+}
+
+.vendra-step-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--vendra-fg);
+}
+
+.vendra-step-desc {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--vendra-fg-muted);
+}
+
+/* ==========================================================================
+   Definition list
+   ========================================================================== */
+
+.vendra-deflist {
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.875rem;
+  overflow: hidden;
+}
+
+.vendra-def {
+  padding: 0.875rem 1.125rem;
+  border-top: 1px solid var(--vendra-line);
+}
+
+.vendra-def:first-child {
+  border-top: 0;
+}
+
+.vendra-def-term {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vendra-def-code {
+  font-family: var(--x-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--vendra-fg);
+}
+
+.vendra-def-meta {
+  font-size: 0.75rem;
+  color: var(--vendra-fg-subtle);
+}
+
+.vendra-def-desc {
+  margin: 0.3125rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--vendra-fg-muted);
+}
+
+/* ==========================================================================
+   Command list
+   ========================================================================== */
+
+.vendra-commands {
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.875rem;
+  overflow: hidden;
+}
+
+.vendra-command {
+  display: grid;
+  gap: 0.25rem 1.25rem;
+  padding: 0.75rem 1.125rem;
+  border-top: 1px solid var(--vendra-line);
+  align-items: baseline;
+}
+
+.vendra-command:first-child {
+  border-top: 0;
+}
+
+@media (min-width: 768px) {
+  .vendra-command {
+    grid-template-columns: minmax(0, 22rem) 1fr;
+  }
+}
+
+.vendra-command-cmd {
+  font-family: var(--x-font-mono);
+  font-size: 0.8125rem;
+  color: var(--vendra-fg);
+  overflow-wrap: anywhere;
+}
+
+.vendra-command-desc {
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  color: var(--vendra-fg-muted);
+}
+
+/* ==========================================================================
+   Flow diagram
+   ========================================================================== */
+
+.vendra-flow-label {
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--vendra-fg-subtle);
+}
+
+.vendra-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--x-font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.5rem;
+}
+
+.vendra-flow-node {
+  border: 1px solid var(--vendra-line-strong);
+  border-radius: 0.5rem;
+  background: var(--vendra-surface-raised);
+  padding: 0.25rem 0.625rem;
+  color: var(--vendra-fg);
+  white-space: nowrap;
+}
+
+.vendra-flow-arrow {
+  color: var(--vendra-fg-subtle);
+  user-select: none;
+}
+
+/* ==========================================================================
+   Stats
+   ========================================================================== */
+
+.vendra-stats {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--vendra-line);
+  border-radius: 1rem;
+  background: var(--vendra-line);
+}
+
+@media (min-width: 640px) {
+  .vendra-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vendra-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.vendra-stat {
+  background: rgb(255 255 255);
+  padding: 1.25rem;
+}
+
+.dark .vendra-stat {
+  background: rgb(9 9 11);
+}
+
+.vendra-stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--vendra-fg);
+}
+
+.vendra-stat-label {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--vendra-fg-subtle);
+}
+
+/* ==========================================================================
+   Boundary
+   ========================================================================== */
+
+.vendra-boundary {
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.875rem;
+  padding: 1.125rem 1.25rem;
+}
+
+.vendra-boundary-do {
+  border-color: color-mix(in srgb, var(--vendra-accent) 28%, transparent);
+  background: color-mix(in srgb, var(--vendra-accent) 6%, transparent);
+}
+
+.vendra-boundary-dont {
+  background: var(--vendra-muted);
+}
+
+.vendra-boundary-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--vendra-fg-subtle);
+}
+
+.vendra-boundary-do .vendra-boundary-title {
+  color: var(--vendra-accent);
+}
+
+.vendra-boundary-list {
+  margin: 0.75rem 0 0;
+  padding-left: 1.125rem;
+  list-style: disc;
+  font-size: 0.875rem;
+  line-height: 1.625rem;
+  color: var(--vendra-fg-muted);
+}
+
+.vendra-boundary-list li {
+  margin: 0;
+}
