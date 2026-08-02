@@ -13,109 +13,149 @@ import { team } from '../../lib/team'
 export const metadata: Metadata = {
   title: 'Vendra Pro',
   description:
-    'Commercial support, prioritised issues, and direct access to the team behind the Vendra ecosystem.'
+    'Reseller plans for the Vendra ecosystem, counted in the number of websites you can run at once.'
 }
 
 /* -------------------------------------------------------------------------- */
-/* TODO — PLACEHOLDER PRICING. NOTHING BELOW IS A REAL COMMERCIAL OFFER.      */
+/* TODO — PRICES ARE STILL PLACEHOLDERS. The plan *structure* below is real:   */
+/* reseller subscribers, limits counted in concurrent websites, a 7-day free   */
+/* trial, and a conversation above three. The money is not.                    */
 /*                                                                            */
-/* Every price, seat count, and support window here is invented to fill the    */
-/* layout. Before this page goes anywhere public, replace:                     */
+/* Before this page goes public, replace:                                      */
 /*                                                                            */
-/*   1. `price` and `cadence` on each plan                                     */
-/*   2. the `features` lists — especially seat counts and support hours        */
-/*   3. `cta.href` — these point at /faq as a placeholder, and need to go to   */
-/*      a real checkout, quote form, or mailto:                                */
-/*   4. the `<Notice>` below, which exists to stop a draft being mistaken for  */
-/*      a live price list — delete it only once 1–3 are done                   */
-/*   5. the LogoWall names, which are placeholders on the landing page too     */
+/*   1. `price` and `cadence` on Basic and Pro                                 */
+/*   2. `cta.href` on the paid tiers — they point at /faq as a placeholder and */
+/*      need a real contact route, quote form, or mailto:                      */
+/*   3. the `<Notice>`, once 1 and 2 are done                                  */
+/*   4. the "after the trial" FAQ answer, which is a commercial commitment     */
+/*      and is currently marked TODO                                           */
 /*                                                                            */
-/* `check:links` will fail the build if a cta.href points at a route that does */
-/* not exist, so a half-finished edit here cannot ship silently.               */
+/* Keep this page in step with the `plans` table in vendra-subscription:       */
+/* max_units is the website count, trial_days the 7, grace_days the window     */
+/* after expiry. If a number here disagrees with a column there, the column    */
+/* wins — it is what actually gets enforced.                                   */
 /* -------------------------------------------------------------------------- */
 
 const plans: Plan[] = [
   {
-    name: 'Starter',
-    price: 'TBD',
-    cadence: '/ month',
+    name: 'Free trial',
+    price: 'Free',
+    cadence: 'for 7 days',
     summary:
-      'For a team running a single property and wanting a faster path past blockers.',
+      'Build one real website and take it end to end before paying anything.',
     features: [
-      'Access to Pro examples and templates',
-      'Prioritised GitHub issues',
-      'PLACEHOLDER: 1 team seat',
-      'Introduction call with the maintainers'
+      '1 website',
+      'Every platform feature — nothing is held back',
+      'No card required to start',
+      'Expires after 7 days'
     ],
-    cta: { href: '/faq', label: 'Subscribe' }
+    cta: { href: '/getting-started', label: 'Start building' }
   },
   {
-    name: 'Professional',
+    name: 'Basic',
+    price: 'TBD',
+    cadence: '/ month',
+    summary: 'For a reseller running a single client website in production.',
+    features: [
+      '1 website',
+      'No time limit',
+      'Email support',
+      'Upgrade without rebuilding anything'
+    ],
+    cta: { href: '/faq', label: 'Talk to us' }
+  },
+  {
+    name: 'Pro',
     price: 'TBD',
     cadence: '/ month',
     summary:
-      'For teams operating several properties, with a support channel that has a name on it.',
+      'For resellers carrying a small portfolio of client shops at once.',
     features: [
-      'Everything in Starter',
-      'PLACEHOLDER: up to 1 hour of email support per month',
-      'PLACEHOLDER: 5 team seats',
+      '3 websites',
+      'Everything in Basic',
+      'Priority on issues you report',
       'Architecture review of your deployment'
     ],
-    cta: { href: '/faq', label: 'Subscribe' },
+    cta: { href: '/faq', label: 'Talk to us' },
     featured: true
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
+    name: 'More than three',
+    price: 'Let’s talk',
     summary:
-      'For hosts running Vendra as infrastructure, with procurement and compliance requirements.',
+      'Running a larger portfolio? The limit is a number in your plan, and we will set it with you.',
     features: [
-      'Everything in Professional',
-      'PLACEHOLDER: 1 hour of voice or video support per month',
-      'PLACEHOLDER: 10 team seats',
-      'Custom procurement, invoicing, and terms'
+      'Website count agreed with you',
+      'Everything in Pro',
+      'Custom invoicing and terms',
+      'A direct line rather than a queue'
     ],
-    cta: { href: '/faq', label: 'Request a quote' }
+    cta: { href: '/faq', label: 'Get in touch' }
   }
 ]
 
-
 const faq = [
   {
-    question: 'Is Vendra itself open source?',
+    question: 'Who are these plans for?',
     answer: (
       <p>
-        The ecosystem repositories are public and the packages are first-party.
-        A Pro subscription does not unlock the software — it funds the work and
-        buys support, prioritisation, and access to the Pro examples.
-      </p>
-    ),
-  },
-  {
-    question: 'Do I need a subscription to use Vendra commercially?',
-    answer: (
-      <p>
-        No. You can build and operate commercial storefronts on the ecosystem
-        without a subscription. Pro exists for teams that want a support
-        relationship rather than permission.
+        Resellers — agencies and builders who run Vendra websites on behalf of
+        their own clients. There is no plan sold to a shop&rsquo;s end customers,
+        because a shop&rsquo;s customers are not our customers: they are yours.
       </p>
     )
   },
   {
-    question: 'What counts as a team seat?',
+    question: 'What counts toward my website limit?',
     answer: (
       <p>
-        PLACEHOLDER — define this before publishing. Typically one named person
-        who can open prioritised issues and join support calls.
+        Websites you are running right now, not websites you have ever created.
+        The limit is checked against your current count, so removing a website
+        frees its slot immediately and a client who leaves does not keep
+        occupying your plan.
       </p>
     )
   },
   {
-    question: 'Can we trial it first?',
+    question: 'What happens when the 7 days are up?',
     answer: (
       <p>
-        PLACEHOLDER — decide whether a trial exists and on what terms, then
-        replace this answer.
+        PLACEHOLDER — this is a commercial commitment and needs your decision
+        before publishing. The engine supports a grace window after expiry
+        (<code>grace_days</code>), so the honest options are: the website goes
+        offline but its data is kept for N days, or it is removed. Say which,
+        and say N. People will not start a trial without knowing.
+      </p>
+    )
+  },
+  {
+    question: 'Can I move down a plan?',
+    answer: (
+      <p>
+        Yes, as long as you are within the smaller plan&rsquo;s limit first. You
+        cannot drop to a 1-website plan while running three — the subscription
+        refuses it rather than silently choosing which two of your client sites
+        to switch off.
+      </p>
+    )
+  },
+  {
+    question: 'Do I need a card to try it?',
+    answer: (
+      <p>
+        No. The free trial starts without one. Note that this means the trial
+        does not roll into a paid plan on its own — you choose a plan when you
+        are ready.
+      </p>
+    )
+  },
+  {
+    question: 'Do I have to pay to use Vendra commercially?',
+    answer: (
+      <p>
+        The ecosystem repositories are public and you can build on them. Plans
+        exist for resellers who want the hosted platform, the limits managed for
+        them, and somebody to call.
       </p>
     )
   }
@@ -133,16 +173,18 @@ export default function ProPage() {
   return (
     <>
       <Section
-        eyebrow="Vendra Pro"
-        title="Support the ecosystem, and get support back"
-        lede="The Vendra packages are public and free to build on. Subscriptions fund the maintenance, and buy your team a direct line to the people who write it."
+        eyebrow="Vendra for resellers"
+        title="Plans are counted in websites"
+        lede="Build client shops on Vendra and pay for how many you run at once. Start free for seven days, and move up when a client signs — the limit is the only thing that changes."
       >
-        <Notice title="Draft — placeholder pricing">
+        <Notice title="Draft — prices not set">
           <p>
-            Every price and limit on this page is a placeholder. This layout is
-            ready for real numbers; it does not carry any yet, and nothing here
-            is a commercial offer. See the TODO block in{' '}
-            <code>app/pro/page.tsx</code> for exactly what to replace.
+            The plan structure here is real: reseller subscribers, limits
+            counted in concurrent websites, a seven-day free trial, and a
+            conversation above three. The <strong>prices are not</strong> — Basic
+            and Pro read &ldquo;TBD&rdquo; because no figure has been set, and
+            nothing on this page is a commercial offer until they are. See the
+            TODO block in <code>app/pro/page.tsx</code>.
           </p>
         </Notice>
       </Section>
@@ -182,8 +224,8 @@ export default function ProPage() {
 
       <Section
         eyebrow="Questions"
-        title="Before you subscribe"
-        lede="Two of these still need real answers — they are marked."
+        title="Before you sign up"
+        lede="One of these still needs a real answer — it is marked."
       >
         <FaqList items={faq} />
       </Section>
