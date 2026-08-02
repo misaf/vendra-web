@@ -28,7 +28,7 @@ import { Callout } from 'nextra/components'
     { cmd: 'vendra stack ps', description: 'List running containers.' },
     { cmd: 'vendra stack urls', description: 'Print the routed URLs.' },
     {
-      cmd: 'vendra stack logs [service]',
+      cmd: 'vendra stack logs [target]',
       description: 'Tail service logs. Defaults to the php service.'
     },
     { cmd: 'vendra stack restart', description: 'Restart stack services.' },
@@ -37,7 +37,11 @@ import { Callout } from 'nextra/components'
       description: 'Update /etc/hosts for local domains.'
     },
     { cmd: 'vendra stack down', description: 'Stop the stack.' },
-    { cmd: 'vendra version', description: 'Print the binary version.' }
+    { cmd: 'vendra version', description: 'Print the binary version.' },
+    {
+      cmd: 'vendra completion <bash|zsh|fish|powershell>',
+      description: 'Emit a shell completion script on stdout.'
+    }
   ]}
 />
 

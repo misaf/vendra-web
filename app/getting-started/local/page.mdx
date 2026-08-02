@@ -34,11 +34,23 @@ images:
 no_pull: true
 ```
 
+Tags rather than digests are correct here: a digest pins an image that only
+exists in a registry. Production still pins by digest.
+
 <Callout type="warning">
-  `no_pull: true` matters for console-driven provisioning, because the
-  provisioner runs without CLI flags. Local tags must exactly match the names in
-  this file.
+  `no_pull: true` is the configuration form of `--no-pull`, and it is the only
+  one the provisioner obeys. Console-driven deployment does not go through the
+  CLI — the console calls the provisioner, which runs as a container and has no
+  flags. Without this key it tries to pull the storefront image and the
+  deployment lands in `storefront_deployments` as `failed` with a bare
+  `provisioning failed`. The registry error appears only in
+  `docker logs platform-provisioner-1`.
 </Callout>
+
+Image names must match what you built **exactly**. A registry-shaped name such
+as `ghcr.io/misaf/vendra:local` is a different image from `vendra-platform:local`
+even with identical contents. Check `docker images` before starting; a mismatch
+reads as *No such image*.
 
 ## 3. Start and resolve hosts
 
@@ -48,16 +60,104 @@ vendra stack up --no-pull --config ./controller.local.yaml
 sudo vendra stack hosts --write --config ./controller.local.yaml
 ```
 
-## 4. Trust the local authority
+## 4. Trust the local authority, on both origins
 
-In self-signed mode, accept or trust the generated authority for **both**
-`https://api.vendra.test` and the storefront domain.
+A storefront spans two origins, and accepting the warning on the page you are
+looking at does not cover the other one.
+
+<Steps
+  items={[
+    {
+      title: 'Accept https://api.vendra.test',
+      body: 'Do this one first — it is the one people miss.'
+    },
+    {
+      title: 'Accept https://<slug>.vendra.test',
+      body: 'The storefront origin itself.'
+    }
+  ]}
+/>
 
 <Callout type="error">
-  A page may render while browser API calls fail TLS, producing deceptively
-  empty sections. An empty product grid is more often an untrusted certificate
-  than a data problem.
+  A storefront whose API origin was never accepted looks like it worked. The
+  page renders from the server, which already trusts the authority through
+  `NODE_EXTRA_CA_CERTS`, so it returns 200 with every data section empty and the
+  server logs nothing at all. The failing requests are the browser's own `fetch`
+  calls, visible only in the network panel. An empty product grid is more often
+  an untrusted certificate than a data problem.
 </Callout>
+
+This needs no administrator rights — a browser exception is stored in your own
+profile. Chrome sometimes needs a hard reload before it retries requests that
+already failed.
+
+The exception survives. Certificates are re-signed from a persistent authority
+(`certificates/ca.pem`), so it holds across `vendra property render`, and
+accepting `api.vendra.test` once covers every property added later. Only
+deleting `ca.pem` or `state_dir` invalidates it. It is per browser profile, so a
+new profile or a teammate's machine repeats the two clicks.
+
+### Optional: trust the authority outright
+
+With administrator rights, install the authority and see no warnings at all.
+This is a convenience, not a prerequisite — it is the same certificate either
+way.
+
+```bash
+sudo security add-trusted-cert -d -r trustRoot \
+  -k /Library/Keychains/System.keychain \
+  /var/lib/vendra/certificates/ca.pem
+```
+
+Quit and reopen the browser afterwards: Chrome and Safari cache TLS decisions
+for the life of the process.
+
+## What to expect
+
+<DefList
+  items={[
+    {
+      term: '/api/health',
+      description: 'Storefront containers report healthy on this endpoint.'
+    },
+    {
+      term: 'www-redirect · security-headers · compression',
+      description:
+        'Routers carry these middlewares, so responses include X-Frame-Options, X-Content-Type-Options, and Referrer-Policy.'
+    },
+    {
+      term: 'No Strict-Transport-Security',
+      description:
+        'Correct under certificate_mode: self-signed — HSTS would pin a certificate the browser does not trust, and the "proceed anyway" bypass has to keep working.'
+    },
+    {
+      term: 'http://127.0.0.1:8080/dashboard/',
+      description: 'The Traefik dashboard.'
+    }
+  ]}
+/>
+
+## Caveats
+
+<DefList
+  items={[
+    {
+      term: '--no-pull is not --pull never',
+      description:
+        'It skips the explicit compose pull only. Public dependencies (mysql, redis, traefik) are still fetched from a registry, which is deliberate — forbidding that would break a first run on a clean machine.'
+    },
+    {
+      term: 'Stale local tags are used silently',
+      description:
+        'Nothing checks that a tag matches what you last built. Rebuild the image, then run vendra property restart <slug> after changing source.'
+    },
+    {
+      term: 'images.website: ""',
+      description:
+        'With this empty, nothing serves the apex base domain. Only property and platform hosts respond.'
+    }
+  ]}
+/>
 
 <NextSteps
   items={[
