@@ -5,7 +5,7 @@
  *
  *   vendra-controller/api/openapi.yaml   -> provisioner endpoints
  *   vendra-storefront-florist/properties/schema.json -> property config fields
- *   vendra/packages/                     -> first-party package catalog
+ *   vendra-platform/packages/            -> first-party package catalog
  *
  * Drift is checked in both directions. A contract item missing from the docs is
  * an undocumented feature; a documented item missing from the contract is worse,
@@ -170,7 +170,7 @@ if (existsSync(schemaPath)) {
 /* First-party package catalog                                                */
 /* -------------------------------------------------------------------------- */
 
-const packagesDir = resolve(ecosystem, 'vendra/packages')
+const packagesDir = resolve(ecosystem, 'vendra-platform/packages')
 
 /** 'User Profile' -> 'user-profile', 'FAQ' -> 'faq' */
 const toSlug = name => name.trim().toLowerCase().replace(/\s+/g, '-')
@@ -223,9 +223,9 @@ if (existsSync(packagesDir)) {
     documented: documentedCore,
     describe: {
       missing: s =>
-        `vendra/packages has vendra-${s}, but the catalog in ${docPath} does not list it`,
+        `vendra-platform/packages has vendra-${s}, but the catalog in ${docPath} does not list it`,
       stale: s =>
-        `the catalog in ${docPath} lists "${s}", but vendra/packages has no vendra-${s}`
+        `the catalog in ${docPath} lists "${s}", but vendra-platform/packages has no vendra-${s}`
     }
   })
 
@@ -234,17 +234,17 @@ if (existsSync(packagesDir)) {
     documented: documentedApi,
     describe: {
       missing: s =>
-        `vendra/packages has vendra-${s}-api, but the API modules entry in ${docPath} omits it`,
+        `vendra-platform/packages has vendra-${s}-api, but the API modules entry in ${docPath} omits it`,
       stale: s =>
-        `the API modules entry in ${docPath} lists "${s}", but vendra/packages has no vendra-${s}-api`
+        `the API modules entry in ${docPath} lists "${s}", but vendra-platform/packages has no vendra-${s}-api`
     }
   })
 
   console.log(
-    `  vendra/packages: ${coreSlugs.size} packages, ${apiSlugs.size} API modules`
+    `  vendra-platform/packages: ${coreSlugs.size} packages, ${apiSlugs.size} API modules`
   )
 } else {
-  console.log('  vendra/packages: not found, skipped')
+  console.log('  vendra-platform/packages: not found, skipped')
 }
 
 /* -------------------------------------------------------------------------- */
