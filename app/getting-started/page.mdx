@@ -1,30 +1,83 @@
-import { Cards } from 'nextra/components'
+---
+description: "Choose between native Laravel development, running the full Docker ecosystem locally, installing a production host, or creating your first storefront."
+---
 
-# Getting started
+# Choose a workflow
 
-Choose the workflow that matches your goal. The platform's native development
-loop and the complete Docker ecosystem are complementary, not interchangeable.
+<Lede>
+  The platform’s native development loop and the complete Docker ecosystem are
+  complementary, not interchangeable. Pick the one that matches your goal.
+</Lede>
 
-<Cards num={2}>
-  <Cards.Card title="Develop the Laravel platform" href="/platform/development" arrow>
-    Run Composer setup and the application development processes locally.
-  </Cards.Card>
-  <Cards.Card title="Run the complete ecosystem" href="/getting-started/local" arrow>
-    Build local images and let the controller run Traefik, platform, and storefronts.
-  </Cards.Card>
-  <Cards.Card title="Install a production host" href="/getting-started/production" arrow>
-    Configure Docker, DNS, secrets, digest-pinned images, and ACME.
-  </Cards.Card>
-  <Cards.Card title="Create a storefront" href="/getting-started/first-storefront" arrow>
-    Generate a valid property configuration and bring its container online.
-  </Cards.Card>
-</Cards>
+<FeatureGrid
+  items={[
+    {
+      href: '/platform/development',
+      title: 'Develop the Laravel platform',
+      description:
+        'Run Composer setup and the application development processes locally.',
+      meta: 'composer setup · composer dev'
+    },
+    {
+      href: '/getting-started/local',
+      title: 'Run the complete ecosystem',
+      description:
+        'Build local images and let the controller run Traefik, platform, and storefronts.',
+      meta: 'certificate_mode: self-signed'
+    },
+    {
+      href: '/getting-started/production',
+      title: 'Install a production host',
+      description:
+        'Configure Docker, DNS, secrets, digest-pinned images, and ACME.',
+      meta: 'certificate_mode: acme'
+    },
+    {
+      href: '/getting-started/first-storefront',
+      title: 'Create a storefront',
+      description:
+        'Generate a valid property configuration and bring its container online.',
+      meta: 'vendra property add'
+    }
+  ]}
+/>
 
 ## Requirements by workflow
 
-| Workflow | Requirements |
-| --- | --- |
-| Laravel development | PHP 8.3+, Composer, Node.js/npm, supported database |
-| Storefront development | Node.js/npm; canonical API optional for UI-only work |
-| Controller development | Go version from `go.mod`, Docker Compose v2 |
-| Production host | Linux, Docker Engine, Compose v2, `vendra` binary, DNS, registry access |
+<DefList
+  items={[
+    {
+      term: 'Laravel development',
+      description: 'PHP 8.3+, Composer, Node.js/npm, and a supported database.'
+    },
+    {
+      term: 'Storefront development',
+      description:
+        'Node.js/npm. The canonical API is optional for UI-only work.'
+    },
+    {
+      term: 'Controller development',
+      description: 'The Go version from go.mod, plus Docker Compose v2.'
+    },
+    {
+      term: 'Production host',
+      description:
+        'Linux, Docker Engine, Compose v2, the vendra binary, DNS control, and registry access.'
+    }
+  ]}
+/>
+
+<NextSteps
+  items={[
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description: 'Understand the topology before installing it.'
+    },
+    {
+      href: '/operations',
+      title: 'Operations runbook',
+      description: 'Daily checks once the stack is running.'
+    }
+  ]}
+/>

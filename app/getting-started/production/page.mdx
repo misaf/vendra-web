@@ -1,16 +1,42 @@
+---
+description: "Install a production Vendra host: Docker and DNS prerequisites, digest-pinned controller configuration, secret handling, and ACME certificates."
+---
+
+import { Callout } from 'nextra/components'
+
 # Production host
 
-## Prepare infrastructure
+<Lede>
+  A production install pins every image by digest, keeps secrets out of YAML,
+  and treats `stack up` as a convergent operation you can re-run safely.
+</Lede>
+
+## 1. Prepare infrastructure
 
 Install Docker Engine, Docker Compose v2, and a versioned `vendra` CLI binary.
-Point the base domain plus `api`, `admin`, `console`, and `reseller` hosts to the
-server. Each customer domain must also resolve to it.
 
-## Controller configuration
+<DefList
+  items={[
+    {
+      term: '<base-domain>',
+      description: 'The platform base domain, pointed at the server.'
+    },
+    {
+      term: 'api · admin · console · reseller',
+      description: 'Platform subdomains that must also resolve to the server.'
+    },
+    {
+      term: 'Customer domains',
+      description: 'Every storefront domain must resolve to the same server.'
+    }
+  ]}
+/>
+
+## 2. Controller configuration
 
 Create `/etc/vendra/controller.yaml` using immutable image digests:
 
-```yaml
+```yaml filename="/etc/vendra/controller.yaml"
 state_dir: /var/lib/vendra
 base_domain: example.com
 network: traefik-public
@@ -25,11 +51,17 @@ images:
   provisioner: ghcr.io/your-org/vendra-controller@sha256:PROVISIONER
 ```
 
+## 3. Secrets
+
 Place `APP_KEY`, database credentials, mail settings, and
 `VENDRA_PROVISIONER_TOKEN` in `/etc/vendra/controller.env`, owned by root with
-mode `0600`. Do not put secrets in YAML.
+mode `0600`.
 
-## Initialize and verify
+<Callout type="error">
+  Never put secrets in `controller.yaml`. It is not treated as a secret file.
+</Callout>
+
+## 4. Initialize and verify
 
 ```bash
 sudo vendra init --config /etc/vendra/controller.yaml
@@ -39,4 +71,19 @@ sudo vendra stack urls --config /etc/vendra/controller.yaml
 ```
 
 Re-running `stack up` is the normal convergent operation after configuration or
-image changes.
+image changes — it is not a repair command.
+
+<NextSteps
+  items={[
+    {
+      href: '/getting-started/first-storefront',
+      title: 'First storefront',
+      description: 'Create the first property on this host.'
+    },
+    {
+      href: '/controller/security',
+      title: 'Security and recovery',
+      description: 'Docker boundary, TLS behavior, and what to back up.'
+    }
+  ]}
+/>

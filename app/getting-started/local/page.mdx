@@ -1,9 +1,17 @@
+---
+description: "Run locally built Vendra images behind the production Traefik topology using self-signed certificates and disabled controller pulls."
+---
+
+import { Callout } from 'nextra/components'
+
 # Local ecosystem
 
-This workflow runs locally built images behind the same Traefik topology used in
-production. Use explicit local tags and disable controller pulls.
+<Lede>
+  Run locally built images behind the same Traefik topology used in production.
+  Use explicit local tags and disable controller pulls.
+</Lede>
 
-## Build images
+## 1. Build images
 
 ```bash
 docker build -t vendra-controller:local ./vendra-controller
@@ -11,9 +19,9 @@ docker build -t vendra-storefront-florist:local ./vendra-storefront-florist
 docker build -f vendra/docker/Dockerfile -t vendra-platform:local ./vendra
 ```
 
-## Configure the controller
+## 2. Configure the controller
 
-```yaml
+```yaml filename="controller.local.yaml"
 state_dir: /absolute/writable/path/vendra-state
 base_domain: vendra.test
 network: traefik-public
@@ -26,10 +34,13 @@ images:
 no_pull: true
 ```
 
-`no_pull: true` matters for console-driven provisioning because the provisioner
-runs without CLI flags. Local tags must exactly match the names in this file.
+<Callout type="warning">
+  `no_pull: true` matters for console-driven provisioning, because the
+  provisioner runs without CLI flags. Local tags must exactly match the names in
+  this file.
+</Callout>
 
-## Start and resolve hosts
+## 3. Start and resolve hosts
 
 ```bash
 vendra init --config ./controller.local.yaml
@@ -37,6 +48,28 @@ vendra stack up --no-pull --config ./controller.local.yaml
 sudo vendra stack hosts --write --config ./controller.local.yaml
 ```
 
-In self-signed mode, accept or trust the generated authority for both
-`https://api.vendra.test` and the storefront domain. A page may render while
-browser API calls fail TLS, producing deceptively empty sections.
+## 4. Trust the local authority
+
+In self-signed mode, accept or trust the generated authority for **both**
+`https://api.vendra.test` and the storefront domain.
+
+<Callout type="error">
+  A page may render while browser API calls fail TLS, producing deceptively
+  empty sections. An empty product grid is more often an untrusted certificate
+  than a data problem.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/getting-started/first-storefront',
+      title: 'First storefront',
+      description: 'Bring a property container online against this stack.'
+    },
+    {
+      href: '/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'Empty sections, unhealthy containers, and stale changes.'
+    }
+  ]}
+/>

@@ -1,9 +1,18 @@
+---
+description: "Generate a valid property configuration, render and start the storefront container, and verify both locales and API-backed data."
+---
+
+import { Callout } from 'nextra/components'
+
 # First storefront
 
-The property slug and domain must agree in Laravel, the controller command, and
-the encoded storefront configuration.
+<Lede>
+  The property slug and domain must agree in three places: Laravel, the
+  controller command, and the encoded storefront configuration. A mismatch in
+  any one of them fails validation.
+</Lede>
 
-## Generate configuration
+## 1. Generate configuration
 
 From the storefront repository:
 
@@ -15,7 +24,7 @@ The configuration requires identity, localized name, business type, currency,
 address, contact, and social fields. `ogImage` may be empty. The controller
 validates the complete shape before creating a container.
 
-## Render and start manually
+## 2. Render and start manually
 
 ```bash
 sudo vendra property add <slug> <domain> \
@@ -25,10 +34,13 @@ sudo vendra property add <slug> <domain> \
 sudo vendra property up <slug>
 ```
 
-Normal production onboarding uses the Laravel Console property form and queued
-provisioner job instead of these manual commands.
+<Callout type="info">
+  Normal production onboarding uses the Laravel Console property form and its
+  queued provisioner job instead of these manual commands. Use them for
+  bootstrapping and debugging.
+</Callout>
 
-## Verify
+## 3. Verify
 
 ```bash
 sudo vendra property ls
@@ -38,6 +50,45 @@ curl -I https://<domain>/en
 curl https://api.<base-domain>/up
 ```
 
-Check both `/en` and `/fa`, API-backed products/blog/FAQ, light and dark themes,
-and the `/api/health` endpoint. Rendering a shell is not proof that canonical API
-requests resolve the correct tenant.
+Then check by hand:
+
+<DefList
+  items={[
+    {
+      term: 'Both locales',
+      description: 'Visit /en and /fa, and confirm RTL behavior on the Persian routes.'
+    },
+    {
+      term: 'API-backed surfaces',
+      description: 'Products, blog, and FAQ must return real data, not empty states.'
+    },
+    {
+      term: 'Themes',
+      description: 'Check both light and dark color schemes.'
+    },
+    {
+      term: '/api/health',
+      description: 'The endpoint Docker and Traefik both probe.'
+    }
+  ]}
+/>
+
+<Callout type="warning">
+  Rendering a shell is not proof that canonical API requests resolve the correct
+  tenant. Verify that the data on the page belongs to this property.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/storefront/configuration',
+      title: 'Property configuration',
+      description: 'The full schema and environment contract.'
+    },
+    {
+      href: '/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'When provisioning fails or the container never goes healthy.'
+    }
+  ]}
+/>
