@@ -17,7 +17,7 @@ export const siteUrl = (
   process.env.NEXT_PUBLIC_SITE_URL ?? `http://localhost:3000${basePath}`
 ).replace(/\/$/, '')
 
-export const siteName = 'Vendra Ecosystem'
+export const siteName = 'Vendra'
 
 export const siteDescription =
-  'Documentation for the Vendra platform, controller, storefront, and operations.'
+  'A modular commerce platform, an infrastructure controller, and configurable storefronts \u2014 built to stay understandable at scale.'

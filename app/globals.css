@@ -963,3 +963,566 @@ pre {
 .vendra-boundary-list li {
   margin: 0;
 }
+
+/* ==========================================================================
+   Marketing surface (.vw-*)
+
+   The landing page, /pro, and the galleries run with the docs chrome switched
+   off (see `app/_meta.tsx`), so unlike the `.vendra-*` layer above — which
+   lives inside the documentation content column — these own their own width,
+   rhythm, and full-bleed backgrounds.
+   ========================================================================== */
+
+.vw-container {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+.vw-section {
+  padding-block: 4.5rem;
+}
+
+.vw-section-muted {
+  background: var(--vendra-muted);
+  border-block: 1px solid var(--vendra-line);
+}
+
+.vw-section-head {
+  max-width: 44rem;
+  margin-bottom: 2.5rem;
+}
+
+.vw-align-center {
+  margin-inline: auto;
+  text-align: center;
+}
+
+.vw-section-title {
+  margin-top: 0.75rem;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.vw-section-lede {
+  margin-top: 1rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+/* -- Hero ------------------------------------------------------------------ */
+
+.vw-hero {
+  position: relative;
+  padding-block: 5.5rem 3.5rem;
+  overflow: hidden;
+}
+
+.vw-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 12% -10%, rgb(124 58 237 / 12%), transparent 32rem),
+    radial-gradient(circle at 88% 0%, rgb(14 165 233 / 10%), transparent 28rem);
+}
+
+.vw-hero-title {
+  max-width: 24ch;
+  margin-top: 1rem;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1.03;
+}
+
+.vw-hero-lede {
+  max-width: 46rem;
+  margin-top: 1.5rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 1.125rem;
+  line-height: 1.8;
+}
+
+.vw-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.vw-hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 2.25rem;
+}
+
+/* -- Stack diagram --------------------------------------------------------- */
+
+.vw-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.vw-stack-tier {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.9rem;
+  background: var(--vendra-surface-raised);
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.vw-stack-tier:hover {
+  border-color: var(--vendra-accent);
+  transform: translateY(-2px);
+}
+
+.vw-stack-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.vw-stack-label {
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.vw-stack-role {
+  margin-top: 0.35rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vw-stack-detail {
+  margin-top: 0.6rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.vw-stack-arrow {
+  padding-block: 0.5rem;
+  color: var(--vendra-fg-subtle);
+  text-align: center;
+}
+
+/* -- Feature splits -------------------------------------------------------- */
+
+.vw-split {
+  display: grid;
+  gap: 2.5rem;
+  align-items: start;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--vendra-line);
+}
+
+.vw-split:first-child {
+  border-top: 0;
+}
+
+@media (min-width: 60rem) {
+  .vw-split {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  .vw-split-flip .vw-split-copy {
+    order: 2;
+  }
+}
+
+.vw-split-title {
+  margin-top: 0.6rem;
+  font-size: 1.5rem;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.vw-split-body {
+  margin-top: 0.9rem;
+  color: var(--vendra-fg-subtle);
+  line-height: 1.8;
+}
+
+.vw-split-points {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vw-split-points li {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.7rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.vw-arrow-link {
+  display: inline-flex;
+  gap: 0.4rem;
+  margin-top: 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.vw-arrow-link:hover {
+  text-decoration: underline;
+}
+
+/* -- Logo wall ------------------------------------------------------------- */
+
+.vw-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.5rem;
+}
+
+.vw-logo {
+  color: var(--vendra-fg-subtle);
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  opacity: 0.75;
+}
+
+/* -- Quickstart ------------------------------------------------------------ */
+
+.vw-quickstart {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 48rem) {
+  .vw-quickstart {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.vw-quickstart-label {
+  margin-bottom: 0.5rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vw-quickstart-code {
+  overflow-x: auto;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.7rem;
+  background: var(--vendra-muted);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* -- Galleries ------------------------------------------------------------- */
+
+.vw-gallery {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+}
+
+.vw-gallery-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.vw-group-title {
+  font-size: 1.25rem;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+}
+
+.vw-group-desc {
+  margin-top: 0.4rem;
+  margin-bottom: 1.25rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+.vw-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.85rem;
+}
+
+.vw-card-link {
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.vw-card-link:hover {
+  border-color: var(--vendra-accent);
+  transform: translateY(-2px);
+}
+
+.vw-card-static {
+  border-style: dashed;
+  opacity: 0.75;
+}
+
+.vw-card-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.vw-card-title {
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.vw-card-desc {
+  margin-top: 0.5rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.vw-card-planned {
+  align-self: flex-start;
+  margin-top: 0.85rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px dashed var(--vendra-line);
+  border-radius: 0.35rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* -- Pricing --------------------------------------------------------------- */
+
+.vw-plans {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  align-items: start;
+}
+
+.vw-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.75rem 1.5rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 1rem;
+}
+
+.vw-plan-featured {
+  border-color: var(--vendra-accent);
+  box-shadow: 0 12px 40px -18px rgb(124 58 237 / 45%);
+}
+
+.vw-plan-badge {
+  position: absolute;
+  top: -0.7rem;
+  left: 1.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.4rem;
+  background: var(--vendra-accent);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vw-plan-name {
+  font-size: 1.1rem;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+}
+
+.vw-plan-price {
+  margin-top: 0.75rem;
+  font-size: 2rem;
+  font-weight: 720;
+  letter-spacing: -0.04em;
+}
+
+.vw-plan-cadence {
+  margin-left: 0.3rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.vw-plan-summary {
+  margin-top: 0.6rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9rem;
+  line-height: 1.65;
+}
+
+.vw-plan-features {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin: 1.25rem 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.vw-plan-features li {
+  padding-left: 1.35rem;
+  position: relative;
+}
+
+.vw-plan-features li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--vendra-accent);
+  font-weight: 700;
+}
+
+.vw-plan-cta {
+  justify-content: center;
+  width: 100%;
+}
+
+/* -- Notice ---------------------------------------------------------------- */
+
+.vw-notice {
+  padding: 1rem 1.25rem;
+  border: 1px dashed var(--vendra-accent);
+  border-radius: 0.75rem;
+  background: rgb(124 58 237 / 6%);
+}
+
+.vw-notice-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vw-notice-body {
+  margin-top: 0.5rem;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+
+/* -- FAQ ------------------------------------------------------------------- */
+
+.vw-faq {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--vendra-line);
+}
+
+.vw-faq-item {
+  border-bottom: 1px solid var(--vendra-line);
+}
+
+.vw-faq-q {
+  padding-block: 1rem;
+  font-size: 1rem;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.vw-faq-a {
+  padding-bottom: 1.15rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.9375rem;
+  line-height: 1.75;
+}
+
+/* -- Navbar group menus ---------------------------------------------------- */
+
+.vw-navmenu {
+  position: relative;
+}
+
+.vw-navmenu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--vendra-fg-muted);
+  font-size: 0.875rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+.vw-navmenu-trigger::-webkit-details-marker {
+  display: none;
+}
+
+.vw-navmenu-trigger:hover,
+.vw-navmenu[open] .vw-navmenu-trigger {
+  color: var(--vendra-fg);
+}
+
+.vw-navmenu-caret {
+  font-size: 0.6rem;
+  transition: transform 120ms ease;
+}
+
+.vw-navmenu[open] .vw-navmenu-caret {
+  transform: rotate(180deg);
+}
+
+.vw-navmenu-panel {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  min-width: 12rem;
+  translate: -50% 0;
+  flex-direction: column;
+  padding: 0.4rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.7rem;
+  background: var(--vendra-surface-raised);
+  box-shadow: 0 18px 40px -20px rgb(9 9 11 / 40%);
+  backdrop-filter: blur(12px);
+}
+
+.vw-navmenu-item {
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.45rem;
+  color: var(--vendra-fg-muted);
+  font-size: 0.875rem;
+}
+
+.vw-navmenu-item:hover {
+  background: var(--vendra-muted);
+  color: var(--vendra-fg);
+}

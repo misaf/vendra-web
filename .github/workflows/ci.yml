@@ -22,7 +22,7 @@ jobs:
 
       - run: npm ci
 
-      # Typecheck, internal links, contract drift, blog frontmatter, script
+      # Typecheck, internal links, contract drift, blog/FAQ frontmatter, script
       # self-tests, the production build (which static-exports to out/ and
       # generates the Pagefind index via postbuild), then HTML nesting
       # validation of that exported output.
@@ -78,10 +78,21 @@ jobs:
       # NEXT_PUBLIC_SITE_URL is read at build time — it is inlined into the
       # output, and canonical tags plus sitemap.xml are generated here. Setting
       # it only at runtime would have no effect.
+      #
+      # SITE_URL is a repository variable so the domain lives in one place.
+      # BASE_PATH stays empty: this site is served from the root of its own
+      # domain, not from a /<repo> project path.
       - name: Build
         env:
-          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url || 'https://misaf.github.io/vendra-ecosystem-docs' }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
+          BASE_PATH: ''
         run: npm run build
+
+      # GitHub Pages needs CNAME inside the artifact to keep serving the custom
+      # domain; it is not preserved across deployments otherwise.
+      - name: Add CNAME
+        if: vars.SITE_DOMAIN != ''
+        run: echo "${{ vars.SITE_DOMAIN }}" > out/CNAME
 
       - uses: actions/upload-pages-artifact@v3
         with:

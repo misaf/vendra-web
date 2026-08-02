@@ -1,7 +1,12 @@
-# Vendra Ecosystem Docs
+# Vendra Web
 
-Documentation for the Vendra platform, controller, storefront, and operations —
-the three cooperating repositories documented as one system.
+The Vendra website: the product landing page, the documentation, examples, the
+UI and showcase galleries, Pro, and the blog — one site, one deploy.
+
+This repository supersedes **vendra-docs** and **vendra-blog**, which it was
+assembled from. Keeping the blog next to the reference is the point: the landing
+page lists recent posts by reading the same `lib/blog.ts` the blog index uses,
+so publishing a post updates the front page with no list to maintain anywhere.
 
 Built with [Nextra 4](https://nextra.site) on Next.js 16, with
 [Pagefind](https://pagefind.app) for offline search.
@@ -30,8 +35,9 @@ app/                 One directory per route; content lives in page.mdx
   robots.ts          Generated robots.txt
   sitemap.ts         Generated sitemap.xml; lastmod from each page's git history
   opengraph-image.tsx  Social share card, rendered at build time
-components/vendra.tsx  The design system
-mdx-components.tsx     Registers that design system globally for MDX
+components/vendra.tsx  The design system (in-page MDX vocabulary)
+components/marketing.tsx  Landing, Pro, and gallery blocks (.vw-* layer)
+mdx-components.tsx     Registers the design system globally for MDX
 lib/site.ts            Canonical origin, site name, description
 lib/base-path.mjs      Path prefix, shared with next.config.mjs (plain JS)
 lib/navigation.ts      Navbar and footer labels, derived from app/_meta.tsx
@@ -168,6 +174,10 @@ That is the whole workflow. Section indexes, tag pages, the RSS feed at
 page map — there is no list to maintain, and tag pages are generated from the
 tags actually in use.
 
+The landing page shows the three most recent posts, read through that same
+`lib/blog.ts`. Publishing a post therefore updates `/` for free — which is the
+main reason the blog lives in this repository rather than on a site of its own.
+
 `lib/collection.ts` is the engine; `lib/blog.ts` and `lib/faq.ts` bind it to a
 section root, and `components/collection.tsx` renders both. Tags are scoped per
 section, so `/blog/tags/controller` and `/faq/tags/controller` are different
@@ -196,21 +206,73 @@ with the docs theme, but Next.js allows only one global `mdx-components.tsx`, an
 both themes map the same MDX primitives — so one would have to win for the whole
 site. The blog and the FAQ are sections of this site, sharing its design system.
 
+## The marketing surface
+
+Five pages run outside the documentation chrome — `layout: 'full'`, no sidebar,
+no table of contents, set per section in `app/_meta.tsx`:
+
+| Route | What it is | State |
+| --- | --- | --- |
+| `/` | Landing page: hero, stack diagram, quickstart, features, showcase, latest posts | Real content |
+| `/pro` | Commercial tiers, social proof, FAQ | **Placeholder pricing** |
+| `/examples` | Worked examples grouped by problem | Part scaffold |
+| `/ui` | Themes, panel presets, blocks | Mostly scaffold |
+| `/showcase` | Projects built on Vendra | First-party only |
+
+They are composed from `components/marketing.tsx`, which is deliberately *not*
+registered as global MDX components — a reference page should not be able to
+drop a pricing table into itself. Styling lives in the `.vw-*` layer at the
+bottom of `app/globals.css`, alongside but separate from `.vendra-*`.
+
+### Placeholders
+
+Three of these ship with content that must be replaced before launch. Each
+carries a `TODO` block at the top of its file and a visible `<Notice>` on the
+page itself, so a draft cannot be mistaken for a finished one:
+
+- **`/pro`** — every price, seat count, and support window is invented, and the
+  CTAs point at `/faq`. Nothing on that page is a commercial offer.
+- **`/examples`, `/ui`** — entries without an `href` render as dashed,
+  non-clickable "Planned" cards. Give an entry an `href` and `check:links`
+  starts policing it like any other link.
+- **Logo walls** on `/` and `/pro` use placeholder company names as text rather
+  than logos. `/showcase` deliberately lists only first-party projects: a
+  fabricated showcase is a false endorsement, not a placeholder.
+
+### Navigation
+
+The navbar groups documentation under **Learn** and **Reference** menus, in
+React Flow's shape. That grouping is presentational and lives in
+`lib/navigation.ts`: no page moved into a `/learn` or `/reference` directory, so
+every documentation URL is the one it has always been. `app/_meta.tsx` remains
+the single source of truth for labels and sidebar order, and
+`lib/navigation.ts` reads from it.
+
 ## Deployment
 
 The site is statically exported (`output: 'export'`) to `out/` and published to
 GitHub Pages by the `deploy` job in `.github/workflows/ci.yml`, which runs on
 pushes to `master` after `check` passes.
 
-<https://misaf.github.io/vendra-ecosystem-docs>
+Enable it once under **Settings → Pages → Source → GitHub Actions**, then set
+two repository variables (**Settings → Secrets and variables → Actions →
+Variables**):
 
-Enable it once under **Settings → Pages → Source → GitHub Actions**.
+| Variable | Example | Used for |
+| --- | --- | --- |
+| `SITE_URL` | `https://vendra.dev` | Canonical tags, `sitemap.xml`, the RSS feed |
+| `SITE_DOMAIN` | `vendra.dev` | Written to `out/CNAME` so Pages keeps the custom domain |
+
+Without `SITE_DOMAIN` the CNAME step is skipped and the site publishes to the
+default Pages URL.
 
 ### Base path
 
-A GitHub Pages *project* site is served from `/<repo>`, not the domain root, so
-the build sets `basePath` (see `lib/base-path.mjs`). This has one consequence
-worth remembering when writing components:
+This site is served from the root of its own domain, so `basePath` is empty
+(see `lib/base-path.mjs`) and the CI build pins `BASE_PATH=''`. Set it to
+`/<repo>` only to publish to a GitHub Pages *project* site, which is served from
+a subdirectory. That mode has one consequence worth remembering when writing
+components:
 
 > `next/link` and Next's own asset URLs get the prefix automatically.
 > A plain `<a href="/foo">` does **not**, and will 404 in production while
@@ -221,8 +283,7 @@ the footer in `app/layout.tsx`. The favicon is declared explicitly in
 `metadata.icons` for the same reason: a generated `app/icon` route emits a
 `<link rel="icon">` without the prefix.
 
-Moving to a custom domain means setting `BASE_PATH=` (empty) and updating
-`NEXT_PUBLIC_SITE_URL`.
+Both modes are supported by the same code; only the two variables above change.
 
 ### Site URL
 

@@ -90,23 +90,80 @@ for (const [dir, file] of sources) {
 
 const metaFiles = await collect('**/_meta.tsx', appDir)
 
-// These files are hand-written object literals of `slug: 'Label'` pairs, so a
-// key scan is enough — no need to evaluate TypeScript here.
-const metaKeyPattern = /^\s*'?([\w-]+)'?:\s*['"]/gm
+/**
+ * Section slugs declared in an `_meta.tsx` default export.
+ *
+ * A flat key scan used to be enough, back when these files were nothing but
+ * `slug: 'Label'` pairs. They are not any more: a section can now carry a
+ * config object (`type: 'page'`, a `theme` override), and a naive scan both
+ * reported `type` and `layout` as routes and missed every object-valued
+ * section — checking less while failing more.
+ *
+ * So walk the default export and take only the keys at depth 1, whatever their
+ * value. String literals are skipped so a label containing a brace or a colon
+ * cannot throw off the depth count.
+ */
+function metaSlugs(text) {
+  const start = text.indexOf('export default')
+  if (start === -1) return []
+
+  const open = text.indexOf('{', start)
+  if (open === -1) return []
+
+  const slugs = []
+  let depth = 0
+
+  for (let i = open; i < text.length; i++) {
+    const char = text[i]
+
+    if (char === '"' || char === "'" || char === '`') {
+      // Skip the whole literal, honouring backslash escapes.
+      const quote = char
+      i++
+      while (i < text.length && text[i] !== quote) {
+        if (text[i] === '\\') i++
+        i++
+      }
+      continue
+    }
+
+    if (char === '{') {
+      depth++
+      continue
+    }
+
+    if (char === '}') {
+      depth--
+      if (depth === 0) break
+      continue
+    }
+
+    if (depth === 1) {
+      const rest = text.slice(i)
+      const match = /^['"]?([\w-]+)['"]?\s*:/.exec(rest)
+      if (match) {
+        slugs.push(match[1])
+        i += match[0].length - 1
+      }
+    }
+  }
+
+  return slugs
+}
 
 let metaKeys = 0
 
 for (const file of metaFiles) {
   const text = readFileSync(resolve(appDir, file), 'utf8')
   const base = file.replace(/(^|\/)_meta\.tsx$/, '')
-  const keys = [...text.matchAll(metaKeyPattern)].map(m => m[1])
+  const keys = metaSlugs(text)
 
   // A meta file that parses to nothing means the pattern above has drifted from
   // the file format. Without this, the scan would report success while checking
   // nothing at all — worse than not having the check.
   if (keys.length === 0) {
     problems.push(
-      `app/${file}\n    -> no entries parsed; the _meta key pattern in ` +
+      `app/${file}\n    -> no entries parsed; metaSlugs() in ` +
         `scripts/check-links.mjs no longer matches this file`
     )
     continue

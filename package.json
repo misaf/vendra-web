@@ -1,7 +1,7 @@
 {
-  "name": "vendra-ecosystem-docs",
+  "name": "vendra-web",
   "version": "1.0.0",
-  "description": "Documentation for the Vendra platform, controller, storefront, and operations.",
+  "description": "The Vendra website: product, documentation, examples, and the blog.",
   "license": "ISC",
   "private": true,
   "type": "module",

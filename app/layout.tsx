@@ -6,7 +6,7 @@ import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Anchor } from 'nextra/components'
 import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
-import { navSections, sectionLabel } from '../lib/navigation'
+import { navGroups, navMore, navSections, sectionLabel } from '../lib/navigation'
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 
@@ -114,10 +114,41 @@ function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
       >
         V
       </span>
-      <span className="text-sm font-semibold tracking-tight">
-        Vendra Ecosystem
-      </span>
+      <span className="text-sm font-semibold tracking-tight">Vendra</span>
     </span>
+  )
+}
+
+/**
+ * A hover/focus dropdown for a navbar group.
+ *
+ * Built from a <details> element rather than state so it works without turning
+ * the layout into a client component, and so it still opens by keyboard on a
+ * static export.
+ */
+function NavMenu({
+  label,
+  items
+}: {
+  label: string
+  items: { href: string; label: string }[]
+}) {
+  return (
+    <details className="vw-navmenu">
+      <summary className="vw-navmenu-trigger">
+        {label}
+        <span aria-hidden="true" className="vw-navmenu-caret">
+          ▾
+        </span>
+      </summary>
+      <div className="vw-navmenu-panel">
+        {items.map(item => (
+          <Link key={item.href} href={item.href} className="vw-navmenu-item">
+            {item.label}
+          </Link>
+        ))}
+      </div>
+    </details>
   )
 }
 
@@ -152,7 +183,7 @@ const footer = (
       </div>
     </div>
     <div className="mt-12 border-t border-[var(--vendra-line)] pt-6 text-xs text-neutral-400 dark:text-neutral-500">
-      © {new Date().getFullYear()} Vendra Ecosystem. All rights reserved.
+      © {new Date().getFullYear()} Vendra. All rights reserved.
     </div>
   </Footer>
 )
@@ -165,13 +196,21 @@ export default async function RootLayout({
   const navbar = (
     <Navbar logo={<Wordmark size="lg" />}>
       {/* Nextra does not hide custom navbar children on small screens, so they
-          would overflow behind the hamburger. The sidebar covers mobile nav. */}
-      <span className="flex items-center gap-6 max-md:hidden">
+          would overflow behind the hamburger. The sidebar covers mobile nav.
+
+          Learn and Reference are menus over the documentation sections, which
+          keep their original top-level slugs — the grouping is presentational,
+          so no URL moved. See `lib/navigation.ts`. */}
+      <span className="flex items-center gap-5 max-lg:hidden">
+        {navGroups.map(group => (
+          <NavMenu key={group.label} label={group.label} items={group.items} />
+        ))}
         {navSections.map(section => (
           <Anchor key={section.href} href={section.href}>
             {section.label}
           </Anchor>
         ))}
+        <NavMenu label="More" items={navMore} />
       </span>
     </Navbar>
   )

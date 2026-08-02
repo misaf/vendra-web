@@ -7,18 +7,28 @@
  */
 import meta from '../app/_meta'
 
-/** Sections that are reachable from the sidebar but not the top navbar. */
-const hiddenFromNavbar = new Set(['index', 'overview'])
+/**
+ * An entry in `_meta.tsx` is either a bare label or a config object carrying
+ * one. Reading the label through this keeps both forms working, so a section
+ * can gain `type: 'page'` or a theme override without breaking the navbar.
+ */
+type MetaEntry = string | { title?: string; display?: string }
+
+function labelOf(entry: MetaEntry, slug: string): string {
+  if (typeof entry === 'string') return entry
+  return entry.title ?? slug
+}
 
 export type NavSection = {
   href: string
   label: string
 }
 
-/** Top-level sections shown in the navbar, in sidebar order. */
-export const navSections: NavSection[] = Object.entries(meta)
-  .filter(([slug]) => !hiddenFromNavbar.has(slug))
-  .map(([slug, label]) => ({ href: `/${slug}`, label }))
+export type NavGroup = {
+  label: string
+  /** Sections in the group, in the order they should appear in the menu. */
+  items: NavSection[]
+}
 
 /**
  * The sidebar label for a top-level section.
@@ -28,11 +38,58 @@ export const navSections: NavSection[] = Object.entries(meta)
  * `check:links` (the href would still resolve).
  */
 export function sectionLabel(slug: keyof typeof meta): string {
-  const label = meta[slug]
-  if (!label) {
+  const entry = meta[slug] as MetaEntry | undefined
+  if (!entry) {
     throw new Error(
       `No section "${slug}" in app/_meta.tsx. Known sections: ${Object.keys(meta).join(', ')}.`
     )
   }
-  return label
+  return labelOf(entry, String(slug))
 }
+
+const section = (slug: keyof typeof meta): NavSection => ({
+  href: `/${String(slug)}`,
+  label: sectionLabel(slug)
+})
+
+/**
+ * Navbar groups.
+ *
+ * The documentation sections keep their original top-level slugs — nothing was
+ * moved under `/learn` or `/reference`, so no URL changed and every existing
+ * link still resolves. The grouping is presentational, and it lives here rather
+ * than in `_meta.tsx` because Nextra's sidebar wants the flat list.
+ *
+ * Declared as slugs rather than literal hrefs so `sectionLabel` still throws on
+ * a section that no longer exists.
+ */
+export const navGroups: NavGroup[] = [
+  {
+    label: 'Learn',
+    items: [
+      section('getting-started'),
+      section('overview'),
+      section('operations')
+    ]
+  },
+  {
+    label: 'Reference',
+    items: [
+      section('platform'),
+      section('controller'),
+      section('storefront'),
+      section('api')
+    ]
+  }
+]
+
+/** Top-level sections shown flat in the navbar, after the groups. */
+export const navSections: NavSection[] = [
+  section('examples'),
+  section('ui'),
+  section('showcase'),
+  section('pro')
+]
+
+/** Secondary links, collected under a "More" menu. */
+export const navMore: NavSection[] = [section('blog'), section('faq')]
