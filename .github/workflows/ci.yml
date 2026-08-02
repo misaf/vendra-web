@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Typecheck, internal links, contract drift, the production build (which
+      # also generates the Pagefind search index via postbuild), then HTML
+      # nesting validation of the prerendered output.
+      #
+      # NEXT_PUBLIC_SITE_URL is intentionally unset here: this job validates
+      # that the site builds, it does not publish. The deployment environment
+      # supplies the real origin for canonical URLs and the sitemap.
+      - run: npm run check
+
+      # A build that produces no search index would ship a search box that
+      # silently returns nothing, so fail loudly instead.
+      - name: Verify search index was generated
+        run: |
+          test -f public/_pagefind/pagefind.js \
+            || { echo "::error::Pagefind index missing — search would be broken"; exit 1; }
+          echo "search index OK"
