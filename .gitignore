@@ -22,5 +22,6 @@ pnpm-debug.log*
 # system
 .DS_Store
 
-# generated search index
+# generated search index — now written into out/, which is ignored above.
+# Kept so a stale index from an earlier build layout stays out of commits.
 public/_pagefind

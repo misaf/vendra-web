@@ -7,17 +7,17 @@
  * cleanly, then fails at runtime as a React hydration error. This catches it at
  * build time instead.
  *
- * Run after `next build`.
+ * Run after `next build`, which static-exports every page into `out/`.
  */
 import { readFileSync } from 'node:fs'
 import { glob } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const buildDir = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  '../.next/server/app'
-)
+// VENDRA_BUILD_DIR exists so the self-tests can point this at fixtures.
+const buildDir =
+  process.env.VENDRA_BUILD_DIR ??
+  resolve(dirname(fileURLToPath(import.meta.url)), '../out')
 
 const VOID = new Set([
   'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
@@ -72,6 +72,7 @@ let pages = 0
 
 for await (const file of glob('**/*.html', { cwd: buildDir })) {
   if (file.startsWith('_')) continue // _not-found, _global-error
+  if (file.startsWith('404')) continue // static-export error page
   pages++
   const violations = new Set(findViolations(readFileSync(resolve(buildDir, file), 'utf8')))
   for (const violation of violations) problems.push(`${file}: ${violation}`)
