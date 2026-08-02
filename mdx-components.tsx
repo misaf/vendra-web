@@ -1,3 +1,4 @@
+import type { MDXComponents } from 'mdx/types'
 import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs'
 import {
   Boundary,
@@ -17,7 +18,9 @@ import {
 
 const themeComponents = getThemeComponents()
 
-export function useMDXComponents(components) {
+export function useMDXComponents(
+  components?: Readonly<MDXComponents>
+): MDXComponents {
   return {
     ...themeComponents,
     Boundary,

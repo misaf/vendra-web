@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "Documentation for the Vendra platform, controller, storefront, and operations.",
   "license": "ISC",
-  "author": "",
+  "private": true,
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "dev": "next",
     "build": "next build",
@@ -22,8 +21,7 @@
     "nextra": "^4.6.1",
     "nextra-theme-docs": "^4.6.1",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "zod": "^4.3.6"
+    "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
