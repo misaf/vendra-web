@@ -1,0 +1,84 @@
+---
+title: "“Can it start with defaults instead of crashing?”"
+date: "2026-07-07"
+author: "Misaf"
+description: "A support request after a botched migration: the storefront container exits at boot. The requested fix would have been much worse than the outage."
+tags: ["storefront", "operations"]
+---
+
+# “Can it start with defaults instead of crashing?”
+
+<Panel title="The request">
+  Filed after a property was moved to a new host and its environment file did
+  not come with it:
+
+  > The container exits immediately because `STOREFRONT_CONFIG_BASE64` is
+  > missing. There's an example config in the image already — can it fall back
+  > to that so the site stays up while we fix the env? Some page is better than
+  > no page.
+</Panel>
+
+We understand the instinct. The answer is no, and it is one of the few places
+where we would rather take the outage.
+
+## What "some page" would have been
+
+The storefront image is one image for the whole fleet. What makes a container
+*this shop* is the configuration handed to it at runtime: slug, domain, display
+name, currency, address, contact phone.
+
+Fall back to the example, and the result is not an unbranded page. Traefik is
+already routing the customer's real domain, so what visitors get is a live
+storefront, returning 200, confidently displaying a different business's name,
+phone number, and address.
+
+<Panel title="Two ways to fail">
+  <ChipRow
+    items={[
+      'Exit at boot: loud, contained, fixed by restoring one variable',
+      'Boot with the example: silent, public, and wrong about a real business'
+    ]}
+    dot
+  />
+</Panel>
+
+An outage is recoverable in minutes and everyone knows it happened. Publishing
+another tenant's identity on a customer domain is not something you retract —
+it is something screenshots outlive.
+
+## The same rule one layer earlier
+
+The provisioner does the identical thing before a container exists: `POST
+/v1/storefronts` requires the request identity to match the encoded
+configuration *exactly*. A request claiming one slug while carrying another's
+config is rejected rather than reconciled.
+
+Both checks exist because identity is the one field nothing downstream can
+recompute. Image digest, container name, network — all derivable. Identity has
+to be supplied, so it gets verified at every point where it is supplied.
+
+## What we did instead
+
+For this case: restore the variable, which took under a minute once the cause
+was obvious — and the crash is what made it obvious. A fallback would have
+turned a one-minute fix into a defect nobody was looking for.
+
+For the general case, the useful improvement is not a fallback, it is making the
+value harder to lose in the first place: treat the property environment as
+part of the backup set alongside the database, media, and ACME state, and
+regenerate it from the platform when in doubt.
+
+<NextSteps
+  items={[
+    {
+      href: '/storefront/configuration',
+      title: 'Property configuration',
+      description: 'The required shape and the full environment contract.'
+    },
+    {
+      href: '/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'Other failures that look like something they are not.'
+    }
+  ]}
+/>

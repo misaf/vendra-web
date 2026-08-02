@@ -1,0 +1,95 @@
+---
+title: "“It works with curl — so is that a bug?”"
+date: "2026-07-14"
+author: "Misaf"
+description: "An integrator discovered they could set X-Storefront-Domain by hand and get a tenant's data back. They were right to ask."
+tags: ["api", "tenancy", "security"]
+---
+
+# “It works with curl — so is that a bug?”
+
+<Panel title="The question">
+  From an integrator writing a stock-sync script against the canonical API:
+
+  > I set `Origin` and `X-Storefront-Domain` to the shop's domain in curl and I
+  > get that shop's catalog back. I'm not complaining — it made my script easy —
+  > but that seems like something you didn't intend?
+</Panel>
+
+We did intend the behaviour. We did not intend it to be relied on as a security
+boundary, and the person asking had put their finger on exactly the right thing.
+
+Here is the honest answer we gave them.
+
+## Yes, and it is not authentication
+
+Those headers are how the API decides *which tenant's data to look in*. They do
+not establish *that the caller is that tenant*. A browser will not let page
+JavaScript forge `Origin`; curl is not a browser, and neither is anything else
+speaking HTTP by hand.
+
+So the integrator's script works because header-based selection is tenant
+routing. Their catalog read is already public content served on a public
+storefront, so nothing leaked. The problem would start the moment anything
+tenant-sensitive sat behind the same check — and that is why nothing does.
+
+## What we told them to build against
+
+Use the headers, expect them to keep working for reads, and expect a credential
+requirement to arrive. `X-Storefront-Key` already exists in the storefront
+environment contract; Laravel does not validate it yet, and the controller does
+not issue one automatically. When both land, unauthenticated header-only access
+to anything beyond public reads goes away.
+
+Scripts written today should be prepared to attach a per-integration credential
+later. Scripts that assume forged headers will remain sufficient forever will
+break, and should.
+
+## The technology decision behind it
+
+The constraint is architectural, not an oversight: every storefront in the fleet
+calls one canonical API host, so unlike the tenant-hosted Admin panel, the API
+cannot learn the tenant from the request host. Something in the request has to
+say it.
+
+The direction we have settled on:
+
+<Steps
+  items={[
+    {
+      title: 'Per-storefront secret, issued with the deployment',
+      body: 'The deployment record already exists and already has a lifecycle. The credential rides along with it rather than becoming a second thing to manage.'
+    },
+    {
+      title: 'Verifier stored, not the secret',
+      body: 'Server-side we keep something that can check the credential, not something that can produce it.'
+    },
+    {
+      title: 'Credential checked before the domain hint is trusted',
+      body: 'Order matters. Validating after accepting the hint changes nothing.'
+    },
+    {
+      title: 'Storefront identity kept separate from end-user identity',
+      body: 'A bearer token for a logged-in customer answers a different question than “which shop is calling”. Collapsing them is how you get authorization bugs that look like routing bugs.'
+    }
+  ]}
+/>
+
+Until that ships, the rule we hold ourselves to is the one in the docs: header
+selection is routing, not proof, and tenant-sensitive mutations do not go behind
+it.
+
+<NextSteps
+  items={[
+    {
+      href: '/api/storefront',
+      title: 'Storefront API and tenancy',
+      description: 'The current request context and the limitation in full.'
+    },
+    {
+      href: '/platform/tenancy',
+      title: 'Panels and tenancy',
+      description: 'Why the panels do not have this problem.'
+    }
+  ]}
+/>

@@ -1,0 +1,74 @@
+---
+title: "“Can my theme just fetch the API directly?”"
+date: "2026-07-21"
+author: "Misaf"
+description: "A theme developer wanted to drop the proxy hop and call api.<base> from the browser. The answer is no, and the reason is not performance."
+tags: ["storefront", "security"]
+---
+
+# “Can my theme just fetch the API directly?”
+
+<Panel title="The question">
+  A developer building a storefront theme, mid-review:
+
+  > The filter panel goes through `/api/proxy`, which hits the container, which
+  > hits `api.<base>`. That's a pointless hop — the API is public anyway. Can I
+  > just `fetch('https://api.<base>/api/products')` from the component and skip
+  > it?
+</Panel>
+
+It is a fair question, and the "pointless hop" part is even half right. The hop
+buys nothing on the first paint, because server rendering already calls the API
+directly. It only exists for client-initiated reads.
+
+The answer is still no, and the reason is not latency.
+
+## What breaks the moment you skip it
+
+**The credential stops being a credential.** `X-Storefront-Key` is a server-only
+value. To send it from the browser you must ship it to the browser, and a secret
+in client JavaScript is a published secret. There is no version of this that
+works — not `NEXT_PUBLIC_`, not fetching it from an endpoint first, not
+obfuscation. Whatever the browser can send, the visitor can read.
+
+**Every new property becomes a CORS deployment.** Direct browser calls are
+cross-origin calls, so the canonical API has to allow each customer domain
+before that storefront's client reads work at all. That inventory exists today,
+but making it load-bearing for basic rendering means a mis-synced domain list is
+a broken shop rather than a tightened policy.
+
+**The API topology ships to every visitor.** The canonical host would appear in
+the bundle of every storefront in the fleet. That is not a catastrophe on its
+own; it is unnecessary, and unnecessary published surface has a way of becoming
+load-bearing later.
+
+## The part that actually is a cost
+
+The proxy hop is real. Interaction latency for filters, pagination, and cart
+reads includes one extra network segment between the container and the API,
+inside the same host network.
+
+Worth paying, given the alternative is "the credential does not exist." And the
+proxy adds no new failure mode: if the property container is down, its pages
+were already failing.
+
+## What would change this answer
+
+If we ever expose a genuinely public, read-only, tenant-scoped endpoint that
+needs no credential at all, direct browser access to *that* endpoint becomes
+reasonable. That is not what the current API is. Ask again when it is.
+
+<NextSteps
+  items={[
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description: 'Where the proxy sits in the request path.'
+    },
+    {
+      href: '/storefront/configuration',
+      title: 'Property configuration',
+      description: 'The environment contract, including the credential.'
+    }
+  ]}
+/>

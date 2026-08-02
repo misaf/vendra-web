@@ -1,0 +1,86 @@
+---
+title: "“Which version of Vendra are we on?”"
+date: "2026-06-30"
+author: "Misaf"
+description: "The question comes up in every handover. There is no single version — and the thing you actually want to know has a different name."
+tags: ["operations", "releases"]
+---
+
+# “Which version of Vendra are we on?”
+
+<Panel title="The question">
+  Asked, in some form, in every operations handover we have done:
+
+  > What version is this host running? I want to write it in the runbook.
+</Panel>
+
+There isn't one. Not "we haven't tagged it yet" — there is no such number,
+because the ecosystem is separate repositories releasing on their own schedules,
+and no tag spans them.
+
+What belongs in the runbook is the **compatibility set**: the four artifacts
+that were tested together, recorded by digest.
+
+<Panel title="A compatibility set">
+  <ChipRow
+    items={[
+      'Controller binary',
+      'Platform image',
+      'Provisioner image',
+      'Storefront image'
+    ]}
+    dot
+  />
+</Panel>
+
+## Why we did not just invent a version number
+
+We considered it. A synthetic "Vendra 3.2" spanning all four repositories would
+answer the question people are asking, and it is what most people expect.
+
+It also lies. A single number implies the four move together, which would mean
+either releasing all four whenever any one changes, or letting the number drift
+out of correspondence with what is deployed. The first is release theatre. The
+second is worse than no number, because a wrong version in a runbook is trusted
+until the outage.
+
+So the honest artifact is the digest set, and the operational discipline is
+recording it before every production rollout. "Latest of each" is not a
+compatibility set — it is four independent bets resolved at pull time, and you
+find out which one failed in production.
+
+## The follow-up question
+
+The second thing people ask is what order to deploy in. That one has a real
+answer, and it is the single rule that prevents most bad rollouts:
+
+<Flow
+  label="Safe order"
+  nodes={['Consumer accepts both', 'Producer sends new', 'Remove old handling']}
+/>
+
+Ship the code that accepts both the old and new field shape. Let it run. Then
+let producers start sending only the new shape. Delete the old handling last.
+
+Each step is independently reversible — which is the whole point, because across
+four separately-released artifacts, "roll everything back at once" is not an
+operation you have.
+
+The same logic governs the storefront fleet: roll digests property-by-property.
+Rolling every property at once turns one bad digest into a fleet outage; rolling
+one at a time turns it into one property you revert.
+
+<NextSteps
+  items={[
+    {
+      href: '/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'The full procedure, backups included.'
+    },
+    {
+      href: '/overview/repositories',
+      title: 'Repository boundaries',
+      description: 'Why the repositories release independently.'
+    }
+  ]}
+/>
