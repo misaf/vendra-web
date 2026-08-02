@@ -1,34 +1,126 @@
-import { Cards, Callout } from 'nextra/components'
+import { Callout } from 'nextra/components'
 
-# Vendra Ecosystem
+export const metadata = {
+  title: 'Vendra Ecosystem',
+  description:
+    'Documentation for the Vendra commerce ecosystem: a modular Laravel platform, a Go infrastructure controller, and a runtime-configured Next.js storefront.'
+}
 
-<div className="not-prose mt-6 rounded-3xl border border-neutral-200 bg-[linear-gradient(135deg,rgba(9,9,11,0.04),rgba(0,0,0,0))] p-8 shadow-sm dark:border-neutral-800 dark:bg-[linear-gradient(135deg,rgba(255,255,255,0.04),rgba(0,0,0,0))] md:p-12">
-  <div className="mb-4 text-sm font-semibold uppercase tracking-[0.24em] text-neutral-500">
-    Platform · Control plane · Storefront
-  </div>
-  <h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50 md:text-6xl">
-    Build, deploy, and operate the complete Vendra commerce ecosystem.
-  </h1>
-  <div className="mt-6 max-w-2xl text-base leading-7 text-neutral-600 dark:text-neutral-300 md:text-lg">
-    Vendra combines a modular Laravel platform, a Go infrastructure controller,
-    and a runtime-configured Next.js storefront. This documentation explains
-    how those repositories cooperate and where each responsibility belongs.
-  </div>
-  <div className="mt-8 flex flex-wrap gap-3">
-    <a
-      href="/getting-started"
-      className="inline-flex items-center rounded-full bg-neutral-950 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-200"
-    >
-      Get started
-    </a>
-    <a
-      href="/overview/architecture"
-      className="inline-flex items-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:border-neutral-400 hover:text-neutral-950 dark:border-neutral-700 dark:text-neutral-200 dark:hover:border-neutral-500 dark:hover:text-white"
-    >
-      View architecture
-    </a>
-  </div>
-</div>
+{/* The hero supplies this page's <h1>; a markdown heading would duplicate it. */}
+
+<Hero
+  eyebrow="Platform · Control plane · Storefront"
+  title={
+    <>
+      {'Build, deploy, and operate the '}
+      <span className="vendra-gradient-text">complete Vendra</span>
+      {' commerce ecosystem.'}
+    </>
+  }
+  actions={[
+    { href: '/getting-started', label: 'Get started', primary: true },
+    { href: '/overview/architecture', label: 'View architecture' }
+  ]}
+  chips={[
+    'Laravel 13',
+    'Go controller',
+    'Next.js 16',
+    'Docker Compose',
+    'Traefik edge'
+  ]}
+>
+  Vendra combines a modular Laravel platform, a Go infrastructure controller,
+  and a runtime-configured Next.js storefront. This documentation explains how
+  those repositories cooperate and where each responsibility belongs.
+</Hero>
+
+<StatRow
+  items={[
+    { value: '3', label: 'Cooperating repositories' },
+    { value: '1', label: 'Public edge (Traefik)' },
+    { value: 'Async', label: 'Property provisioning' },
+    { value: 'Per-property', label: 'Compose projects' }
+  ]}
+/>
+
+## Start here
+
+<FeatureGrid
+  cols={3}
+  items={[
+    {
+      href: '/getting-started',
+      title: 'Getting Started',
+      description:
+        'Choose local source development or a production host installation.',
+      meta: 'vendra init · stack up'
+    },
+    {
+      href: '/overview',
+      title: 'Ecosystem map',
+      description:
+        'What each repository owns, and which system is the source of truth.',
+      meta: '4 repositories'
+    },
+    {
+      href: '/overview/architecture',
+      title: 'Architecture',
+      description:
+        'Request path, asynchronous provisioning, and state ownership.',
+      meta: 'Traefik · queue · Docker'
+    }
+  ]}
+/>
+
+## The three products
+
+<FeatureGrid
+  cols={3}
+  items={[
+    {
+      href: '/platform',
+      title: 'Platform',
+      description:
+        'Laravel 13, Filament panels, tenancy, billing, and first-party packages.',
+      meta: 'vendra'
+    },
+    {
+      href: '/controller',
+      title: 'Controller',
+      description:
+        'Go CLI, provisioner API, Compose projects, TLS, and recovery.',
+      meta: 'vendra-controller'
+    },
+    {
+      href: '/storefront',
+      title: 'Storefront',
+      description:
+        'Next.js architecture, runtime property configuration, themes, features.',
+      meta: 'vendra-storefront-florist'
+    }
+  ]}
+/>
+
+## System at a glance
+
+<Panel title="Runtime paths" className="space-y-5">
+  <Flow
+    label="Visitor traffic"
+    nodes={['Visitors', 'Traefik', 'Next.js storefront', 'Laravel API']}
+  />
+  <Flow
+    label="Operator control"
+    nodes={['Operators', 'vendra CLI', 'Docker Compose projects']}
+  />
+  <Flow
+    label="Provisioning"
+    nodes={['Laravel queue', 'Provisioner API', 'Property containers']}
+  />
+</Panel>
+
+Laravel owns business state. The controller owns host runtime state. The
+storefront owns presentation and browser-local demo state. Keeping those
+boundaries explicit is the central architectural rule.
 
 <Callout type="info">
   These pages are derived from the current `vendra`, `vendra-controller`, and
@@ -36,44 +128,35 @@ import { Cards, Callout } from 'nextra/components'
   for package-level implementation details.
 </Callout>
 
-## Explore the ecosystem
+## Operate and integrate
 
-<Cards num={3}>
-  <Cards.Card title="Platform" href="/platform" arrow>
-    Laravel 13, Filament panels, tenancy, billing, and first-party packages.
-  </Cards.Card>
-  <Cards.Card title="Controller" href="/controller" arrow>
-    Go CLI, provisioner API, Docker Compose projects, TLS, and recovery.
-  </Cards.Card>
-  <Cards.Card title="Storefront" href="/storefront" arrow>
-    Next.js architecture, runtime property configuration, themes, and features.
-  </Cards.Card>
-  <Cards.Card title="Getting Started" href="/getting-started" arrow>
-    Choose local source development or a production host installation.
-  </Cards.Card>
-  <Cards.Card title="APIs" href="/api" arrow>
-    Public JSON:API behavior and the internal storefront provisioner contract.
-  </Cards.Card>
-  <Cards.Card title="Operations" href="/operations" arrow>
-    Health checks, upgrades, backups, recovery, and troubleshooting.
-  </Cards.Card>
-</Cards>
-
-## System at a glance
-
-```text
-Visitors ──HTTPS──> Traefik ──> Next.js storefront ──> canonical Laravel API
-Operators ────────> vendra CLI ──> Docker Compose projects
-Laravel queue ────> provisioner API ──> per-property storefront containers
-```
-
-Laravel owns business state. The controller owns host runtime state. The
-storefront owns presentation and browser-local demo state. Keeping those
-boundaries explicit is the central architectural rule.
+<FeatureGrid
+  items={[
+    {
+      href: '/api',
+      title: 'APIs',
+      description:
+        'Public JSON:API behavior and the internal storefront provisioner contract.'
+    },
+    {
+      href: '/operations',
+      title: 'Operations',
+      description:
+        'Health checks, upgrades, backups, recovery, and troubleshooting.'
+    }
+  ]}
+/>
 
 ## Current stack
 
-- Platform: PHP 8.3+, Laravel 13, Filament 5, Livewire 4
-- Controller: Go, Docker Engine, Docker Compose v2, Traefik
-- Storefront: Next.js 16, React 19, TypeScript, Tailwind CSS 4
-- Documentation: Next.js 16, Nextra 4
+<ChipRow
+  items={[
+    'PHP 8.3+ · Laravel 13',
+    'Filament 5 · Livewire 4',
+    'Go · Docker Engine',
+    'Docker Compose v2 · Traefik',
+    'Next.js 16 · React 19',
+    'TypeScript · Tailwind CSS 4',
+    'Nextra 4 · this site'
+  ]}
+/>
