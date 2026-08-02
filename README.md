@@ -35,6 +35,10 @@ mdx-components.tsx     Registers that design system globally for MDX
 lib/site.ts            Canonical origin, site name, description
 lib/base-path.mjs      Path prefix, shared with next.config.mjs (plain JS)
 lib/navigation.ts      Navbar and footer labels, derived from app/_meta.tsx
+lib/collection.ts      The dated-entry engine behind /blog and /faq
+lib/blog.ts lib/faq.ts Those two sections, bound to their roots
+lib/authors.ts         Post authors and their avatars
+components/collection.tsx  Entry headers, listings, and tag clouds
 scripts/               The validators described below, plus their tests
 ```
 
@@ -81,6 +85,7 @@ Runs, in order:
 | `typecheck` | Type errors (`strict` is on) |
 | `check:links` | Internal links and `_meta.tsx` keys pointing at routes that do not exist |
 | `check:drift` | Docs disagreeing with the contracts they describe |
+| `check:blog` | Blog/FAQ frontmatter that would make an entry silently invisible |
 | `test` | The validators themselves silently breaking |
 | `build` | Build failures; also static-exports to `out/` and generates the Pagefind index |
 | `check:html` | Invalid HTML nesting in the exported output |
@@ -128,6 +133,68 @@ VENDRA_ECOSYSTEM_DIR=~/src/vendra npm run check:drift
 The optional-field list in `storefront/configuration` is read out of a prose
 sentence; that page carries a comment saying so. Reword it freely, but keep the
 words "Optional fields include" and the backticks.
+
+## Blog and FAQ
+
+Two dated sections, one implementation.
+
+| Section | Contains | Lives at |
+| --- | --- | --- |
+| `/faq` | Questions actually asked by clients, operators, and developers, answered in full | `app/faq/<slug>/page.mdx` |
+| `/blog` | Technology notes, the decisions behind the ecosystem, announcements | `app/blog/<slug>/page.mdx` |
+
+The split is editorial, not technical: an FAQ entry answers something someone
+asked, a blog post explains something we chose. Neither restates the docs — the
+docs are the reference, and both sections link into them.
+
+An entry is a page with a `date`:
+
+```mdx
+---
+title: "Two origins, one certificate"
+date: "2026-07-28"
+author: "Misaf"
+description: "One sentence, used in the index, the feed, and search."
+tags: ["operations", "tls"]
+---
+
+# Two origins, one certificate
+
+Body, using the same components as the docs.
+```
+
+That is the whole workflow. Section indexes, tag pages, the RSS feed at
+`/feed.xml`, and the sitemap are all derived from frontmatter through Nextra's
+page map — there is no list to maintain, and tag pages are generated from the
+tags actually in use.
+
+`lib/collection.ts` is the engine; `lib/blog.ts` and `lib/faq.ts` bind it to a
+section root, and `components/collection.tsx` renders both. Tags are scoped per
+section, so `/blog/tags/controller` and `/faq/tags/controller` are different
+pages — mixing questions with technology notes on one tag page would undo the
+split. The RSS feed carries blog posts only.
+
+The date/author/tags header above each entry is rendered from that same
+frontmatter by the `wrapper` override in `mdx-components.tsx`, so an entry never
+restates it in the body — it recovers which section it is in from the `filePath`
+Nextra puts in page metadata. A `date` is what marks a page as an entry; no docs
+page has one.
+
+Author avatars come from `lib/authors.ts`, keyed by the `author` string, with
+images committed under `public/authors/`. An unknown author still renders, just
+without an avatar or link.
+
+Entries are indexed by Pagefind. The indexes and tag listings are not — they
+contain the same titles, and indexing both returns every result twice.
+
+> `check:blog` covers both sections. It exists because that frontmatter-driven
+> design fails quietly: an entry missing its `date` still builds and is still
+> reachable by URL, it just never appears in the index, the tags, or the feed.
+
+Deliberately not a second Nextra theme. `nextra-theme-blog` is version-compatible
+with the docs theme, but Next.js allows only one global `mdx-components.tsx`, and
+both themes map the same MDX primitives — so one would have to win for the whole
+site. The blog and the FAQ are sections of this site, sharing its design system.
 
 ## Deployment
 
