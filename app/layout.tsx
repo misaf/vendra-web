@@ -40,7 +40,10 @@ export const metadata: Metadata = {
   // './' resolves against the current route, giving every page its own
   // canonical and og:url rather than the site root.
   alternates: {
-    canonical: './'
+    canonical: './',
+    types: {
+      'application/rss+xml': `${siteUrl}/feed.xml`
+    }
   },
   // Deliberately no title/description here: Next.js derives og:title and
   // og:description from each page's resolved title/description, but only while
