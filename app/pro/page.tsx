@@ -27,8 +27,16 @@ export const metadata: Metadata = {
 /*   2. `cta.href` on the paid tiers — they point at /faq as a placeholder and */
 /*      need a real contact route, quote form, or mailto:                      */
 /*   3. the `<Notice>`, once 1 and 2 are done                                  */
-/*   4. the "after the trial" FAQ answer, which is a commercial commitment     */
-/*      and is currently marked TODO                                           */
+/*                                                                            */
+/* Two things this page now PROMISES that the platform does not yet do:        */
+/*                                                                            */
+/*   a. "goes offline after 7 days" needs grace_days = 0 on the trial plan.    */
+/*      Subscription::suspendAt() is ends_at + grace_days, so any non-zero     */
+/*      value leaves the site serving past day 7 and this copy becomes false.  */
+/*   b. "data kept 30 days, then gone" has no implementation. vendra-          */
+/*      subscription has no purge or retention job — data currently stays      */
+/*      indefinitely. Promising deletion and not deleting is the wrong way     */
+/*      round to be wrong about data.                                          */
 /*                                                                            */
 /* Keep this page in step with the `plans` table in vendra-subscription:       */
 /* max_units is the website count, trial_days the 7, grace_days the window     */
@@ -47,7 +55,7 @@ const plans: Plan[] = [
       '1 website',
       'Every platform feature — nothing is held back',
       'No card required to start',
-      'Expires after 7 days'
+      'Goes offline after 7 days — data kept 30'
     ],
     cta: { href: '/getting-started', label: 'Start building' }
   },
@@ -120,11 +128,10 @@ const faq = [
     question: 'What happens when the 7 days are up?',
     answer: (
       <p>
-        PLACEHOLDER — this is a commercial commitment and needs your decision
-        before publishing. The engine supports a grace window after expiry
-        (<code>grace_days</code>), so the honest options are: the website goes
-        offline but its data is kept for N days, or it is removed. Say which,
-        and say N. People will not start a trial without knowing.
+        The website goes offline. Your data is kept for 30 days, so if you pick
+        a plan within that window the site comes back as you left it. After 30
+        days it is gone. Nothing is deleted the moment the trial ends, and
+        nothing is charged automatically.
       </p>
     )
   },
@@ -225,7 +232,7 @@ export default function ProPage() {
       <Section
         eyebrow="Questions"
         title="Before you sign up"
-        lede="One of these still needs a real answer — it is marked."
+        lede="The things resellers ask before they start."
       >
         <FaqList items={faq} />
       </Section>
