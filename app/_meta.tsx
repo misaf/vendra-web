@@ -18,9 +18,18 @@
  * presentational: no page moved, so no existing URL broke.
  */
 
-/** Chrome switched off entirely — full-bleed marketing and gallery pages. */
+/**
+ * Chrome switched off entirely — full-bleed marketing and gallery pages.
+ *
+ * `display: 'hidden'` is load-bearing. In Nextra `type: 'page'` means two
+ * things at once: keep this out of the docs sidebar, and put it in the navbar.
+ * Only the first is wanted here — the navbar is built by `lib/navigation.ts`,
+ * which groups and orders these deliberately, and without hiding them every
+ * such section rendered twice in the header.
+ */
 const marketing = {
   type: 'page',
+  display: 'hidden',
   theme: {
     layout: 'full',
     sidebar: false,
@@ -37,6 +46,7 @@ const marketing = {
  */
 const standalone = {
   type: 'page',
+  display: 'hidden',
   theme: {
     sidebar: false,
     breadcrumb: false,
@@ -46,7 +56,7 @@ const standalone = {
 } as const
 
 export default {
-  index: { display: 'hidden', ...marketing },
+  index: { ...marketing },
 
   // Product surface
   pro: { title: 'Pro', ...marketing },
