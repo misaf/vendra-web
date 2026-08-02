@@ -1,8 +1,12 @@
+import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+import Link from 'next/link'
 import { Inter, JetBrains_Mono, Vazirmatn } from 'next/font/google'
 import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Anchor } from 'nextra/components'
-import { siteDescription, siteName, siteUrl } from '../lib/site'
+import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
+import { navSections, sectionLabel } from '../lib/navigation'
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 
@@ -24,7 +28,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: 'swap'
 })
 
-export const metadata = {
+export const metadata: Metadata = {
   // Makes every relative URL in per-page metadata resolve to an absolute one.
   metadataBase: new URL(siteUrl),
   title: {
@@ -50,17 +54,29 @@ export const metadata = {
   twitter: {
     card: 'summary_large_image'
   },
+  // Declared explicitly rather than via an `app/icon` route: Next emits that
+  // route's <link rel="icon"> without the base path, which 404s on a project
+  // site served from a subdirectory. `opengraph-image` is unaffected — it
+  // resolves through metadataBase, which already carries the base path.
+  icons: {
+    icon: [{ url: `${basePath}/icon.svg`, type: 'image/svg+xml' }]
+  },
   robots: {
     index: true,
     follow: true
   }
 }
 
+/**
+ * Footer columns. Section labels come from `app/_meta.tsx` via `sectionLabel`,
+ * so renaming a section in the sidebar renames it here too. Links below section
+ * level are spelled out because the sidebar has no equivalent grouping.
+ */
 const footerSections = [
   {
     title: 'Build',
     links: [
-      { href: '/getting-started', label: 'Getting started' },
+      { href: '/getting-started', label: sectionLabel('getting-started') },
       { href: '/overview/architecture', label: 'Architecture' },
       { href: '/overview/repositories', label: 'Repositories' }
     ]
@@ -68,31 +84,22 @@ const footerSections = [
   {
     title: 'Products',
     links: [
-      { href: '/platform', label: 'Platform' },
-      { href: '/controller', label: 'Controller' },
-      { href: '/storefront', label: 'Storefront' }
+      { href: '/platform', label: sectionLabel('platform') },
+      { href: '/controller', label: sectionLabel('controller') },
+      { href: '/storefront', label: sectionLabel('storefront') }
     ]
   },
   {
     title: 'Operate',
     links: [
-      { href: '/api', label: 'APIs' },
-      { href: '/operations', label: 'Operations' },
+      { href: '/api', label: sectionLabel('api') },
+      { href: '/operations', label: sectionLabel('operations') },
       { href: '/operations/troubleshooting', label: 'Troubleshooting' }
     ]
   }
 ]
 
-const navLinks = [
-  { href: '/getting-started', label: 'Getting Started' },
-  { href: '/platform', label: 'Platform' },
-  { href: '/controller', label: 'Controller' },
-  { href: '/storefront', label: 'Storefront' },
-  { href: '/api', label: 'APIs' },
-  { href: '/operations', label: 'Operations' }
-]
-
-function Wordmark({ size = 'sm' }) {
+function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
   const box =
     size === 'lg'
       ? 'size-7 rounded-lg text-xs'
@@ -128,12 +135,12 @@ const footer = (
             <ul className="space-y-2">
               {section.links.map(link => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     className="text-neutral-600 transition hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
                     href={link.href}
                   >
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -147,15 +154,19 @@ const footer = (
   </Footer>
 )
 
-export default async function RootLayout({ children }) {
+export default async function RootLayout({
+  children
+}: {
+  children: ReactNode
+}) {
   const navbar = (
     <Navbar logo={<Wordmark size="lg" />}>
       {/* Nextra does not hide custom navbar children on small screens, so they
           would overflow behind the hamburger. The sidebar covers mobile nav. */}
       <span className="flex items-center gap-6 max-md:hidden">
-        {navLinks.map(link => (
-          <Anchor key={link.href} href={link.href}>
-            {link.label}
+        {navSections.map(section => (
+          <Anchor key={section.href} href={section.href}>
+            {section.label}
           </Anchor>
         ))}
       </span>
