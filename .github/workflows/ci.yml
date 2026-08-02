@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master, '[0-9]+.x']
   pull_request:
 
 jobs:
@@ -10,6 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # `app/sitemap.ts` derives each page's lastmod from its last commit
+          # date, which needs real history rather than a depth-1 clone.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -18,19 +22,70 @@ jobs:
 
       - run: npm ci
 
-      # Typecheck, internal links, contract drift, the production build (which
-      # also generates the Pagefind search index via postbuild), then HTML
-      # nesting validation of the prerendered output.
+      # Typecheck, internal links, contract drift, script self-tests, the
+      # production build (which static-exports to out/ and generates the
+      # Pagefind index via postbuild), then HTML nesting validation of that
+      # exported output.
       #
       # NEXT_PUBLIC_SITE_URL is intentionally unset here: this job validates
-      # that the site builds, it does not publish. The deployment environment
-      # supplies the real origin for canonical URLs and the sitemap.
+      # that the site builds, it does not publish. The deploy job below supplies
+      # the real origin.
       - run: npm run check
 
       # A build that produces no search index would ship a search box that
       # silently returns nothing, so fail loudly instead.
       - name: Verify search index was generated
         run: |
-          test -f public/_pagefind/pagefind.js \
+          test -f out/_pagefind/pagefind.js \
             || { echo "::error::Pagefind index missing — search would be broken"; exit 1; }
           echo "search index OK"
+
+  deploy:
+    # Only the default branch publishes. PRs and release branches stop at check.
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    needs: check
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # Two pushes landing together would otherwise race to publish; let the
+    # newer one win rather than interleaving deployments.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - id: pages
+        uses: actions/configure-pages@v5
+
+      # NEXT_PUBLIC_SITE_URL is read at build time — it is inlined into the
+      # output, and canonical tags plus sitemap.xml are generated here. Setting
+      # it only at runtime would have no effect.
+      - name: Build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ steps.pages.outputs.base_url || 'https://misaf.github.io/vendra-ecosystem-docs' }}
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
