@@ -8,11 +8,13 @@ import {
   LogoWall,
   Quickstart,
   Section,
-  StackDiagram
+  StackDiagram,
+  TeamGrid
 } from '../components/marketing'
 import { PostList } from '../components/collection'
 import { blogRoot, getPosts } from '../lib/blog'
 import { siteDescription } from '../lib/site'
+import { team } from '../lib/team'
 
 export const metadata: Metadata = {
   title: 'Vendra — commerce systems that stay understandable',
@@ -245,6 +247,15 @@ export default async function Landing() {
           </div>
         </Section>
       ) : null}
+
+      <Section
+        eyebrow="Who builds it"
+        title="A small team, in the open"
+        lede="Vendra is built by the people who answer for it. The same names appear on the commits, in the blog posts, and on a support call."
+        align="center"
+      >
+        <TeamGrid members={team} />
+      </Section>
 
       <Section tone="muted">
         <div className="vw-section-head vw-align-center">

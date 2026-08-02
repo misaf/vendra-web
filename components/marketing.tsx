@@ -13,6 +13,7 @@
 
 import type { ReactNode } from 'react'
 import Link from 'next/link'
+import type { TeamMember } from '../lib/team'
 
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
@@ -409,16 +410,6 @@ export function FaqList({
 /* -------------------------------------------------------------------------- */
 /* Team                                                                       */
 /* -------------------------------------------------------------------------- */
-
-export type TeamMember = {
-  name: string
-  role: string
-  /** Public path to a square portrait. Served from `public/team/`. */
-  photo: string
-  /** One line on what they actually do. */
-  bio?: string
-  href?: string
-}
 
 /**
  * The people behind Vendra.

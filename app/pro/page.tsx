@@ -7,7 +7,8 @@ import {
   Section,
   TeamGrid
 } from '../../components/marketing'
-import type { Plan, TeamMember } from '../../components/marketing'
+import type { Plan } from '../../components/marketing'
+import { team } from '../../lib/team'
 
 export const metadata: Metadata = {
   title: 'Vendra Pro',
@@ -78,27 +79,6 @@ const plans: Plan[] = [
   }
 ]
 
-
-/*
- * TODO — the second member's name and role are placeholders. Replace `name`
- * and `role` below, and rename `public/team/team-member-2.jpg` to match, once
- * they are confirmed. The photo itself is final.
- */
-const team: TeamMember[] = [
-  {
-    name: 'Misaf',
-    role: 'Founder',
-    photo: '/team/misaf.jpg',
-    bio: 'Builds the platform, the controller, and most of what is written about them.',
-    href: 'https://github.com/misaf'
-  },
-  {
-    name: 'TODO: name',
-    role: 'TODO: role',
-    photo: '/team/team-member-2.jpg',
-    bio: 'TODO: one line on what they do.'
-  }
-]
 
 const faq = [
   {
