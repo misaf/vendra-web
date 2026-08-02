@@ -21,3 +21,6 @@ pnpm-debug.log*
 
 # system
 .DS_Store
+
+# generated search index
+public/_pagefind
