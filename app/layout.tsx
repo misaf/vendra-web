@@ -105,10 +105,17 @@ const footerSections = [
 
 function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
   return (
-    <span className={`vw-wordmark vw-wordmark-${size}`}>
-      <svg className="vw-wordmark-mark" viewBox="0 0 32 32" aria-hidden="true">
+    <span className="group inline-flex items-center gap-2">
+      <svg
+        className={`${size === 'lg' ? 'size-7 rounded-lg' : 'size-6 rounded-md'} bg-[var(--vendra-fg)] fill-[var(--vendra-bg)] p-1 shadow-[0_7px_18px_-10px_var(--vendra-fg)] transition-transform group-hover:-rotate-3 group-hover:scale-105`}
+        viewBox="0 0 32 32"
+        aria-hidden="true"
+      >
         <path d="M7 7.5 16 25 25 7.5h-5.2L16 16l-3.8-8.5H7Z" />
-        <path className="vw-wordmark-cut" d="m12.2 7.5 3.8 8.6 3.8-8.6" />
+        <path
+          className="fill-[var(--vendra-accent)] opacity-80"
+          d="m12.2 7.5 3.8 8.6 3.8-8.6"
+        />
       </svg>
       <span className="text-sm font-semibold tracking-tight">Vendra</span>
     </span>
@@ -136,7 +143,9 @@ const footer = (
         <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3">
           {footerSections.map(section => (
             <div key={section.title}>
-              <div className="vendra-eyebrow mb-3">{section.title}</div>
+              <div className="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+                {section.title}
+              </div>
               <ul className="space-y-2">
                 {section.links.map(link => (
                   <li key={link.href}>
@@ -174,7 +183,10 @@ export default async function RootLayout({
           keep their original top-level slugs — the grouping is presentational,
           so no URL moved. See `lib/navigation.ts`. */}
       <TopNavigation groups={navGroups} sections={navSections} />
-      <ThemeSwitch lite className="vw-header-theme-switch" />
+      <ThemeSwitch
+        lite
+        className="ml-1 border-l border-[var(--vendra-line)] pl-3 [&_button]:grid [&_button]:size-9 [&_button]:place-items-center [&_button]:rounded-full [&_button]:border [&_button]:border-[var(--vendra-line)] [&_button]:bg-[var(--vendra-surface)] [&_button]:p-0 [&_button]:text-[var(--vendra-fg-muted)] [&_button]:transition [&_button:hover]:rotate-6 [&_button:hover]:border-[color-mix(in_srgb,var(--vendra-accent),transparent_40%)] [&_button:hover]:bg-[var(--vendra-muted)] [&_button:hover]:text-[var(--vendra-fg)] [&_svg]:size-3.5"
+      />
     </Navbar>
   )
 
