@@ -171,6 +171,7 @@ export type FeatureItem = {
   title: ReactNode
   description: ReactNode
   meta?: ReactNode
+  icon?: ReactNode
 }
 
 /** Primary link grid for section landing pages. */
@@ -187,11 +188,18 @@ export function FeatureGrid({
     >
       {items.map(item => (
         <Link key={item.href} href={item.href} className="vendra-feature">
-          <div className="flex items-baseline justify-between gap-3">
-            <span className="vendra-feature-title">{item.title}</span>
-            <span className="vendra-feature-arrow" aria-hidden="true">
-              →
-            </span>
+          <div className="vendra-feature-head">
+            {item.icon ? (
+              <span className="vendra-feature-icon" aria-hidden="true">
+                {item.icon}
+              </span>
+            ) : null}
+            <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
+              <span className="vendra-feature-title">{item.title}</span>
+              <span className="vendra-feature-arrow" aria-hidden="true">
+                →
+              </span>
+            </div>
           </div>
           <p className="vendra-feature-desc">{item.description}</p>
           {item.meta ? (

@@ -497,6 +497,15 @@ pre {
   background: var(--vendra-surface);
 }
 
+.vendra-panel-accent {
+  border-color: color-mix(in srgb, var(--vendra-accent), transparent 55%);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--vendra-accent), transparent 92%),
+    var(--vendra-surface)
+  );
+}
+
 /* ==========================================================================
    Navigation grids
    ========================================================================== */
@@ -513,6 +522,27 @@ pre {
     border-color 0.15s ease,
     background-color 0.15s ease,
     transform 0.15s ease;
+}
+
+.vendra-feature-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.vendra-feature-icon {
+  display: grid;
+  width: 2.1rem;
+  height: 2.1rem;
+  flex: none;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--vendra-accent), transparent 70%);
+  border-radius: 0.6rem;
+  background: color-mix(in srgb, var(--vendra-accent), transparent 91%);
+  color: var(--vendra-accent);
+  font-family: var(--x-font-mono);
+  font-size: 0.65rem;
+  font-weight: 750;
 }
 
 .vendra-feature:hover {

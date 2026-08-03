@@ -6,40 +6,81 @@ description: 'Build, understand, and operate the Vendra ecosystem.'
 # Vendra documentation
 
 <Lede>
-  Everything you need to build, understand, and operate the Vendra ecosystem.
+  Everything you need to build, understand, and operate Vendra—organized as a
+  path, not a pile of reference pages.
 </Lede>
 
+<Panel title="New to Vendra?" className="vendra-panel-accent">
+  Start with **Getting Started**, then read **Architecture** before choosing the
+  product reference you need. Use the search control in the top navigation from
+  anywhere in the documentation.
+</Panel>
+
+## Choose a path
+
 <FeatureGrid
+  cols={3}
   items={[
     {
+      icon: '01',
       title: 'Get started',
-      body: 'Set up a local environment, prepare production, and launch your first storefront.',
-      href: '/docs/getting-started'
+      description: 'Set up locally, prepare production, and launch your first storefront.',
+      href: '/docs/getting-started',
+      meta: 'Recommended first'
     },
     {
+      icon: '02',
       title: 'Understand the system',
-      body: 'See how the platform, controller, storefront, and infrastructure fit together.',
-      href: '/docs/overview'
+      description: 'See how the platform, controller, storefront, and infrastructure fit together.',
+      href: '/docs/overview',
+      meta: 'Architecture · repositories'
     },
     {
+      icon: '03',
       title: 'Platform',
-      body: 'Explore tenancy, packages, and the Laravel development model.',
-      href: '/docs/platform'
+      description: 'Explore tenancy, packages, and the Laravel development model.',
+      href: '/docs/platform',
+      meta: 'Laravel · business state'
     },
     {
+      icon: '04',
       title: 'Controller',
-      body: 'Configure and operate the Go infrastructure controller.',
-      href: '/docs/controller'
+      description: 'Configure and operate the Go infrastructure controller.',
+      href: '/docs/controller',
+      meta: 'Go · runtime state'
     },
     {
+      icon: '05',
       title: 'Storefront',
-      body: 'Configure, customize, and deploy the Next.js storefront.',
-      href: '/docs/storefront'
+      description: 'Configure, customize, and deploy the Next.js storefront.',
+      href: '/docs/storefront',
+      meta: 'Next.js · presentation'
     },
     {
+      icon: '06',
       title: 'Operations',
-      body: 'Upgrade the ecosystem and troubleshoot running installations.',
-      href: '/docs/operations'
+      description: 'Upgrade the ecosystem and troubleshoot running installations.',
+      href: '/docs/operations',
+      meta: 'Upgrade · troubleshoot'
+    }
+  ]}
+/>
+
+## Recommended route
+
+<Steps
+  items={[
+    {
+      title: 'Install and run',
+      body: 'Choose local development or production and bring up your first property.'
+    },
+    {
+      title: 'Learn the boundaries',
+      body: 'Understand which system owns business state, runtime state, and presentation.'
+    },
+    {
+      title: 'Go deeper where needed',
+      body: 'Open the Platform, Controller, Storefront, or API reference for your task.'
     }
   ]}
 />
