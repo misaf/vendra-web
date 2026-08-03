@@ -78,7 +78,7 @@ function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
             >
               <span className="inline-flex items-center gap-2">
                 <i
-                  className="grid size-6 place-items-center rounded-md border border-[var(--vendra-line)] bg-[var(--vendra-surface)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent)] not-italic"
+                  className="grid size-6 place-items-center rounded-md border border-[var(--vendra-line)] bg-[var(--vendra-surface)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent-text)] not-italic"
                   aria-hidden="true"
                 >
                   {item.label.slice(0, 1)}
@@ -146,7 +146,14 @@ export function TopNavigation({
         href={section.href}
         className={
           primary
-            ? 'ml-1 inline-flex min-h-9 items-center rounded-full border border-[color-mix(in_srgb,var(--vendra-accent),transparent_45%)] bg-[var(--vendra-accent)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--vendra-glow-sm)] transition hover:-translate-y-px hover:brightness-110'
+            ? // Same fill pair as the primary `Actions` button in
+              // `components/marketing.tsx`, for the same reason: white on the
+              // plain accent is 3.3:1 at the light theme, and this label is
+              // 13px bold. The strong step and its paired foreground carry the
+              // contrast on both themes. The 1px hover lift is gone rather
+              // than enlarged — on a control this small it read as jitter, and
+              // the glow step alone is the clearer response.
+              'ml-1 inline-flex min-h-9 items-center rounded-full border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-4 text-[0.8125rem] font-bold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)]'
             : `relative inline-flex min-h-9 items-center rounded-lg px-3 text-sm font-medium transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)] after:absolute after:inset-x-3 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-[var(--vendra-accent)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`
         }
         aria-current={current ? 'page' : undefined}
