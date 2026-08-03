@@ -25,7 +25,7 @@ export default function AboutPage() {
         size="lg"
         title="Built in the open"
         lede="Architecture decisions, implementation details, and the reasoning behind them are published alongside the code."
-        tone="muted"
+        tone="accent"
         actions={[
           {
             href: 'https://github.com/misaf',
