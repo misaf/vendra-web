@@ -1,5 +1,11 @@
 import type { Metadata } from 'next'
-import { Gallery, Notice, Section } from '../../components/marketing'
+import {
+  EditorialList,
+  FeaturedProject,
+  RoadmapList,
+  Section
+} from '../../components/marketing'
+import { basePath } from '../../lib/site'
 
 export const metadata: Metadata = {
   title: 'UI',
@@ -8,9 +14,9 @@ export const metadata: Metadata = {
 }
 
 /* -------------------------------------------------------------------------- */
-/* TODO — SCAFFOLD. This section is the thinnest of the three galleries,       */
-/* because the artefacts it lists do not exist yet as distributable            */
-/* templates. The florist storefront is the only real one today.               */
+/* TODO — ROADMAP. The florist theme and operator panel are presented as       */
+/* available work; distributable artefacts that do not exist yet stay in a     */
+/* compact roadmap below them.                                                  */
 /*                                                                            */
 /* To land a template: publish it (a repository, a theme package, or a         */
 /* documented preset), then give its entry an `href` and drop `planned`.       */
@@ -22,7 +28,14 @@ const themes = [
     description:
       'The reference storefront theme: catalogue, product detail, cart, and checkout, fully internationalised.',
     href: '/docs/storefront',
-    tag: 'Available'
+    tag: 'Available',
+    shot: {
+      src: `${basePath}/shots/storefront-home.png`,
+      alt: 'The Houshang Flowers English storefront home page with navigation, shopping actions, and a large floral arrangement',
+      width: 1600,
+      height: 1000,
+      host: 'houshang-flowers.com/en'
+    }
   },
   {
     title: 'Minimal catalogue',
@@ -76,32 +89,53 @@ const blocks = [
 ]
 
 export default function UiPage() {
+  const featured = themes[0]
+  const available = [...themes.slice(1), ...panels, ...blocks].filter(
+    item => !('planned' in item && item.planned)
+  )
+  const roadmap = [
+    ...themes.slice(1).map(item => ({ ...item, area: 'Theme' })),
+    ...panels.map(item => ({ ...item, area: 'Panel' })),
+    ...blocks.map(item => ({ ...item, area: 'Block' }))
+  ]
+    .filter(item => 'planned' in item && item.planned)
+    .map(item => ({ title: item.title, area: item.area }))
+
   return (
     <>
       <Section
         eyebrow="UI"
-        title="Themes, panels, and blocks"
-        lede="Starting points for a Vendra property. A theme decides how a storefront looks and which pages it composes; a panel preset decides what an operator can do."
+        title="A real theme before a catalogue of promises"
+        lede="The florist storefront and operator panel are available today. Future themes and composable blocks follow as a compact roadmap."
       >
-        <Notice title="Scaffold">
-          <p>
-            Only the florist theme and the operator panel exist today — the rest
-            are placeholders showing the intended shape of this section. Edit{' '}
-            <code>app/ui/page.tsx</code> to fill them in.
-          </p>
-        </Notice>
+        <FeaturedProject
+          eyebrow="Available theme"
+          item={{ ...featured, href: featured.href!, shot: featured.shot! }}
+          secondaryShot={{
+            src: `${basePath}/shots/storefront-home-fa.png`,
+            alt: 'The same Houshang Flowers home page in Persian with right-to-left navigation and content',
+            width: 1600,
+            height: 1000,
+            host: 'houshang-flowers.com/fa'
+          }}
+        />
       </Section>
 
-      <Section eyebrow="Storefront" title="Themes">
-        <Gallery items={themes} />
+      <Section
+        eyebrow="Available"
+        title="Operator surfaces"
+        lede="First-party administration built around the platform's existing domains."
+        tone="muted"
+      >
+        <EditorialList items={available} />
       </Section>
 
-      <Section eyebrow="Platform" title="Panel presets" tone="muted">
-        <Gallery items={panels} />
-      </Section>
-
-      <Section eyebrow="Composable" title="Blocks">
-        <Gallery items={blocks} />
+      <Section
+        eyebrow="Roadmap"
+        title="Themes, panels, and blocks still to come"
+        lede="Visible enough to show direction, compact enough not to outnumber the work you can use."
+      >
+        <RoadmapList items={roadmap} />
       </Section>
     </>
   )
