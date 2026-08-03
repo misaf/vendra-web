@@ -51,7 +51,7 @@ export default async function FaqTagPage({
     <ContentWrapper searchable={false}>
       <h1>{label}</h1>
 
-      <div className="vendra-lede">
+      <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0">
         <p>
           {questions.length} {questions.length === 1 ? 'question' : 'questions'}{' '}
           tagged <strong>{label}</strong>.{' '}

@@ -17,7 +17,7 @@ export default async function BlogIndex() {
     <ContentWrapper searchable={false}>
       <h1>Blog</h1>
 
-      <div className="vendra-lede">
+      <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0">
         <p>
           The technology the ecosystem runs on, the decisions behind it, what
           they cost, and what we have decided to build next. The{' '}

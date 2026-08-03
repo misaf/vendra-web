@@ -43,7 +43,7 @@ export default async function TagPage({ params }: { params: Promise<Params> }) {
     <ContentWrapper searchable={false}>
       <h1>{label}</h1>
 
-      <div className="vendra-lede">
+      <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0">
         <p>
           {posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged{' '}
           <strong>{label}</strong>. <Link href="/blog">All posts</Link>

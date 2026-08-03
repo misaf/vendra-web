@@ -20,7 +20,7 @@ export default async function FaqIndex() {
     <ContentWrapper searchable={false}>
       <h1>FAQ</h1>
 
-      <div className="vendra-lede">
+      <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0">
         <p>
           Questions we were actually asked — by clients, by operators running a
           host, and by developers building against the API. Each one is answered
