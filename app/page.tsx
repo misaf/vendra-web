@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
-  Actions,
   FeatureSplit,
   Gallery,
   LandingHero,
   LogoWall,
+  PropertyRouting,
   Quickstart,
   Section,
   StackDiagram,
@@ -45,7 +45,7 @@ export default async function Landing() {
         title={
           <>
             {'Build commerce systems that stay '}
-            <span className="bg-[linear-gradient(110deg,hsl(var(--nextra-primary-hue),var(--nextra-primary-saturation),calc(var(--nextra-primary-lightness)+6%)),hsl(calc(var(--nextra-primary-hue)+28deg),var(--nextra-primary-saturation),calc(var(--nextra-primary-lightness)+10%)))] bg-clip-text text-transparent">
+            <span className="bg-[linear-gradient(110deg,var(--vendra-accent),var(--vendra-accent-2))] bg-clip-text text-transparent">
               understandable
             </span>
             {' at scale.'}
@@ -109,15 +109,12 @@ export default async function Landing() {
         />
       </Section>
 
-      <Section tone="muted">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
-            Quickstart
-          </div>
-          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
-            Running in three commands
-          </h2>
-        </div>
+      <Section
+        align="center"
+        eyebrow="Quickstart"
+        title="Running in three commands"
+        tone="muted"
+      >
         <Quickstart
           steps={[
             { label: '1 · Install', command: 'brew install vendra/tap/vendra' },
@@ -186,6 +183,7 @@ export default async function Landing() {
           index="03"
           eyebrow="Storefronts"
           title="One codebase, many properties"
+          media={<PropertyRouting />}
           points={[
             'Configuration resolved at runtime, not baked at build time',
             'Selectable theme pages composed per property',
@@ -205,19 +203,13 @@ export default async function Landing() {
         </FeatureSplit>
       </Section>
 
-      <Section tone="muted">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
-            Used by
-          </div>
-          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
-            Companies building on Vendra
-          </h2>
-          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
-            Florists, importers, and studios running their shops on the
-            ecosystem.
-          </p>
-        </div>
+      <Section
+        align="center"
+        eyebrow="Used by"
+        title="Companies building on Vendra"
+        lede="Florists, importers, and studios running their shops on the ecosystem."
+        tone="muted"
+      >
         <LogoWall customers={customers} />
       </Section>
 
@@ -289,30 +281,21 @@ export default async function Landing() {
         </div>
       </Section>
 
-      <Section tone="muted">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
-            Start with the getting-started guide
-          </h2>
-          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
-            Local source development or a production host installation — both
-            paths are documented end to end.
-          </p>
-          <Actions
-            items={[
-              {
-                href: '/docs/getting-started',
-                label: 'Get started',
-                primary: true
-              },
-              {
-                href: '/docs/overview/architecture',
-                label: 'View architecture'
-              }
-            ]}
-          />
-        </div>
-      </Section>
+      <Section
+        align="center"
+        size="lg"
+        title="Start with the getting-started guide"
+        lede="Local source development or a production host installation — both paths are documented end to end."
+        tone="muted"
+        actions={[
+          {
+            href: '/docs/getting-started',
+            label: 'Get started',
+            primary: true
+          },
+          { href: '/docs/overview/architecture', label: 'View architecture' }
+        ]}
+      />
     </>
   )
 }
