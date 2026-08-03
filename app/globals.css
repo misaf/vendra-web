@@ -18,10 +18,36 @@
    Tokens
    ========================================================================== */
 
+/* The display type scale.
+ *
+ * Each step carries its own line height and tracking, so `text-title` is the
+ * whole typographic decision rather than one third of it — the size, the
+ * leading, and the tracking cannot drift apart across the pages that use it.
+ * Weight stays on the element: the landing headline is 750 and the section
+ * headings are 700, which is a per-use choice rather than a property of the
+ * step.
+ *
+ *   display   docs page heroes (`components/vendra.tsx`), fixed size
+ *   hero      the landing headline, the largest type on the site
+ *   title     section <h2> on the marketing pages
+ *   subtitle  <h3> inside a section, `FeatureSplit` and friends
+ */
 @theme {
   --text-display: 3.25rem;
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.03em;
+
+  --text-hero: clamp(2.25rem, 6vw, 4rem);
+  --text-hero--line-height: 1.03;
+  --text-hero--letter-spacing: -0.045em;
+
+  --text-title: clamp(1.75rem, 3.5vw, 2.5rem);
+  --text-title--line-height: 1.15;
+  --text-title--letter-spacing: -0.035em;
+
+  --text-subtitle: clamp(1.5rem, 3vw, 2rem);
+  --text-subtitle--line-height: 1.2;
+  --text-subtitle--letter-spacing: -0.03em;
 }
 
 /* `--nextra-primary-*` and `--nextra-bg` are set by `<Head>` in
@@ -41,6 +67,20 @@
     var(--nextra-primary-lightness)
   );
 
+  /* The other two brand hues. One per tier, in the order the architecture is
+     drawn everywhere on the site — `hero-canvas.tsx`'s `TIERS`, the hero's
+     system list, and the landing `StackDiagram`:
+
+       storefront  violet  --vendra-accent-2
+       platform    emerald --vendra-accent   (the Nextra primary)
+       controller  sky     --vendra-accent-3
+
+     They are tokens rather than the literals they used to be so a change to
+     the primary colour does not leave two thirds of the palette behind, and so
+     both respond to the theme the way the accent already does. */
+  --vendra-accent-2: rgb(124 58 237);
+  --vendra-accent-3: rgb(14 165 233);
+
   /* One border + three surface steps drive every component below, so light and
      dark stay in sync without per-component dark: variants. */
   --vendra-line: rgb(9 9 11 / 0.09);
@@ -53,9 +93,30 @@
   --vendra-fg-muted: rgb(82 82 91);
   --vendra-fg-subtle: rgb(113 113 122);
   --vendra-bg: rgb(255 255 255);
+
+  /* Elevation, in three steps: a badge or wordmark, a panel that floats over
+     the page (menus, list cards), and the hero figure. Neutral and dark in
+     both themes — several of these used to be mixed from `--vendra-fg`, which
+     inverted them to a white haze on the dark theme. */
+  --vendra-shadow-sm: 0 7px 18px -10px rgb(9 9 11 / 0.45);
+  --vendra-shadow-md: 0 18px 42px -22px rgb(9 9 11 / 0.4);
+  --vendra-shadow-lg: 0 30px 80px -45px rgb(18 18 30 / 0.55);
+
+  /* The same three steps tinted with the accent, for the raised/emphasised
+     states — a hovered card, the featured plan. `var(--vendra-accent)` is
+     resolved on the element that uses the glow, not here, so an element that
+     overrides the accent gets a glow that follows it. */
+  --vendra-glow-sm: 0 6px 18px -10px var(--vendra-accent);
+  --vendra-glow-md: 0 12px 30px -24px var(--vendra-accent);
+  --vendra-glow-lg: 0 22px 46px -36px var(--vendra-accent);
 }
 
 .dark {
+  /* Lifted the same way `<Head>` lifts the primary's lightness (40% → 55%):
+     the light-theme violet and sky both go muddy against a near-black page. */
+  --vendra-accent-2: rgb(139 92 246);
+  --vendra-accent-3: rgb(56 189 248);
+
   --vendra-line: rgb(255 255 255 / 0.1);
   --vendra-line-strong: rgb(255 255 255 / 0.17);
   --vendra-surface: rgb(255 255 255 / 0.035);
@@ -66,6 +127,12 @@
   --vendra-fg-muted: rgb(190 190 196);
   --vendra-fg-subtle: rgb(148 148 156);
   --vendra-bg: rgb(9 9 11);
+
+  /* Same geometry, pushed to black and further opened up: a 40% zinc shadow
+     that reads on white is invisible against a near-black page. */
+  --vendra-shadow-sm: 0 7px 18px -10px rgb(0 0 0 / 0.7);
+  --vendra-shadow-md: 0 18px 42px -22px rgb(0 0 0 / 0.65);
+  --vendra-shadow-lg: 0 30px 80px -45px rgb(0 0 0 / 0.8);
 }
 
 /* ==========================================================================
@@ -265,8 +332,8 @@ pre {
 }
 
 /* The button is Headless UI's listbox trigger, so it is matched by role rather
-   than by any class of Nextra's. Restyled as a `.vendra-chip`-shaped pill to
-   match the hero chips and the navbar menus. */
+   than by any class of Nextra's. Restyled as a pill matching the hero chips and
+   the navbar menus — same border, radius, and surface tokens they use. */
 :is(div:has(> hr.nextra-border + footer)) > div:first-child button {
   height: 1.9rem;
   padding-inline: 0.75rem;
