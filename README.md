@@ -45,12 +45,13 @@ Next.js server to run.
 app/                 One directory per route; content lives in page.mdx
   _meta.tsx          Sidebar order and labels (one per section directory)
   layout.tsx         Navbar, footer, fonts, and site-wide metadata
-  globals.css        Design tokens and every .vendra-* class
+  globals.css        Design tokens, the base layer, and Nextra chrome overrides
   robots.ts          Generated robots.txt
   sitemap.ts         Generated sitemap.xml; lastmod from each page's git history
   opengraph-image.tsx  Social share card, rendered at build time
 components/vendra.tsx  The design system (in-page MDX vocabulary)
-components/marketing.tsx  Landing, Pro, and gallery blocks (.vw-* layer)
+components/marketing.tsx  Landing, Pro, and gallery blocks
+components/icons.tsx   Icons shared by the marketing blocks and the navigation
 mdx-components.tsx     Registers the design system globally for MDX
 lib/site.ts            Canonical origin, site name, description
 lib/base-path.mjs      Path prefix, shared with next.config.mjs (plain JS)
@@ -235,23 +236,77 @@ no table of contents, set per section in `app/_meta.tsx`:
 
 They are composed from `components/marketing.tsx`, which is deliberately *not*
 registered as global MDX components — a reference page should not be able to
-drop a pricing table into itself. Styling lives in the `.vw-*` layer at the
-bottom of `app/globals.css`, alongside but separate from `.vendra-*`.
+drop a pricing table into itself. Styling is Tailwind utilities on the markup
+itself; `app/globals.css` keeps only the shared tokens, the base layer, the
+Nextra chrome overrides, and the two `@keyframes` the utilities reference by
+name.
 
 ### Placeholders
 
-Three of these ship with content that must be replaced before launch. Each
-carries a `TODO` block at the top of its file and a visible `<Notice>` on the
-page itself, so a draft cannot be mistaken for a finished one:
+These ship with content that must be replaced before launch. Each carries a
+`TODO` block at the top of its file and a visible `<Notice>` on the page itself,
+so a draft cannot be mistaken for a finished one:
 
 - **`/pro`** — every price, seat count, and support window is invented, and the
   CTAs point at `/faq`. Nothing on that page is a commercial offer.
 - **`/examples`, `/ui`** — entries without an `href` render as dashed,
   non-clickable "Planned" cards. Give an entry an `href` and `check:links`
   starts policing it like any other link.
-- **Logo walls** on `/` and `/pro` use placeholder company names as text rather
-  than logos. `/showcase` deliberately lists only first-party projects: a
-  fabricated showcase is a false endorsement, not a placeholder.
+- **`/showcase`** deliberately lists only first-party projects. A fabricated
+  showcase is a false endorsement, not a placeholder, so third-party entries go
+  up as their owners agree to be named.
+
+### The logo wall
+
+The **"Used by" wall** on `/` and `/pro` is *not* a placeholder: every business
+in `lib/customers.ts` is a real customer that has agreed to appear. That file is
+the permission gate, and its header says so — a wall of customer names is read
+as an endorsement, and one that has not been given is a false one. Adding a
+name is a decision about consent before it is a decision about design.
+
+Entries are set as logotypes in the site's own typography — an inline mark, the
+lead word, and a tracked line under it — rather than as uploaded logo files. The
+wall stays sharp at any size, correct in both themes, and free of image weight,
+and a business can go up without anyone chasing a vector file first.
+
+### Screenshots
+
+Outside four portraits, the site ships no images: it argues for a product with
+a user interface and shows none of it. `components/marketing.tsx` exports the
+frame those captures go in — a title bar, an address bar carrying the real
+host, and a fixed 16:10 plate.
+
+Two slots take one:
+
+- **Gallery cards** (`/`, `/examples`, `/ui`, `/showcase`) — give the item a
+  `shot`, and the card leads with the framed capture instead of its title.
+- **`FeatureSplit` rows** — pass `media={<Screenshot shot={…} />}`. It sits
+  above the points rather than replacing them.
+
+```tsx
+shot: {
+  src: '/shots/operator-orders.png',
+  alt: 'The orders table, filtered to unfulfilled',
+  width: 1600,
+  height: 1000,
+  host: 'admin.vendra.test'
+}
+```
+
+Files go in `public/shots/`. Capture at **1600×1000** (16:10 at 2x); anything
+else is cropped to that ratio from the top, so put the subject high in frame.
+`alt` describes what the reader would see, not the page's title. Both `width`
+and `height` are required — without them the card reflows when the image lands.
+
+Capture a whole gallery or none of it. The cards share a height but top-align
+their content, so one captured card among three drops its title a frame below
+its neighbours'. An item with no `shot` renders exactly as it does today: there
+is no skeleton and no greyed-out mock, because a picture of a panel that does
+not exist is the same false promise `/showcase` already refuses to make.
+
+`PropertyRouting` on the landing page is the other kind of figure — drawn, not
+captured. Every string in it (`<slug>.vendra.test`, `api.vendra.test`, the
+florist reference storefront) is one the documentation already commits to.
 
 ### Navigation
 
