@@ -1413,6 +1413,22 @@ pre {
     transform 150ms ease;
 }
 
+@media (min-width: 60rem) {
+  .vw-stack {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .vw-stack-row {
+    display: contents;
+  }
+
+  .vw-stack-arrow {
+    display: none;
+  }
+}
+
 .vw-stack-tier:hover {
   border-color: var(--vendra-accent);
   transform: translateY(-2px);
@@ -1445,6 +1461,49 @@ pre {
   color: var(--vendra-fg-subtle);
   font-size: 0.9375rem;
   line-height: 1.7;
+}
+
+.vw-stack-preview {
+  display: grid;
+  grid-template-columns: 1.3fr 0.8fr;
+  gap: 0.4rem;
+  height: 4.5rem;
+  margin-top: 1rem;
+  padding: 0.65rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.6rem;
+  background: var(--vendra-muted);
+  overflow: hidden;
+}
+
+.vw-stack-preview span {
+  display: block;
+  min-height: 0.4rem;
+  border-radius: 999px;
+  background: var(--vendra-line-strong);
+}
+
+.vw-stack-preview .vw-stack-preview-bar {
+  grid-row: span 3;
+  border-radius: 0.4rem;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--vendra-accent), transparent 72%),
+    color-mix(in srgb, #7c3aed, transparent 82%)
+  );
+}
+
+.vw-stack-preview-1 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vw-stack-preview-1 .vw-stack-preview-bar {
+  grid-column: span 3;
+  grid-row: auto;
+}
+
+.vw-stack-preview-2 {
+  grid-template-columns: 0.55fr 1.45fr;
 }
 
 .vw-stack-arrow {

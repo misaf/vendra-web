@@ -230,6 +230,15 @@ export function StackDiagram({
             </div>
             <div className="vw-stack-role">{tier.role}</div>
             <p className="vw-stack-detail">{tier.detail}</p>
+            <div
+              className={`vw-stack-preview vw-stack-preview-${i}`}
+              aria-hidden="true"
+            >
+              <span className="vw-stack-preview-bar" />
+              <span />
+              <span />
+              <span />
+            </div>
           </Link>
           {i < tiers.length - 1 ? (
             <div className="vw-stack-arrow" aria-hidden="true">
