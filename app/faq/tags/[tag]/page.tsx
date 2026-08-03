@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ContentWrapper } from '../../../../components/page-wrapper'
 import { PostList } from '../../../../components/collection'
-import { faqRoot, getQuestionTags, getQuestionsByTag } from '../../../../lib/faq'
+import {
+  faqRoot,
+  getQuestionTags,
+  getQuestionsByTag
+} from '../../../../lib/faq'
 import { tagSlug } from '../../../../lib/collection'
 
 type Params = { tag: string }
@@ -50,7 +54,8 @@ export default async function FaqTagPage({
       <div className="vendra-lede">
         <p>
           {questions.length} {questions.length === 1 ? 'question' : 'questions'}{' '}
-          tagged <strong>{label}</strong>. <Link href="/faq">All questions</Link>
+          tagged <strong>{label}</strong>.{' '}
+          <Link href="/faq">All questions</Link>
         </p>
       </div>
 

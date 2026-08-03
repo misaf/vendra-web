@@ -102,117 +102,150 @@ const readJson = path => JSON.parse(readFileSync(path, 'utf8'))
 const writeJson = (path, value) =>
   writeFileSync(path, JSON.stringify(value, null, 2))
 
-describe('check-drift', { skip: !haveSiblings && 'sibling repos not present' }, () => {
-  it('passes against the real ecosystem', () => {
-    const { code, output } = run('check-drift.mjs')
-    assert.equal(code, 0, output)
-    assert.match(output, /contract items match/)
-  })
-
-  it('passes against an unmutated fixture', () => {
-    const { code, output } = run('check-drift.mjs', {
-      VENDRA_ECOSYSTEM_DIR: fixtureEcosystem()
+describe(
+  'check-drift',
+  { skip: !haveSiblings && 'sibling repos not present' },
+  () => {
+    it('passes against the real ecosystem', () => {
+      const { code, output } = run('check-drift.mjs')
+      assert.equal(code, 0, output)
+      assert.match(output, /contract items match/)
     })
-    assert.equal(code, 0, output)
-  })
 
-  it('skips cleanly when the sibling repositories are absent', () => {
-    const { code, output } = run('check-drift.mjs', {
-      VENDRA_ECOSYSTEM_DIR: temporaryDir('vendra-empty-')
+    it('passes against an unmutated fixture', () => {
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: fixtureEcosystem()
+      })
+      assert.equal(code, 0, output)
     })
-    assert.equal(code, 0, output)
-    assert.match(output, /nothing to check/)
-  })
 
-  it('flags an endpoint the docs do not document', () => {
-    const dir = fixtureEcosystem(({ openapi }) => {
-      const yaml = readFileSync(openapi, 'utf8')
-      writeFileSync(openapi, yaml.replace(/^paths:\n/m, 'paths:\n  /v1/teapots:\n    get: {}\n'))
+    it('skips cleanly when the sibling repositories are absent', () => {
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: temporaryDir('vendra-empty-')
+      })
+      assert.equal(code, 0, output)
+      assert.match(output, /nothing to check/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /\/v1\/teapots.*does not document it/)
-  })
 
-  it('flags a documented endpoint the contract dropped', () => {
-    const dir = fixtureEcosystem(({ openapi }) => {
-      const yaml = readFileSync(openapi, 'utf8')
-      writeFileSync(openapi, yaml.replace(/^ {2}\/health:\n(?: {4}.*\n)*/m, ''))
+    it('flags an endpoint the docs do not document', () => {
+      const dir = fixtureEcosystem(({ openapi }) => {
+        const yaml = readFileSync(openapi, 'utf8')
+        writeFileSync(
+          openapi,
+          yaml.replace(/^paths:\n/m, 'paths:\n  /v1/teapots:\n    get: {}\n')
+        )
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /\/v1\/teapots.*does not document it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /\/health.*no longer defines it/)
-  })
 
-  it('flags an unparseable openapi paths block', () => {
-    const dir = fixtureEcosystem(({ openapi }) => {
-      writeFileSync(openapi, 'paths:\ncomponents: {}\n')
+    it('flags a documented endpoint the contract dropped', () => {
+      const dir = fixtureEcosystem(({ openapi }) => {
+        const yaml = readFileSync(openapi, 'utf8')
+        writeFileSync(
+          openapi,
+          yaml.replace(/^ {2}\/health:\n(?: {4}.*\n)*/m, '')
+        )
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /\/health.*no longer defines it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /Could not parse any endpoints/)
-  })
 
-  it('flags a new optional schema field', () => {
-    const dir = fixtureEcosystem(({ schema }) => {
-      const value = readJson(schema)
-      value.properties.brandNewField = { type: 'string' }
-      writeJson(schema, value)
+    it('flags an unparseable openapi paths block', () => {
+      const dir = fixtureEcosystem(({ openapi }) => {
+        writeFileSync(openapi, 'paths:\ncomponents: {}\n')
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /Could not parse any endpoints/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /brandNewField.*does not list it/)
-  })
 
-  it('flags a documented optional field the schema dropped', () => {
-    const dir = fixtureEcosystem(({ schema }) => {
-      const value = readJson(schema)
-      delete value.properties.trustSeal
-      writeJson(schema, value)
+    it('flags a new optional schema field', () => {
+      const dir = fixtureEcosystem(({ schema }) => {
+        const value = readJson(schema)
+        value.properties.brandNewField = { type: 'string' }
+        writeJson(schema, value)
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /brandNewField.*does not list it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /trustSeal.*no longer defines it/)
-  })
 
-  it('flags a required field missing from the example', () => {
-    const dir = fixtureEcosystem(({ schema }) => {
-      const value = readJson(schema)
-      value.required = [...value.required, 'mandatoryNewField']
-      writeJson(schema, value)
+    it('flags a documented optional field the schema dropped', () => {
+      const dir = fixtureEcosystem(({ schema }) => {
+        const value = readJson(schema)
+        delete value.properties.trustSeal
+        writeJson(schema, value)
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /trustSeal.*no longer defines it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /mandatoryNewField.*omits it/)
-  })
 
-  it('flags a new first-party package', () => {
-    const dir = fixtureEcosystem(({ packages }) => {
-      mkdirSync(resolve(packages, 'vendra-warehouse'), { recursive: true })
+    it('flags a required field missing from the example', () => {
+      const dir = fixtureEcosystem(({ schema }) => {
+        const value = readJson(schema)
+        value.required = [...value.required, 'mandatoryNewField']
+        writeJson(schema, value)
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /mandatoryNewField.*omits it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /vendra-warehouse.*does not list it/)
-  })
 
-  it('flags a new API module package', () => {
-    const dir = fixtureEcosystem(({ packages }) => {
-      mkdirSync(resolve(packages, 'vendra-warehouse-api'), { recursive: true })
+    it('flags a new first-party package', () => {
+      const dir = fixtureEcosystem(({ packages }) => {
+        mkdirSync(resolve(packages, 'vendra-warehouse'), { recursive: true })
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /vendra-warehouse.*does not list it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /vendra-warehouse-api.*omits it/)
-  })
 
-  it('flags a documented package that no longer exists', () => {
-    const dir = fixtureEcosystem(({ packages }) => {
-      rmSync(resolve(packages, 'vendra-tagger'), { recursive: true, force: true })
+    it('flags a new API module package', () => {
+      const dir = fixtureEcosystem(({ packages }) => {
+        mkdirSync(resolve(packages, 'vendra-warehouse-api'), {
+          recursive: true
+        })
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /vendra-warehouse-api.*omits it/)
     })
-    const { code, output } = run('check-drift.mjs', { VENDRA_ECOSYSTEM_DIR: dir })
-    assert.equal(code, 1)
-    assert.match(output, /tagger.*has no vendra-tagger/)
-  })
-})
+
+    it('flags a documented package that no longer exists', () => {
+      const dir = fixtureEcosystem(({ packages }) => {
+        rmSync(resolve(packages, 'vendra-tagger'), {
+          recursive: true,
+          force: true
+        })
+      })
+      const { code, output } = run('check-drift.mjs', {
+        VENDRA_ECOSYSTEM_DIR: dir
+      })
+      assert.equal(code, 1)
+      assert.match(output, /tagger.*has no vendra-tagger/)
+    })
+  }
+)
 
 /* -------------------------------------------------------------------------- */
 /* check-html                                                                 */
@@ -246,7 +279,9 @@ describe('check-html', () => {
   })
 
   it('rejects a nested anchor', () => {
-    const dir = htmlFixture({ 'index.html': page('<a href="#"><a href="#">x</a></a>') })
+    const dir = htmlFixture({
+      'index.html': page('<a href="#"><a href="#">x</a></a>')
+    })
     const { code, output } = run('check-html.mjs', { VENDRA_BUILD_DIR: dir })
     assert.equal(code, 1)
     assert.match(output, /<a> inside <a>/)
@@ -254,14 +289,18 @@ describe('check-html', () => {
 
   it('ignores markup inside <script> and <style>', () => {
     const dir = htmlFixture({
-      'index.html': page('<p>ok</p><script>var a = "<p><div></div></p>"</script>')
+      'index.html': page(
+        '<p>ok</p><script>var a = "<p><div></div></p>"</script>'
+      )
     })
     const { code, output } = run('check-html.mjs', { VENDRA_BUILD_DIR: dir })
     assert.equal(code, 0, output)
   })
 
   it('does not treat void elements as unclosed', () => {
-    const dir = htmlFixture({ 'index.html': page('<p>a<br>b<img src="x">c</p>') })
+    const dir = htmlFixture({
+      'index.html': page('<p>a<br>b<img src="x">c</p>')
+    })
     const { code, output } = run('check-html.mjs', { VENDRA_BUILD_DIR: dir })
     assert.equal(code, 0, output)
   })
@@ -288,8 +327,7 @@ function blogFixture(posts) {
   return dir
 }
 
-const post = (fields, body = '# Title\n') =>
-  `---\n${fields}\n---\n\n${body}`
+const post = (fields, body = '# Title\n') => `---\n${fields}\n---\n\n${body}`
 
 describe('check-blog', () => {
   it('passes against the real posts', () => {

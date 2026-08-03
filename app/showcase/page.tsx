@@ -76,7 +76,9 @@ export default function ShowcasePage() {
             We would like to feature it. Start a conversation and we will put
             together a short case study.
           </p>
-          <Actions items={[{ href: '/faq', label: 'Get in touch', primary: true }]} />
+          <Actions
+            items={[{ href: '/faq', label: 'Get in touch', primary: true }]}
+          />
         </div>
       </Section>
     </>

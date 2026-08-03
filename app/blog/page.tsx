@@ -21,8 +21,8 @@ export default async function BlogIndex() {
         <p>
           The technology the ecosystem runs on, the decisions behind it, what
           they cost, and what we have decided to build next. The{' '}
-          <Link href="/overview">documentation</Link> describes how things work —
-          these posts explain why they work that way.
+          <Link href="/overview">documentation</Link> describes how things work
+          — these posts explain why they work that way.
         </p>
         <p>
           Questions from clients, operators, and developers are answered in the{' '}

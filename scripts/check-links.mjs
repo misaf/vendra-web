@@ -49,7 +49,8 @@ const dynamicPrefixes = [...routes]
 
 const matchesDynamic = path =>
   dynamicPrefixes.some(
-    prefix => path.startsWith(prefix) && !path.slice(prefix.length).includes('/')
+    prefix =>
+      path.startsWith(prefix) && !path.slice(prefix.length).includes('/')
   )
 
 const problems = []

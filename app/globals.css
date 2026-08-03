@@ -22,11 +22,13 @@
   --nextra-primary-saturation: 57%;
   --nextra-primary-lightness: 40%;
 
-  --x-font-sans: var(--font-inter), var(--font-vazirmatn), ui-sans-serif,
-    system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-    'Segoe UI Symbol', 'Noto Color Emoji';
-  --x-font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo,
-    Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --x-font-sans:
+    var(--font-inter), var(--font-vazirmatn), ui-sans-serif, system-ui,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --x-font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, 'Liberation Mono', 'Courier New', monospace;
 
   --vendra-accent: hsl(
     var(--nextra-primary-hue),
@@ -78,8 +80,9 @@ body {
 
 :lang(fa),
 [lang='fa'] {
-  font-family: var(--font-vazirmatn), var(--font-inter), ui-sans-serif,
-    system-ui, sans-serif;
+  font-family:
+    var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
   letter-spacing: 0;
 }
 
@@ -1077,7 +1080,9 @@ pre {
   border: 1px solid var(--vendra-line);
   border-radius: 0.9rem;
   background: var(--vendra-surface-raised);
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
 }
 
 .vw-stack-tier:hover {
@@ -1275,7 +1280,9 @@ pre {
 }
 
 .vw-card-link {
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
 }
 
 .vw-card-link:hover {
@@ -1550,7 +1557,9 @@ pre {
   border-radius: 50%;
   border: 1px solid var(--vendra-line);
   object-fit: cover;
-  transition: border-color 150ms ease, transform 150ms ease;
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
 }
 
 .vw-team-link:hover .vw-team-photo {

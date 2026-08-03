@@ -69,7 +69,8 @@ const blocks = [
   },
   {
     title: 'Account blocks',
-    description: 'Login, registration, and order history, with social login optional.',
+    description:
+      'Login, registration, and order history, with social login optional.',
     planned: true
   }
 ]

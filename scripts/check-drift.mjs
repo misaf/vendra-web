@@ -74,9 +74,9 @@ if (existsSync(openapiPath)) {
   // `GET /v1/capabilities`. Matching the method prefix keeps prose mentions of
   // a path from counting as documentation of the endpoint itself.
   const documented = new Set(
-    [...doc.matchAll(/\b(?:GET|POST|PUT|PATCH|DELETE)\s+(\/\S*?)(?=['"`\s])/g)].map(
-      m => m[1]
-    )
+    [
+      ...doc.matchAll(/\b(?:GET|POST|PUT|PATCH|DELETE)\s+(\/\S*?)(?=['"`\s])/g)
+    ].map(m => m[1])
   )
 
   compare({

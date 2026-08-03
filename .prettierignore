@@ -1,0 +1,12 @@
+# Build output and generated artefacts. `next-env.d.ts` is rewritten by Next on
+# every build, so formatting it just makes it dirty again.
+.next/
+out/
+public/_pagefind/
+next-env.d.ts
+
+# Content, not code. Prettier reflows MDX prose — rewrapping paragraphs across
+# every docs page would bury real edits in whitespace diffs, and the writing is
+# already wrapped by hand. Remove this if that trade stops being worth it.
+*.mdx
+*.md

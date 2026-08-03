@@ -20,15 +20,39 @@ const buildDir =
   resolve(dirname(fileURLToPath(import.meta.url)), '../out')
 
 const VOID = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'source', 'track', 'wbr'
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'source',
+  'track',
+  'wbr'
 ])
 
 /** Ancestor tag -> descendant tags that HTML forbids inside it. */
 const FORBIDDEN = {
   p: new Set([
-    'p', 'div', 'ul', 'ol', 'dl', 'pre', 'table', 'section',
-    'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
+    'p',
+    'div',
+    'ul',
+    'ol',
+    'dl',
+    'pre',
+    'table',
+    'section',
+    'blockquote',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6'
   ]),
   a: new Set(['a', 'button']),
   button: new Set(['a', 'button'])
@@ -74,7 +98,9 @@ for await (const file of glob('**/*.html', { cwd: buildDir })) {
   if (file.startsWith('_')) continue // _not-found, _global-error
   if (file.startsWith('404')) continue // static-export error page
   pages++
-  const violations = new Set(findViolations(readFileSync(resolve(buildDir, file), 'utf8')))
+  const violations = new Set(
+    findViolations(readFileSync(resolve(buildDir, file), 'utf8'))
+  )
   for (const violation of violations) problems.push(`${file}: ${violation}`)
 }
 

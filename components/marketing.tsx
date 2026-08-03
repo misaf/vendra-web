@@ -57,7 +57,12 @@ export function Section({
 export function Actions({
   items
 }: {
-  items: { href: string; label: string; primary?: boolean; external?: boolean }[]
+  items: {
+    href: string
+    label: string
+    primary?: boolean
+    external?: boolean
+  }[]
 }) {
   return (
     <div className="vw-actions">
@@ -284,7 +289,11 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
         )
 
         return item.href ? (
-          <Link key={item.title} href={item.href} className="vw-card vw-card-link">
+          <Link
+            key={item.title}
+            href={item.href}
+            className="vw-card vw-card-link"
+          >
             {body}
           </Link>
         ) : (
@@ -347,7 +356,9 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
           key={plan.name}
           className={`vw-plan ${plan.featured ? 'vw-plan-featured' : ''}`}
         >
-          {plan.featured ? <div className="vw-plan-badge">Most popular</div> : null}
+          {plan.featured ? (
+            <div className="vw-plan-badge">Most popular</div>
+          ) : null}
           <h3 className="vw-plan-name">{plan.name}</h3>
           <div className="vw-plan-price">
             {plan.price}

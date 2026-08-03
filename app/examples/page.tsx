@@ -115,8 +115,7 @@ const groups = [
       },
       {
         title: 'Implementing a resource provider',
-        description:
-          'Back a resource with something other than Eloquent.',
+        description: 'Back a resource with something other than Eloquent.',
         planned: true
       },
       {

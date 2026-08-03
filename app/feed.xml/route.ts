@@ -41,9 +41,7 @@ export async function GET(): Promise<Response> {
         post.description
           ? `      <description>${escapeXml(post.description)}</description>`
           : null,
-        ...post.tags.map(
-          tag => `      <category>${escapeXml(tag)}</category>`
-        ),
+        ...post.tags.map(tag => `      <category>${escapeXml(tag)}</category>`),
         '    </item>'
       ]
         .filter(Boolean)

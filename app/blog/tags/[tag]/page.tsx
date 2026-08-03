@@ -28,11 +28,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function TagPage({
-  params
-}: {
-  params: Promise<Params>
-}) {
+export default async function TagPage({ params }: { params: Promise<Params> }) {
   const { tag } = await params
   const posts = await getPostsByTag(tag)
 
@@ -40,7 +36,8 @@ export default async function TagPage({
 
   // Prefer the tag's authored spelling over the URL slug.
   const label =
-    posts.flatMap(post => post.tags).find(value => tagSlug(value) === tag) ?? tag
+    posts.flatMap(post => post.tags).find(value => tagSlug(value) === tag) ??
+    tag
 
   return (
     <ContentWrapper searchable={false}>
@@ -49,8 +46,7 @@ export default async function TagPage({
       <div className="vendra-lede">
         <p>
           {posts.length} {posts.length === 1 ? 'post' : 'posts'} tagged{' '}
-          <strong>{label}</strong>.{' '}
-          <Link href="/blog">All posts</Link>
+          <strong>{label}</strong>. <Link href="/blog">All posts</Link>
         </p>
       </div>
 

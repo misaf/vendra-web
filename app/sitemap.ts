@@ -62,7 +62,7 @@ function lastModified(route: string, fallback: Date): Date {
 export const dynamic = 'force-static'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const routes = collectRoutes(await getPageMap() as PageMapNode[])
+  const routes = collectRoutes((await getPageMap()) as PageMapNode[])
   const buildTime = new Date()
 
   return [...routes]
