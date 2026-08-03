@@ -144,15 +144,31 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-:is(h1, h2, h3, h4, h5, h6) {
-  letter-spacing: -0.02em;
+/* In `@layer base`, not unlayered like the rules around it, and the difference
+   matters: unlayered declarations beat every layered one regardless of
+   specificity, so as a bare rule this defeated `tracking-*` on any heading —
+   the display steps above, `tracking-tight`, all of them silently flattened to
+   -0.02em. The rest of this stylesheet stays unlayered on purpose, because it
+   is overriding Nextra's own layered theme. This one is a default, so it
+   belongs in the layer defaults live in. */
+@layer base {
+  :is(h1, h2, h3, h4, h5, h6) {
+    letter-spacing: -0.02em;
+  }
+
+  /* Same reasoning: this has to lose to a heading's own tracking utility, and
+     the `:lang(fa)` reset below has to win over both. */
+  :lang(fa),
+  [lang='fa'] {
+    font-family:
+      var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
+      sans-serif;
+  }
 }
 
-:lang(fa),
-[lang='fa'] {
-  font-family:
-    var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
-    sans-serif;
+/* Persian sets flat: the tracking above is drawn for Latin display type and
+   pinches Arabic-script joins. Unlayered so it beats the utilities. */
+:is(:lang(fa), [lang='fa']) {
   letter-spacing: 0;
 }
 
