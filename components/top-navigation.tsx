@@ -1,8 +1,10 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { NavGroup, NavSection } from '../lib/navigation'
+import { Chevron } from './icons'
 
 function isCurrent(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(`${href}/`)
@@ -10,30 +12,58 @@ function isCurrent(pathname: string, href: string): boolean {
 
 function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
   const active = group.items.some(item => isCurrent(pathname, item.href))
+  const ref = useRef<HTMLDetailsElement>(null)
+
+  /* A bare <details> is a menu that only closes by clicking its own trigger
+     again: clicking the page, pressing Escape, or following a link inside it
+     all leave it hanging open. Restore the three dismissals a menu is expected
+     to have. `pointerdown` rather than `click` so the menu is gone before the
+     thing underneath reacts. */
+  useEffect(() => {
+    const close = () => {
+      if (ref.current) ref.current.open = false
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      const node = event.target
+      if (node instanceof Node && !ref.current?.contains(node)) close()
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !ref.current?.open) return
+      close()
+      // Escape from inside a menu would otherwise drop focus on a hidden
+      // element and send the next Tab back to the top of the page.
+      ref.current.querySelector('summary')?.focus()
+    }
+
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [])
+
+  /* Following a link inside the menu is a client-side navigation, which leaves
+     the DOM — and the open menu — exactly as it was. */
+  useEffect(() => {
+    if (ref.current) ref.current.open = false
+  }, [pathname])
 
   return (
-    <details className="group relative">
+    /* `name` makes the menus an exclusive group: opening one closes its
+       siblings, natively. Browsers without it keep today's behaviour, where two
+       can be open at once, which is untidy rather than broken. */
+    <details className="group relative" name="vendra-nav" ref={ref}>
       <summary
         className={`relative inline-flex min-h-9 cursor-pointer list-none items-center gap-1 rounded-lg px-3 text-sm font-medium transition-colors [&::-webkit-details-marker]:hidden ${active ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)] after:absolute after:inset-x-3 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-[var(--vendra-accent)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'} group-open:bg-[var(--vendra-muted)] group-open:text-[var(--vendra-fg)]`}
         aria-label={`${group.label} menu`}
       >
         {group.label}
-        <svg
-          aria-hidden="true"
-          className="transition-transform duration-150 group-open:rotate-180"
-          viewBox="0 0 12 12"
-          width="12"
-          height="12"
-        >
-          <path
-            d="m3 4.5 3 3 3-3"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          />
-        </svg>
+        <Chevron className="transition-transform duration-150 group-open:rotate-180" />
       </summary>
-      <div className="absolute top-[calc(100%+0.65rem)] left-1/2 z-40 flex min-w-48 -translate-x-1/2 flex-col rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] p-2 shadow-[0_18px_40px_-20px_rgb(9_9_11/40%)] backdrop-blur-xl">
+      <div className="absolute top-[calc(100%+0.65rem)] left-1/2 z-40 flex min-w-48 -translate-x-1/2 flex-col rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] p-2 shadow-[var(--vendra-shadow-md)] backdrop-blur-xl">
         <div className="px-2.5 pt-1.5 pb-2 text-[0.65rem] font-bold tracking-[0.1em] text-[var(--vendra-fg-subtle)] uppercase">
           {group.label}
         </div>
@@ -93,7 +123,7 @@ export function TopNavigation({
         href={section.href}
         className={
           primary
-            ? 'ml-1 inline-flex min-h-9 items-center rounded-full border border-[color-mix(in_srgb,var(--vendra-accent),transparent_45%)] bg-[var(--vendra-accent)] px-4 text-[0.8125rem] font-bold text-white shadow-[0_6px_18px_-10px_var(--vendra-accent)] transition hover:-translate-y-px hover:brightness-110'
+            ? 'ml-1 inline-flex min-h-9 items-center rounded-full border border-[color-mix(in_srgb,var(--vendra-accent),transparent_45%)] bg-[var(--vendra-accent)] px-4 text-[0.8125rem] font-bold text-white shadow-[var(--vendra-glow-sm)] transition hover:-translate-y-px hover:brightness-110'
             : `relative inline-flex min-h-9 items-center rounded-lg px-3 text-sm font-medium transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)] after:absolute after:inset-x-3 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-[var(--vendra-accent)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`
         }
         aria-current={current ? 'page' : undefined}
