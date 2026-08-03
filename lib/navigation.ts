@@ -71,21 +71,8 @@ const section = (slug: keyof typeof meta): NavSection => ({
  */
 export const navGroups: NavGroup[] = [
   {
-    label: 'Learn',
-    items: [
-      section('getting-started'),
-      section('overview'),
-      section('operations')
-    ]
-  },
-  {
-    label: 'Reference',
-    items: [
-      section('platform'),
-      section('controller'),
-      section('storefront'),
-      section('api')
-    ]
+    label: 'Explore',
+    items: [section('examples'), section('ui'), section('showcase')]
   }
 ]
 
@@ -97,10 +84,9 @@ export const navGroups: NavGroup[] = [
  * documentation. `app/_meta.tsx` keeps them out of the docs sidebar to match.
  */
 export const navSections: NavSection[] = [
-  section('examples'),
-  section('ui'),
-  section('showcase'),
-  section('pro'),
+  { href: '/', label: 'Home' },
+  docsSection('index'),
   section('blog'),
-  section('faq')
+  section('faq'),
+  section('pro')
 ]

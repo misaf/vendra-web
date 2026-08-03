@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { Inter, JetBrains_Mono, Vazirmatn } from 'next/font/google'
 import { Layout, Navbar, Footer } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
-import { Anchor } from 'nextra/components'
+import { Head } from 'nextra/components'
 import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
 import { navGroups, navSections, sectionLabel } from '../lib/navigation'
+import { TopNavigation } from '../components/top-navigation'
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 
@@ -120,39 +121,6 @@ function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
 }
 
 /**
- * A hover/focus dropdown for a navbar group.
- *
- * Built from a <details> element rather than state so it works without turning
- * the layout into a client component, and so it still opens by keyboard on a
- * static export.
- */
-function NavMenu({
-  label,
-  items
-}: {
-  label: string
-  items: { href: string; label: string }[]
-}) {
-  return (
-    <details className="vw-navmenu">
-      <summary className="vw-navmenu-trigger">
-        {label}
-        <span aria-hidden="true" className="vw-navmenu-caret">
-          ▾
-        </span>
-      </summary>
-      <div className="vw-navmenu-panel">
-        {items.map(item => (
-          <Link key={item.href} href={item.href} className="vw-navmenu-item">
-            {item.label}
-          </Link>
-        ))}
-      </div>
-    </details>
-  )
-}
-
-/**
  * Nextra's `<Footer>` is itself a flex row (`x:flex x:justify-center
  * x:md:justify-start`), so any two children it is given line up side by side.
  * Everything below therefore goes in one full-width wrapper — without it the
@@ -210,21 +178,30 @@ export default async function RootLayout({
           Learn and Reference are menus over the documentation sections, which
           keep their original top-level slugs — the grouping is presentational,
           so no URL moved. See `lib/navigation.ts`. */}
-      <span className="flex items-center gap-5 max-lg:hidden">
-        {navGroups.map(group => (
-          <NavMenu key={group.label} label={group.label} items={group.items} />
-        ))}
-        {navSections.map(section => (
-          <Anchor key={section.href} href={section.href}>
-            {section.label}
-          </Anchor>
-        ))}
-      </span>
+      <TopNavigation groups={navGroups} sections={navSections} />
     </Navbar>
   )
 
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* Nextra's theme reads `--nextra-bg` for every opaque surface it paints
+          — most visibly the search results popover (`bg-nextra-bg/70`) — and
+          only `<Head>` emits it. Without this the variable is undefined, so the
+          popover resolves to a fully transparent background and search results
+          render unreadably over the page beneath them. `<Head>` also sets the
+          html background and the theme-color meta tags.
+
+          The primary colour lives here rather than in `globals.css` so there is
+          one source for it: `<Head>` writes the same `--nextra-primary-*`
+          custom properties, and declaring them in both places makes which one
+          wins depend on stylesheet order. */}
+      <Head
+        color={{
+          hue: 161,
+          saturation: { light: 57, dark: 62 },
+          lightness: { light: 40, dark: 55 }
+        }}
+      />
       <body
         className={`${inter.variable} ${vazirmatn.variable} ${jetbrainsMono.variable}`}
       >
