@@ -94,7 +94,7 @@ function EntryMeta({
             <Link
               key={tag}
               href={`${root}/tags/${tagSlug(tag)}`}
-              className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent)]"
+              className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent-text)]"
             >
               {tag}
             </Link>
@@ -157,7 +157,7 @@ export function PostList({
           className="border-b border-[var(--vendra-line)] py-7"
         >
           <Link href={post.route} className="group no-underline">
-            <h2 className="m-0 mb-2 border-0 p-0 text-[1.375rem] font-semibold tracking-[-0.02em] text-[var(--vendra-fg)] transition-colors group-hover:text-[var(--vendra-accent)]">
+            <h2 className="m-0 mb-2 border-0 p-0 text-[1.375rem] font-semibold tracking-[-0.02em] text-[var(--vendra-fg)] transition-colors group-hover:text-[var(--vendra-accent-text)]">
               {post.title}
             </h2>
           </Link>
@@ -195,7 +195,7 @@ export function TagCloud({
         <Link
           key={tag}
           href={`${root}/tags/${tagSlug(tag)}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent)]"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent-text)]"
         >
           {tag}
           <span className="ml-0.5 text-[var(--vendra-fg-subtle)] tabular-nums">
