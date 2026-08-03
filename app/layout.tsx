@@ -107,7 +107,7 @@ function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
   return (
     <span className="group inline-flex items-center gap-2">
       <svg
-        className={`${size === 'lg' ? 'size-7 rounded-lg' : 'size-6 rounded-md'} bg-[var(--vendra-fg)] fill-[var(--vendra-bg)] p-1 shadow-[0_7px_18px_-10px_var(--vendra-fg)] transition-transform group-hover:-rotate-3 group-hover:scale-105`}
+        className={`${size === 'lg' ? 'size-7 rounded-lg' : 'size-6 rounded-md'} bg-[var(--vendra-fg)] fill-[var(--vendra-bg)] p-1 shadow-[var(--vendra-shadow-sm)] transition-transform group-hover:-rotate-3 group-hover:scale-105`}
         viewBox="0 0 32 32"
         aria-hidden="true"
       >
