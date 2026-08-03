@@ -12,10 +12,18 @@
  * otherwise need, and nobody gets misgendered by a copy-paste.
  */
 
+import { basePath } from './site'
+
 export type TeamMember = {
   name: string
   role: string
-  /** Public path to a square portrait, served from `public/team/`. */
+  /**
+   * Public path to a square portrait, served from `public/team/`, base path
+   * included. `components/marketing.tsx` renders these through a plain <img>,
+   * and Next rewrites neither <img> src values nor strings — so on a project
+   * site the prefix has to be baked in here, exactly as `lib/authors.ts` does
+   * for avatars.
+   */
   photo: string
   /** One line on what they actually do. */
   bio?: string
@@ -26,14 +34,14 @@ export const team: TeamMember[] = [
   {
     name: 'Misaf',
     role: 'Founder',
-    photo: '/team/misaf.jpg',
+    photo: `${basePath}/team/misaf.jpg`,
     bio: 'Builds the platform, the controller, and most of what is written about them.',
     href: 'https://github.com/misaf'
   },
   {
     name: 'Arefeh',
     role: 'Support',
-    photo: '/team/arefeh.jpg',
+    photo: `${basePath}/team/arefeh.jpg`,
     bio: 'Answers the questions that become FAQ entries, and keeps subscribers unblocked.'
   }
 ]
