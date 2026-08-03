@@ -23,6 +23,67 @@ import { Chevron } from './icons'
 /* -------------------------------------------------------------------------- */
 
 /**
+ * Vertical rhythm, as one ordered scale rather than a boolean.
+ *
+ * `lg` used to be the only step above the default, which meant a page had
+ * exactly one lever — "land here" — and no way to say anything quieter. So
+ * every band that was not the closing call to action carried identical
+ * padding, and the landing page read as a list of equals: three feature
+ * splits, a quickstart, a logo wall, and a blog roll, all the same height
+ * apart, with no indication which of them was the argument and which were
+ * supporting evidence.
+ *
+ * Four steps, chosen so the section's padding can follow its content's own
+ * density instead of contradicting it:
+ *
+ *   compact  a band whose content is already one tight object — three
+ *            command rows, a row of logos. Padding matched to a taller band
+ *            just adds air around something that has none.
+ *   default  the ordinary case.
+ *   loose    a long band that needs room to be read as one argument rather
+ *            than as several. The landing product section is this: three
+ *            feature splits that otherwise run together.
+ *   lg       arrival. Still the one lever that says stop here, so spending it
+ *            more than once a page spends it on nothing.
+ *
+ * The header spacing moves with the step for the same reason the type scale
+ * carries its own leading: a `loose` band with a `default` header gap has the
+ * heading floating unattached to either neighbour.
+ */
+const sectionPadding = {
+  compact: 'py-10 md:py-12',
+  default: 'py-14 md:py-18',
+  loose: 'py-18 md:py-24',
+  lg: 'py-20 md:py-30'
+} as const
+
+const sectionHeaderGap = {
+  compact: 'mb-8',
+  default: 'mb-10',
+  loose: 'mb-14',
+  lg: 'mb-10'
+} as const
+
+/**
+ * Band treatments.
+ *
+ * `muted` was doing all of the separation on its own, which is why the landing
+ * page put the logo wall and the closing call to action in what looked like
+ * the same band twice — a repeat rather than a rhythm. `accent` is the second
+ * treatment: no dot grid, a wash of the two brand hues bleeding in from the
+ * edges, and an accent-tinted rule. It reads as the end of a page rather than
+ * as another neutral shelf, and it is the only place on the marketing surface
+ * where the brand colour fills space rather than marking it.
+ */
+const sectionTone = {
+  plain: '',
+  muted:
+    'border-y border-[var(--vendra-line)] bg-[var(--vendra-muted)] before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(var(--vendra-line)_1px,transparent_1px),linear-gradient(90deg,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[3rem_3rem] before:opacity-30 before:[mask-image:radial-gradient(circle_at_50%_50%,black,transparent_75%)]',
+  accent:
+    'border-y border-[color-mix(in_srgb,var(--vendra-accent),transparent_78%)] bg-[radial-gradient(ellipse_at_50%_-30%,color-mix(in_srgb,var(--vendra-accent),transparent_86%),transparent_65%),radial-gradient(ellipse_at_50%_130%,color-mix(in_srgb,var(--vendra-accent-2),transparent_90%),transparent_60%)]'
+} as const
+
+/**
  * Full-bleed section band. The marketing pages run outside the docs content
  * column, so each section owns its own width and rhythm.
  */
@@ -42,24 +103,20 @@ export function Section({
   lede?: ReactNode
   /** Calls to action under the lede — closing bands, mostly. */
   actions?: ActionItem[]
-  tone?: 'plain' | 'muted'
+  /** See `sectionTone`. */
+  tone?: keyof typeof sectionTone
   align?: 'left' | 'center'
-  /**
-   * `lg` for a band that should land — the closing call to action. Every
-   * section carrying identical padding is why the page reads as a list of
-   * equals with no arrival at the end of it; this is the one lever that says
-   * "stop here", so spending it more than once a page spends it on nothing.
-   */
-  size?: 'default' | 'lg'
+  /** See `sectionPadding`. */
+  size?: keyof typeof sectionPadding
 }) {
   return (
     <section
-      className={`relative ${size === 'lg' ? 'py-20 md:py-30' : 'py-14 md:py-18'} ${tone === 'muted' ? 'border-y border-[var(--vendra-line)] bg-[var(--vendra-muted)] before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(var(--vendra-line)_1px,transparent_1px),linear-gradient(90deg,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[3rem_3rem] before:opacity-30 before:[mask-image:radial-gradient(circle_at_50%_50%,black,transparent_75%)]' : ''}`}
+      className={`relative ${sectionPadding[size]} ${sectionTone[tone]}`}
     >
       <div className="relative mx-auto w-full max-w-6xl px-6">
         {eyebrow || title || lede ? (
           <header
-            className={`mb-10 max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}
+            className={`${sectionHeaderGap[size]} max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}
           >
             {eyebrow ? (
               <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
@@ -67,7 +124,9 @@ export function Section({
               </div>
             ) : null}
             {title ? (
-              <h2 className={`text-title font-bold ${eyebrow ? 'mt-3' : ''}`}>
+              <h2
+                className={`font-display text-title font-bold ${eyebrow ? 'mt-3' : ''}`}
+              >
                 {title}
               </h2>
             ) : null}
@@ -92,6 +151,30 @@ export type ActionItem = {
   external?: boolean
 }
 
+/**
+ * The button style, shared by every call to action on the marketing surface.
+ *
+ * A module-level function rather than one defined inside `Actions`, because
+ * `PricingTable` draws the same button and used to carry its own copy of these
+ * classes. The copy was still the hardcoded `neutral-950`/`neutral-50` pair
+ * after `Actions` moved onto the accent tokens, so `/pro` shipped two primary
+ * buttons that no longer looked alike. One definition, no drift.
+ *
+ * The primary fill is `--vendra-accent-strong`, not `--vendra-accent`. Every
+ * other surface on these pages is accent-aware and the most important click
+ * target was the one element that was not; it also sat outside the token layer
+ * entirely, so a change to the brand hue would have left it behind. The strong
+ * step rather than the accent itself because a 14px semibold label needs 4.5:1
+ * against its fill — see the token definition in `globals.css` for the
+ * measured numbers on both themes.
+ *
+ * Hover lightens toward the plain accent rather than darkening further: with a
+ * saturated fill, moving away from the page is what reads as a response, and
+ * on the dark theme darkening would move it toward the page.
+ */
+export const actionButtonClass = (primary?: boolean) =>
+  `inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold no-underline transition ${primary ? 'border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)]' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`
+
 export function Actions({
   items,
   align = 'left'
@@ -99,8 +182,7 @@ export function Actions({
   items: ActionItem[]
   align?: 'left' | 'center'
 }) {
-  const buttonClass = (primary?: boolean) =>
-    `inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold no-underline transition ${primary ? 'border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800 dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-300' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`
+  const buttonClass = actionButtonClass
 
   return (
     <div
@@ -159,7 +241,9 @@ export function LandingHero({
               {eyebrow}
             </div>
           ) : null}
-          <h1 className="mt-4 max-w-[17ch] text-hero font-[750]">{title}</h1>
+          <h1 className="mt-4 max-w-[17ch] font-display text-hero font-[750]">
+            {title}
+          </h1>
           {children ? (
             <div className="mt-6 max-w-160 text-lg leading-[1.8] text-[var(--vendra-fg-muted)]">
               {children}
@@ -193,7 +277,8 @@ const heroSystems = [
     tech: 'Next.js',
     role: 'Presentation',
     signal: '2 locales',
-    accent: '[--hero-accent:var(--vendra-accent-2)]'
+    accent:
+      '[--hero-accent:var(--vendra-accent-2)] [--hero-accent-text:var(--vendra-accent-2-text)]'
   },
   {
     href: '/docs/platform',
@@ -202,7 +287,8 @@ const heroSystems = [
     tech: 'Laravel',
     role: 'Business state',
     signal: '30 packages',
-    accent: '[--hero-accent:var(--vendra-accent)]'
+    accent:
+      '[--hero-accent:var(--vendra-accent)] [--hero-accent-text:var(--vendra-accent-text)]'
   },
   {
     href: '/docs/controller',
@@ -211,7 +297,8 @@ const heroSystems = [
     tech: 'Go',
     role: 'Runtime state',
     signal: 'Healthy',
-    accent: '[--hero-accent:var(--vendra-accent-3)]'
+    accent:
+      '[--hero-accent:var(--vendra-accent-3)] [--hero-accent-text:var(--vendra-accent-3-text)]'
   }
 ]
 
@@ -235,10 +322,10 @@ function HeroArchitecture() {
         {heroSystems.map((system, index) => (
           <div className={system.accent} key={system.href}>
             <Link
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--hero-accent),transparent_25%)] hover:shadow-[0_12px_30px_-24px_var(--hero-accent)]"
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-1 hover:border-[color-mix(in_srgb,var(--hero-accent),transparent_25%)] hover:shadow-[0_10px_26px_-16px_var(--hero-accent)]"
               href={system.href}
             >
-              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[color-mix(in_srgb,var(--hero-accent),transparent_90%)] font-mono text-[0.7rem] font-[750] text-[var(--hero-accent)]">
+              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[color-mix(in_srgb,var(--hero-accent),transparent_90%)] font-mono text-[0.7rem] font-[750] text-[var(--hero-accent-text)]">
                 {system.index}
               </span>
               <span className="flex min-w-0 flex-col gap-0.5">
@@ -253,7 +340,7 @@ function HeroArchitecture() {
                 <span className="font-mono text-[0.6875rem] text-[var(--vendra-fg-muted)]">
                   {system.tech}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-[0.625rem] font-semibold text-[var(--hero-accent)]">
+                <span className="inline-flex items-center gap-1.5 text-[0.625rem] font-semibold text-[var(--hero-accent-text)]">
                   <i className="size-1.5 rounded-full bg-current" />
                   {system.signal}
                 </span>
@@ -261,7 +348,7 @@ function HeroArchitecture() {
             </Link>
             {index < heroSystems.length - 1 ? (
               <div
-                className="relative ml-4 grid h-7 w-8 place-items-center text-[var(--vendra-accent)]"
+                className="relative ml-4 grid h-7 w-8 place-items-center text-[var(--vendra-accent-text)]"
                 aria-hidden="true"
               >
                 <span className="absolute h-full w-px bg-[var(--vendra-line-strong)]" />
@@ -334,7 +421,7 @@ export function StackDiagram({
         <div className="min-[60rem]:contents" key={tier.href} role="listitem">
           <Link
             href={tier.href}
-            className={`block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.5 ${tierHover[i] ?? tierHover[1]}`}
+            className={`block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.75 hover:shadow-[var(--vendra-shadow-sm)] ${tierHover[i] ?? tierHover[1]}`}
           >
             <div className="flex items-center justify-between gap-4">
               <span className="text-[1.05rem] font-[650] tracking-[-0.02em]">
@@ -469,7 +556,7 @@ export function PropertyRouting() {
       </div>
 
       <div
-        className="my-3 flex items-center gap-2 text-[var(--vendra-accent)]"
+        className="my-3 flex items-center gap-2 text-[var(--vendra-accent-text)]"
         aria-hidden="true"
       >
         <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
@@ -515,7 +602,7 @@ export function OperatorPanelPreview() {
             Tenants · properties · subscriptions
           </div>
         </div>
-        <span className="rounded-full bg-[color-mix(in_srgb,var(--vendra-accent),transparent_88%)] px-2.5 py-1 text-[0.65rem] font-bold text-[var(--vendra-accent)]">
+        <span className="rounded-full bg-[color-mix(in_srgb,var(--vendra-accent),transparent_88%)] px-2.5 py-1 text-[0.65rem] font-bold text-[var(--vendra-accent-text)]">
           Platform
         </span>
       </div>
@@ -625,20 +712,32 @@ export function FeatureSplit({
   flip?: boolean
 }) {
   const accentClass = {
-    storefront: '[--feature-accent:var(--vendra-accent-2)]',
-    platform: '[--feature-accent:var(--vendra-accent)]',
-    controller: '[--feature-accent:var(--vendra-accent-3)]'
+    storefront:
+      '[--feature-accent:var(--vendra-accent-2)] [--feature-accent-text:var(--vendra-accent-2-text)]',
+    platform:
+      '[--feature-accent:var(--vendra-accent)] [--feature-accent-text:var(--vendra-accent-text)]',
+    controller:
+      '[--feature-accent:var(--vendra-accent-3)] [--feature-accent-text:var(--vendra-accent-3-text)]'
   }[accent]
 
+  // The accent bloom (`before:`) is a 288px circle under a 64px blur, and the
+  // row clips it — `overflow-hidden`, which the row needs so the bloom cannot
+  // widen the page. It used to sit at `-right-24`, 96px *outside* the row, so
+  // the clip cut through the circle's solid middle instead of through its
+  // faded tail and left a hard vertical edge down the row's right side: a
+  // rectangle of tinted background, which is the opposite of what a blurred
+  // blob is for. At `right-16` the circle's edge is 64px inside the row, which
+  // is exactly the blur radius, so the falloff reaches zero by the time it
+  // meets the clip and there is no seam to see.
   return (
     <div
-      className={`group relative grid items-start gap-10 overflow-hidden border-t border-[var(--vendra-line)] py-16 before:pointer-events-none before:absolute before:top-8 before:-right-24 before:-z-1 before:size-72 before:rounded-full before:bg-[var(--feature-accent)] before:opacity-[0.055] before:blur-3xl first:border-t-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-20 ${accentClass}`}
+      className={`group relative grid items-start gap-10 overflow-hidden border-t border-[var(--vendra-line)] py-16 before:pointer-events-none before:absolute before:top-8 before:right-16 before:-z-1 before:size-72 before:rounded-full before:bg-[var(--feature-accent)] before:opacity-[0.055] before:blur-3xl first:border-t-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-20 ${accentClass}`}
     >
       <div className={flip ? 'lg:order-2' : ''}>
         {eyebrow || index ? (
           <div className="flex items-center gap-3 text-xs font-semibold tracking-[0.16em] uppercase">
             {index ? (
-              <span className="font-mono tracking-normal text-[var(--feature-accent)]">
+              <span className="font-mono tracking-normal text-[var(--feature-accent-text)]">
                 {index}
               </span>
             ) : null}
@@ -647,7 +746,9 @@ export function FeatureSplit({
             ) : null}
           </div>
         ) : null}
-        <h3 className="mt-3 max-w-xl text-subtitle font-bold">{title}</h3>
+        <h3 className="mt-3 max-w-xl font-display text-subtitle font-bold">
+          {title}
+        </h3>
         {children ? (
           <div className="mt-3 leading-7 text-[var(--vendra-fg-muted)]">
             {children}
@@ -655,7 +756,7 @@ export function FeatureSplit({
         ) : null}
         {action ? (
           <Link
-            className="group mt-5 inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--feature-accent)]"
+            className="group mt-5 inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--feature-accent-text)]"
             href={action.href}
           >
             {action.label} <span aria-hidden="true">→</span>
@@ -663,8 +764,25 @@ export function FeatureSplit({
         ) : null}
       </div>
       <div className={`flex flex-col gap-4 ${flip ? 'lg:order-1' : ''}`}>
+        {/* The accent frame below is drawn on the wrapper's own bounds, with
+            the media inset from it by the wrapper's padding — not at
+            `-inset-3`, hanging 12px outside the media on every side, which is
+            what this used to do.
+
+            Two things were wrong with the overhang. It was clipped: this
+            column's outer edge is flush with the row's, and the row is
+            `overflow-hidden` to contain the glow blob, so the frame lost
+            exactly one side — the right on a normal row, the left on a `flip`
+            one — and rendered as a three-sided box. And the side that did
+            survive sat 12px outside the column, so it did not line up with the
+            points list directly beneath it, which is bounded by the column
+            itself.
+
+            Padding instead of a negative inset fixes both at once: the frame is
+            now exactly the column's width, so it aligns with the list and there
+            is nothing outside the row to clip. */}
         {media ? (
-          <div className="relative before:pointer-events-none before:absolute before:-inset-3 before:-z-1 before:rounded-[1.35rem] before:border before:border-[color-mix(in_srgb,var(--feature-accent),transparent_76%)]">
+          <div className="relative p-3 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[1.35rem] before:border before:border-[color-mix(in_srgb,var(--feature-accent),transparent_76%)]">
             {media}
           </div>
         ) : null}
@@ -778,7 +896,7 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               />
             ) : (
               <svg
-                className="size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
+                className="size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent-text)] group-hover:opacity-100"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -897,7 +1015,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
           <Link
             key={item.title}
             href={item.href}
-            className="flex flex-col rounded-xl border border-[var(--vendra-line)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[var(--vendra-accent)]"
+            className="flex flex-col rounded-xl border border-[var(--vendra-line)] px-5 py-4 transition hover:-translate-y-0.75 hover:border-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-sm)]"
           >
             {body}
           </Link>
@@ -940,14 +1058,16 @@ export function FeaturedProject({
         ) : null}
       </div>
       <div>
-        <div className="text-xs font-bold tracking-[0.14em] text-[var(--vendra-accent)] uppercase">
+        <div className="text-xs font-bold tracking-[0.14em] text-[var(--vendra-accent-text)] uppercase">
           {eyebrow}
         </div>
-        <h3 className="mt-3 text-subtitle font-bold">{item.title}</h3>
+        <h3 className="mt-3 font-display text-subtitle font-bold">
+          {item.title}
+        </h3>
         <p className="mt-3 leading-7 text-[var(--vendra-fg-muted)]">
           {item.description}
         </p>
-        <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold group-hover:text-[var(--vendra-accent)]">
+        <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold group-hover:text-[var(--vendra-accent-text)]">
           Explore the project <span aria-hidden="true">→</span>
         </span>
       </div>
@@ -981,7 +1101,7 @@ export function EditorialList({ items }: { items: GalleryItem[] }) {
 
         return item.href ? (
           <Link
-            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-4 border-b border-[var(--vendra-line)] py-5 transition hover:pl-2 hover:text-[var(--vendra-accent)]"
+            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-4 border-b border-[var(--vendra-line)] py-5 transition hover:pl-2 hover:text-[var(--vendra-accent-text)]"
             href={item.href}
             key={item.title}
           >
@@ -1075,7 +1195,12 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
           className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[var(--vendra-glow-lg)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
         >
           {plan.featured ? (
-            <div className="absolute -top-3 left-5 rounded-full bg-[var(--vendra-accent)] px-3 py-1 text-xs font-bold text-white">
+            // The accent-fill pair, not `bg-accent` + `text-white`: the plain
+            // accent is a fill colour, and white on it is 3.27:1 — the same
+            // miss the primary button had, in the same place, for the same
+            // reason. Anything that puts a label *on* the accent needs the
+            // strong step and `--vendra-on-accent`.
+            <div className="absolute -top-3 left-5 rounded-full bg-[var(--vendra-accent-strong)] px-3 py-1 text-xs font-bold text-[var(--vendra-on-accent)]">
               Most popular
             </div>
           ) : null}
@@ -1094,7 +1219,7 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
           <ul className="my-5 flex flex-1 list-none flex-col gap-2 p-0 text-sm">
             {plan.features.map(feature => (
               <li
-                className="flex gap-2 before:text-[var(--vendra-accent)] before:content-['✓']"
+                className="flex gap-2 before:text-[var(--vendra-accent-text)] before:content-['✓']"
                 key={feature}
               >
                 {feature}
@@ -1103,7 +1228,7 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
           </ul>
           <Link
             href={plan.cta.href}
-            className={`inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition ${plan.featured ? 'border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800 dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
+            className={actionButtonClass(plan.featured)}
           >
             {plan.cta.label}
           </Link>
@@ -1144,7 +1269,7 @@ export function FaqList({
           key={item.question}
           className="group border-b border-[var(--vendra-line)]"
         >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-semibold transition-colors hover:text-[var(--vendra-accent)] [&::-webkit-details-marker]:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-semibold transition-colors hover:text-[var(--vendra-accent-text)] [&::-webkit-details-marker]:hidden">
             {item.question}
             {/* The same mark, at the same size, as the navbar's menu trigger —
                 a chevron that rotates rather than a glyph that swaps, so the
@@ -1271,7 +1396,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
         return (
           <div
             key={member.name}
-            className="group flex flex-col items-center rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-6 pt-8 pb-6 text-center transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_50%)] hover:shadow-[var(--vendra-glow-lg)]"
+            className="group flex flex-col items-center rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-6 pt-8 pb-6 text-center transition hover:-translate-y-0.75 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_50%)] hover:shadow-[var(--vendra-glow-lg)]"
           >
             <span className="relative block size-40 overflow-hidden rounded-full transition-transform before:pointer-events-none before:absolute before:inset-0 before:z-1 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_50%_40%,transparent_42%,rgb(10_6_24/28%)_74%,rgb(10_6_24/70%)_100%)] after:pointer-events-none after:absolute after:inset-0 after:z-2 after:rounded-[inherit] after:bg-[radial-gradient(circle_at_center,rgb(0_0_0/60%)_30%,transparent_31%)] after:bg-size-[3px_3px] after:opacity-60 after:mix-blend-overlay group-hover:scale-[1.025]">
               <img
@@ -1287,7 +1412,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
             <div className="mt-4 text-[1.05rem] font-semibold tracking-tight">
               {member.name}
             </div>
-            <div className="mt-1 text-xs font-bold tracking-[0.1em] text-[var(--vendra-accent)] uppercase">
+            <div className="mt-1 text-xs font-bold tracking-[0.1em] text-[var(--vendra-accent-text)] uppercase">
               {member.role}
             </div>
             {member.bio ? (
@@ -1304,7 +1429,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--vendra-fg-muted)] transition hover:-translate-y-px hover:bg-[var(--vendra-muted)] ${socialHover[link.label] ?? 'hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
+                    className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] ${socialHover[link.label] ?? 'hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
                     rel="noreferrer"
                     target="_blank"
                   >
