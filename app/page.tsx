@@ -79,7 +79,13 @@ export default async function Landing() {
         </p>
       </LandingHero>
 
+      {/* `loose`: three feature splits in one band is the longest stretch on
+          the site, and at the default rhythm the gap between two splits was
+          the same as the gap between this section and the quickstart — so the
+          argument read as six unrelated blocks rather than one section with
+          three parts. */}
       <Section
+        size="loose"
         eyebrow="The product"
         title="Three systems, each visible in the work"
         lede="The boundaries are architectural, but the result is concrete: a storefront customers use, a platform operators understand, and a controller that reports exactly what it changed."
@@ -158,7 +164,11 @@ export default async function Landing() {
         </FeatureSplit>
       </Section>
 
+      {/* `compact` for both of these: three command rows and a row of logos
+          are each already one tight object, so the default padding was
+          spending the page's tallest gaps on its shortest content. */}
       <Section
+        size="compact"
         align="center"
         eyebrow="Quickstart"
         title="Running in three commands"
@@ -175,7 +185,7 @@ export default async function Landing() {
         />
         <div className="mt-8 flex justify-center">
           <Link
-            className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
+            className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent-text)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
             href="/docs/getting-started"
           >
             Full installation guide <span aria-hidden="true">→</span>
@@ -184,6 +194,7 @@ export default async function Landing() {
       </Section>
 
       <Section
+        size="compact"
         align="center"
         eyebrow="Customers"
         title="Businesses using Vendra"
@@ -201,7 +212,7 @@ export default async function Landing() {
           <PostList posts={posts} root={blogRoot} />
           <div className="mt-8 flex">
             <Link
-              className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
+              className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent-text)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
               href="/blog"
             >
               All posts <span aria-hidden="true">→</span>
@@ -215,7 +226,11 @@ export default async function Landing() {
         size="lg"
         title="Start with the getting-started guide"
         lede="Local source development or a production host installation — both paths are documented end to end."
-        tone="muted"
+        // `accent`, not `muted`: the customers band above is already muted, and
+        // two identical treatments on one page read as a repeat rather than as
+        // a rhythm. This is the arrival, so it gets the one band on the site
+        // where the brand colour fills space.
+        tone="accent"
         actions={[
           {
             href: '/docs/getting-started',
