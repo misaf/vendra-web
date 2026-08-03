@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   ControllerConsole,
-  EditorialList,
   FeatureSplit,
   LandingHero,
   LogoWall,
@@ -161,55 +160,6 @@ export default async function Landing() {
 
       <Section
         align="center"
-        eyebrow="Proof"
-        title="Real businesses and first-party surfaces"
-        lede="Named with permission, and linked to work that exists today."
-        tone="muted"
-      >
-        <LogoWall customers={customers} />
-        <div className="mt-12 grid gap-10 text-left lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-          <div className="border-l-2 border-[var(--vendra-accent)] pl-6">
-            <div className="text-xs font-bold tracking-[0.14em] text-[var(--vendra-accent)] uppercase">
-              Proof, not promises
-            </div>
-            <p className="mt-3 text-xl leading-8 font-semibold tracking-tight">
-              The gallery starts with what ships. Planned work stays in a
-              compact roadmap instead of posing as an available product.
-            </p>
-            <Link
-              className="mt-5 inline-flex gap-2 text-sm font-bold hover:text-[var(--vendra-accent)]"
-              href="/showcase"
-            >
-              View the showcase <span aria-hidden="true">→</span>
-            </Link>
-          </div>
-          <EditorialList
-            items={[
-              {
-                title: 'Houshang Flowers storefront',
-                description:
-                  'A bilingual first-party reference deployment with property-owned branding.',
-                href: '/showcase'
-              },
-              {
-                title: 'Operator control panel',
-                description:
-                  'Filament surfaces for tenants, properties, subscriptions, and platform operations.',
-                href: '/docs/platform'
-              },
-              {
-                title: 'Infrastructure controller',
-                description:
-                  'The Go binary that provisions isolated property projects behind the shared edge.',
-                href: '/docs/controller'
-              }
-            ]}
-          />
-        </div>
-      </Section>
-
-      <Section
-        align="center"
         eyebrow="Quickstart"
         title="Running in three commands"
       >
@@ -231,6 +181,15 @@ export default async function Landing() {
             Full installation guide <span aria-hidden="true">→</span>
           </Link>
         </div>
+      </Section>
+
+      <Section
+        align="center"
+        eyebrow="Customers"
+        title="Businesses using Vendra"
+        tone="muted"
+      >
+        <LogoWall customers={customers} />
       </Section>
 
       {posts.length > 0 ? (
