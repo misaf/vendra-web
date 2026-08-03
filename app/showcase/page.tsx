@@ -103,7 +103,7 @@ export default function ShowcasePage() {
         size="lg"
         title="Building something on Vendra?"
         lede="We would like to feature it—with your permission, a real image, and a short account of what you built."
-        tone="muted"
+        tone="accent"
         actions={[
           {
             href: 'https://github.com/misaf',
