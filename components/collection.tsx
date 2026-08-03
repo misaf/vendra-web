@@ -2,8 +2,8 @@
  * Presentation shared by `/blog` and `/faq`, built on the same tokens as the
  * rest of the site.
  *
- * These reuse the `.vendra-*` layer in `globals.css` rather than introducing a
- * second visual language — both sections are part of this site, not guests. The
+ * These use the same Tailwind utilities and design tokens as the rest of the
+ * site rather than introducing a second visual language. The
  * two differ in what they contain, not in how an entry looks, so they render
  * through one set of components with the section passed as `root`.
  */
@@ -28,9 +28,9 @@ function AuthorBadge({ name }: { name: string }) {
   const content = (
     <>
       {author.avatar ? (
-        <span className="vendra-post-avatar-frame">
+        <span className="inline-grid size-6 shrink-0 place-items-center overflow-hidden rounded-full border border-[color-mix(in_srgb,#7c3aed,transparent_55%)] bg-[color-mix(in_srgb,#7c3aed,transparent_88%)] p-px shadow-[0_4px_12px_-8px_#7c3aed]">
           <img
-            className="vendra-post-avatar"
+            className="block size-full rounded-full object-cover [filter:grayscale(1)_contrast(1.18)_sepia(0.18)_saturate(1.65)_hue-rotate(218deg)] [mask-image:radial-gradient(circle,black_62%,rgb(0_0_0/0.72)_78%,transparent_100%)] transition group-hover:scale-105 group-hover:[filter:grayscale(0.65)_contrast(1.1)_saturate(1.2)]"
             src={author.avatar}
             alt=""
             width={24}
@@ -46,7 +46,7 @@ function AuthorBadge({ name }: { name: string }) {
 
   return author.href ? (
     <a
-      className="vendra-post-author vendra-post-author-link"
+      className="group inline-flex items-center gap-1.5 text-inherit no-underline transition-colors hover:text-[var(--vendra-fg)]"
       href={author.href}
       rel="author noreferrer"
       target="_blank"
@@ -54,7 +54,7 @@ function AuthorBadge({ name }: { name: string }) {
       {content}
     </a>
   ) : (
-    <span className="vendra-post-author">{content}</span>
+    <span className="inline-flex items-center gap-1.5">{content}</span>
   )
 }
 
@@ -81,20 +81,20 @@ function EntryMeta({
   ].filter(fact => fact !== null)
 
   return (
-    <div className="vendra-post-meta">
+    <div className="flex flex-wrap items-center gap-2 text-sm text-[var(--vendra-fg-subtle)]">
       {facts.map((fact, i) => (
-        <span key={fact.key} className="vendra-post-fact">
-          {i > 0 ? <span className="vendra-post-meta-sep">·</span> : null}
+        <span key={fact.key} className="inline-flex items-center">
+          {i > 0 ? <span className="mr-2 select-none">·</span> : null}
           {fact.node}
         </span>
       ))}
       {tags.length ? (
-        <span className="vendra-post-tags">
+        <span className="inline-flex flex-wrap gap-1.5">
           {tags.map(tag => (
             <Link
               key={tag}
               href={`${root}/tags/${tagSlug(tag)}`}
-              className="vendra-tag vendra-tag-neutral vendra-tag-link"
+              className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent)]"
             >
               {tag}
             </Link>
@@ -119,7 +119,7 @@ export function PostHeader({
   metadata: EntryFrontMatter & { filePath?: string }
 }) {
   return (
-    <div className="vendra-post-header">
+    <div className="mt-3">
       <EntryMeta
         root={rootFromFilePath(metadata.filePath)}
         date={metadata.date}
@@ -146,15 +146,20 @@ export function PostList({
   empty?: string
 }) {
   if (posts.length === 0) {
-    return <p className="vendra-post-empty">{empty}</p>
+    return <p className="mt-8 text-[var(--vendra-fg-subtle)]">{empty}</p>
   }
 
   return (
-    <div className="vendra-posts">
+    <div className="mt-10 border-t border-[var(--vendra-line)]">
       {posts.map(post => (
-        <article key={post.route} className="vendra-post-item">
-          <Link href={post.route} className="vendra-post-link">
-            <h2 className="vendra-post-title">{post.title}</h2>
+        <article
+          key={post.route}
+          className="border-b border-[var(--vendra-line)] py-7"
+        >
+          <Link href={post.route} className="group no-underline">
+            <h2 className="m-0 mb-2 border-0 p-0 text-[1.375rem] font-semibold tracking-[-0.02em] text-[var(--vendra-fg)] transition-colors group-hover:text-[var(--vendra-accent)]">
+              {post.title}
+            </h2>
           </Link>
           <EntryMeta
             root={root}
@@ -164,7 +169,9 @@ export function PostList({
             tags={post.tags}
           />
           {post.description ? (
-            <p className="vendra-post-desc">{post.description}</p>
+            <p className="mt-3 text-[0.9375rem] leading-6.5 text-[var(--vendra-fg-muted)]">
+              {post.description}
+            </p>
           ) : null}
         </article>
       ))}
@@ -183,15 +190,17 @@ export function TagCloud({
   if (tags.length === 0) return null
 
   return (
-    <div className="vendra-tag-cloud">
+    <div className="mt-6 flex flex-wrap gap-2">
       {tags.map(({ tag, count }) => (
         <Link
           key={tag}
           href={`${root}/tags/${tagSlug(tag)}`}
-          className="vendra-chip vendra-chip-link"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent)]"
         >
           {tag}
-          <span className="vendra-chip-count">{count}</span>
+          <span className="ml-0.5 text-[var(--vendra-fg-subtle)] tabular-nums">
+            {count}
+          </span>
         </Link>
       ))}
     </div>
