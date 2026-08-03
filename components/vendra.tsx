@@ -16,6 +16,9 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 
+const eyebrowClass =
+  'text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase'
+
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
 /* -------------------------------------------------------------------------- */
@@ -25,10 +28,14 @@ import Link from 'next/link'
  *
  * Renders a <div>, not a <p>: MDX wraps block children in their own <p>, and a
  * <p> inside a <p> is invalid HTML that breaks hydration. The inner paragraph
- * inherits this element's typography — see `.vendra-lede > p` in globals.css.
+ * inherits this element's typography from the parent utility classes.
  */
 export function Lede({ children }: { children: ReactNode }) {
-  return <div className="vendra-lede">{children}</div>
+  return (
+    <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit [&>p]:text-inherit">
+      {children}
+    </div>
+  )
 }
 
 /* -------------------------------------------------------------------------- */
@@ -36,10 +43,13 @@ export function Lede({ children }: { children: ReactNode }) {
 /* -------------------------------------------------------------------------- */
 
 const tones = {
-  neutral: 'vendra-tag-neutral',
-  emerald: 'vendra-tag-emerald',
-  amber: 'vendra-tag-amber',
-  red: 'vendra-tag-red'
+  neutral:
+    'border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] text-[var(--vendra-fg-muted)]',
+  emerald:
+    'border-[color-mix(in_srgb,var(--vendra-accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--vendra-accent)_12%,transparent)] text-[var(--vendra-accent)]',
+  amber:
+    'border-amber-600/30 bg-amber-500/12 text-amber-700 dark:text-amber-300',
+  red: 'border-red-600/30 bg-red-500/12 text-red-700 dark:text-red-300'
 } as const
 
 export type Tone = keyof typeof tones
@@ -69,7 +79,13 @@ export function Tag({
   children: ReactNode
   tone?: Tone
 }) {
-  return <span className={`vendra-tag ${toneClass(tone)}`}>{children}</span>
+  return (
+    <span
+      className={`inline-flex items-center whitespace-nowrap rounded-full border px-2 py-0.5 text-xs font-medium ${toneClass(tone)}`}
+    >
+      {children}
+    </span>
+  )
 }
 
 /** Row of pills. Pass `dot` for the accent marker used in the hero. */
@@ -85,8 +101,13 @@ export function ChipRow({
   return (
     <div className={`flex flex-wrap gap-2 ${className}`}>
       {items.map(item => (
-        <span key={item} className="vendra-chip">
-          {dot ? <span className="vendra-chip-dot" /> : null}
+        <span
+          key={item}
+          className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)]"
+        >
+          {dot ? (
+            <span className="size-2 shrink-0 rounded-full bg-[var(--vendra-accent)]" />
+          ) : null}
           {item}
         </span>
       ))}
@@ -109,8 +130,10 @@ export function Panel({
   className?: string
 }) {
   return (
-    <div className={`vendra-panel mt-5 p-5 ${className}`}>
-      {title ? <div className="vendra-eyebrow mb-4">{title}</div> : null}
+    <div
+      className={`mt-5 rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-5 ${className}`}
+    >
+      {title ? <div className={`${eyebrowClass} mb-4`}>{title}</div> : null}
       {children}
     </div>
   )
@@ -137,20 +160,22 @@ export function Hero({
   chips?: string[]
 }) {
   return (
-    <div className="vendra-hero mt-6 p-8 md:p-12">
-      {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
+    <div className="relative isolate mt-6 overflow-hidden rounded-3xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-8 before:absolute before:inset-0 before:-z-2 before:bg-[linear-gradient(to_right,var(--vendra-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[56px_56px] before:[mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_30%,transparent_75%)] after:absolute after:inset-[-40%_40%_40%_-20%] after:-z-1 after:bg-[radial-gradient(circle,hsla(var(--nextra-primary-hue),var(--nextra-primary-saturation),var(--nextra-primary-lightness),0.16),transparent_65%)] md:p-12">
+      {eyebrow ? <div className={eyebrowClass}>{eyebrow}</div> : null}
       <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50">
         {title}
       </h1>
       {/* <div>, not <p>: MDX wraps block children in their own paragraph. */}
-      <div className="vendra-hero-lede">{children}</div>
+      <div className="mt-6 max-w-168 text-base leading-7 text-[var(--vendra-fg-muted)] md:text-lg [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit [&>p]:text-inherit">
+        {children}
+      </div>
       {actions?.length ? (
         <div className="mt-8 flex flex-wrap gap-3">
           {actions.map(action => (
             <Link
               key={action.href}
               href={action.href}
-              className={`vendra-btn ${action.primary ? 'vendra-btn-primary' : 'vendra-btn-secondary'}`}
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors ${action.primary ? 'border-transparent bg-neutral-950 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-300' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
             >
               {action.label}
             </Link>
@@ -187,23 +212,39 @@ export function FeatureGrid({
       className={`vendra-grid mt-5 grid gap-3 ${cols === 3 ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2'}`}
     >
       {items.map(item => (
-        <Link key={item.href} href={item.href} className="vendra-feature">
-          <div className="vendra-feature-head">
+        <Link
+          key={item.href}
+          href={item.href}
+          className="group block rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-5 py-4 text-inherit no-underline transition hover:-translate-y-px hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-surface-raised)]"
+        >
+          <div className="flex items-center gap-3">
             {item.icon ? (
-              <span className="vendra-feature-icon" aria-hidden="true">
+              <span
+                className="grid size-8 shrink-0 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_70%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_91%)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent)]"
+                aria-hidden="true"
+              >
                 {item.icon}
               </span>
             ) : null}
             <div className="flex min-w-0 flex-1 items-baseline justify-between gap-3">
-              <span className="vendra-feature-title">{item.title}</span>
-              <span className="vendra-feature-arrow" aria-hidden="true">
+              <span className="text-[0.9375rem] font-semibold tracking-tight text-[var(--vendra-fg)]">
+                {item.title}
+              </span>
+              <span
+                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent)]"
+                aria-hidden="true"
+              >
                 →
               </span>
             </div>
           </div>
-          <p className="vendra-feature-desc">{item.description}</p>
+          <p className="mt-1.5 text-sm leading-6 text-[var(--vendra-fg-muted)]">
+            {item.description}
+          </p>
           {item.meta ? (
-            <div className="vendra-feature-meta">{item.meta}</div>
+            <div className="mt-3 font-mono text-xs text-[var(--vendra-fg-subtle)]">
+              {item.meta}
+            </div>
           ) : null}
         </Link>
       ))}
@@ -226,18 +267,27 @@ export function NextSteps({
   title?: ReactNode
 }) {
   return (
-    <div className="vendra-next mt-12">
-      <div className="vendra-eyebrow mb-4">{title}</div>
+    <div className="mt-12 border-t border-[var(--vendra-line)] pt-6">
+      <div className={`${eyebrowClass} mb-4`}>{title}</div>
       <div className="grid gap-3 sm:grid-cols-2">
         {items.map(item => (
-          <Link key={item.href} href={item.href} className="vendra-next-item">
-            <span className="vendra-next-title">
+          <Link
+            key={item.href}
+            href={item.href}
+            className="group flex flex-col rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-5 py-4 no-underline transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-surface-raised)]"
+          >
+            <span className="inline-flex items-center justify-between gap-3 font-semibold text-[var(--vendra-fg)]">
               {item.title}
-              <span className="vendra-feature-arrow" aria-hidden="true">
+              <span
+                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent)]"
+                aria-hidden="true"
+              >
                 →
               </span>
             </span>
-            <span className="vendra-next-desc">{item.description}</span>
+            <span className="mt-1.5 text-sm leading-6 text-[var(--vendra-fg-muted)]">
+              {item.description}
+            </span>
           </Link>
         ))}
       </div>
@@ -257,13 +307,24 @@ export type StepItem = {
 /** Numbered procedure rendered as a connected timeline. */
 export function Steps({ items }: { items: StepItem[] }) {
   return (
-    <ol className="vendra-steps mt-5">
+    <ol className="mt-5 m-0 list-none p-0">
       {items.map((item, i) => (
-        <li key={i} className="vendra-step">
-          <span className="vendra-step-marker">{i + 1}</span>
-          <div className="vendra-step-body">
-            <div className="vendra-step-title">{item.title}</div>
-            {item.body ? <p className="vendra-step-desc">{item.body}</p> : null}
+        <li
+          key={i}
+          className="relative grid grid-cols-[1.75rem_1fr] gap-3.5 pb-6 last:pb-0 not-last:before:absolute not-last:before:top-8 not-last:before:bottom-1 not-last:before:left-3.5 not-last:before:w-px not-last:before:bg-[var(--vendra-line-strong)]"
+        >
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] text-xs font-semibold text-[var(--vendra-accent)]">
+            {i + 1}
+          </span>
+          <div className="pt-0.75">
+            <div className="text-[0.9375rem] font-semibold text-[var(--vendra-fg)]">
+              {item.title}
+            </div>
+            {item.body ? (
+              <p className="mt-1 text-sm leading-6 text-[var(--vendra-fg-muted)]">
+                {item.body}
+              </p>
+            ) : null}
           </div>
         </li>
       ))}
@@ -284,17 +345,26 @@ export type DefItem = {
  */
 export function DefList({ items }: { items: DefItem[] }) {
   return (
-    <dl className="vendra-deflist mt-5">
+    <dl className="mt-5 overflow-hidden rounded-[0.875rem] border border-[var(--vendra-line)]">
       {items.map(item => (
-        <div key={item.term} className="vendra-def">
-          <dt className="vendra-def-term">
-            <code className="vendra-def-code">{item.term}</code>
+        <div
+          key={item.term}
+          className="border-t border-[var(--vendra-line)] px-4.5 py-3.5 first:border-t-0"
+        >
+          <dt className="flex flex-wrap items-center gap-2">
+            <code className="font-mono text-[0.8125rem] font-semibold whitespace-normal text-[var(--vendra-fg)]">
+              {item.term}
+            </code>
             {item.tag ? <Tag tone={item.tag.tone}>{item.tag.label}</Tag> : null}
             {item.meta ? (
-              <span className="vendra-def-meta">{item.meta}</span>
+              <span className="text-xs text-[var(--vendra-fg-subtle)]">
+                {item.meta}
+              </span>
             ) : null}
           </dt>
-          <dd className="vendra-def-desc">{item.description}</dd>
+          <dd className="mt-1.25 text-sm leading-6 text-[var(--vendra-fg-muted)]">
+            {item.description}
+          </dd>
         </div>
       ))}
     </dl>
@@ -309,12 +379,19 @@ export type CommandItem = {
 /** Command reference: each entry is an invocation plus what it does. */
 export function CommandList({ items }: { items: CommandItem[] }) {
   return (
-    <div className="vendra-commands mt-5">
+    <div className="mt-5 overflow-hidden rounded-[0.875rem] border border-[var(--vendra-line)]">
       {items.map(item => (
-        <div key={item.cmd} className="vendra-command">
-          <code className="vendra-command-cmd">{item.cmd}</code>
+        <div
+          key={item.cmd}
+          className="grid items-baseline gap-x-5 gap-y-1 border-t border-[var(--vendra-line)] px-4.5 py-3 first:border-t-0 md:grid-cols-[minmax(0,22rem)_1fr]"
+        >
+          <code className="overflow-wrap-anywhere font-mono text-[0.8125rem] whitespace-normal text-[var(--vendra-fg)]">
+            {item.cmd}
+          </code>
           {item.description ? (
-            <span className="vendra-command-desc">{item.description}</span>
+            <span className="text-sm leading-6 text-[var(--vendra-fg-muted)]">
+              {item.description}
+            </span>
           ) : null}
         </div>
       ))}
@@ -329,16 +406,25 @@ export function CommandList({ items }: { items: CommandItem[] }) {
 export function Flow({ nodes, label }: { nodes: string[]; label?: ReactNode }) {
   return (
     <div>
-      {label ? <div className="vendra-flow-label">{label}</div> : null}
-      <div className="vendra-flow">
+      {label ? (
+        <div className="mb-2 text-xs font-medium text-[var(--vendra-fg-subtle)]">
+          {label}
+        </div>
+      ) : null}
+      <div className="flex flex-wrap items-center gap-2 font-mono text-[0.8125rem] leading-6">
         {nodes.map((node, i) => (
           <span key={node} className="contents">
             {i > 0 ? (
-              <span className="vendra-flow-arrow" aria-hidden="true">
+              <span
+                className="text-[var(--vendra-fg-subtle)] select-none"
+                aria-hidden="true"
+              >
                 →
               </span>
             ) : null}
-            <span className="vendra-flow-node">{node}</span>
+            <span className="whitespace-nowrap rounded-lg border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-2.5 py-1 text-[var(--vendra-fg)]">
+              {node}
+            </span>
           </span>
         ))}
       </div>
@@ -354,11 +440,15 @@ export type StatItem = {
 /** Grid of label/value pairs for "at a glance" summaries. */
 export function StatRow({ items }: { items: StatItem[] }) {
   return (
-    <div className="vendra-stats mt-5">
+    <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-line)] sm:grid-cols-2 lg:grid-cols-4">
       {items.map(item => (
-        <div key={item.label} className="vendra-stat">
-          <div className="vendra-stat-value">{item.value}</div>
-          <div className="vendra-stat-label">{item.label}</div>
+        <div key={item.label} className="bg-white p-5 dark:bg-neutral-950">
+          <div className="text-2xl font-semibold tracking-[-0.02em] text-[var(--vendra-fg)]">
+            {item.value}
+          </div>
+          <div className="mt-1 text-sm text-[var(--vendra-fg-subtle)]">
+            {item.label}
+          </div>
         </div>
       ))}
     </div>
@@ -381,17 +471,21 @@ export function Boundary({
 }) {
   return (
     <div className="mt-5 grid gap-3 sm:grid-cols-2">
-      <div className="vendra-boundary vendra-boundary-do">
-        <div className="vendra-boundary-title">{doTitle}</div>
-        <ul className="vendra-boundary-list">
+      <div className="rounded-xl border border-[color-mix(in_srgb,var(--vendra-accent),transparent_65%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] p-5">
+        <div className="text-sm font-semibold text-[var(--vendra-accent)]">
+          {doTitle}
+        </div>
+        <ul className="mt-3 list-none space-y-2 p-0 text-sm leading-6 text-[var(--vendra-fg-muted)] [&>li]:relative [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:text-[var(--vendra-fg-subtle)] [&>li]:before:content-['·']">
           {dos.map(d => (
             <li key={d}>{d}</li>
           ))}
         </ul>
       </div>
-      <div className="vendra-boundary vendra-boundary-dont">
-        <div className="vendra-boundary-title">{dontTitle}</div>
-        <ul className="vendra-boundary-list">
+      <div className="rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-5">
+        <div className="text-sm font-semibold text-[var(--vendra-fg)]">
+          {dontTitle}
+        </div>
+        <ul className="mt-3 list-none space-y-2 p-0 text-sm leading-6 text-[var(--vendra-fg-muted)] [&>li]:relative [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:text-[var(--vendra-fg-subtle)] [&>li]:before:content-['·']">
           {donts.map(d => (
             <li key={d}>{d}</li>
           ))}
