@@ -30,8 +30,8 @@ export default async function FaqIndex() {
         <p>
           Notes on the technology behind the ecosystem live in the{' '}
           <Link href="/blog">blog</Link>. The{' '}
-          <Link href="/docs/overview">documentation</Link> is the reference for how
-          any of it works.
+          <Link href="/docs/overview">documentation</Link> is the reference for
+          how any of it works.
         </p>
       </div>
 
