@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { GalleryGroup, Section } from '../../components/marketing'
-import { Notice } from '../../components/marketing'
+import { EditorialList, RoadmapList, Section } from '../../components/marketing'
 
 export const metadata: Metadata = {
   title: 'Examples',
@@ -9,8 +8,8 @@ export const metadata: Metadata = {
 }
 
 /* -------------------------------------------------------------------------- */
-/* TODO — SCAFFOLD. Most entries below are `planned: true`, which renders a    */
-/* dashed, non-clickable card rather than a dead link.                         */
+/* TODO — ROADMAP. Planned entries render in a compact roadmap below the       */
+/* available guides, never as disabled product cards.                          */
 /*                                                                            */
 /* To land an example: write the page, then give its entry an `href`, drop     */
 /* `planned`, and `check:links` will start policing that link like any other.  */
@@ -128,26 +127,50 @@ const groups = [
 ]
 
 export default function ExamplesPage() {
-  const planned = groups.flatMap(g => g.items).filter(i => i.planned).length
+  const planned = groups.flatMap(group =>
+    group.items
+      .filter(item => 'planned' in item && item.planned)
+      .map(item => ({ title: item.title, area: group.title }))
+  )
 
   return (
     <>
       <Section
         eyebrow="Examples"
-        title="Worked examples, by problem"
-        lede="Each example is a complete path through one task — not a snippet. Where an example does not exist yet it is listed as planned rather than hidden, so the shape of the collection is visible."
-      >
-        <Notice title="Scaffold">
-          <p>
-            {planned} of these are placeholders. They render as dashed,
-            non-clickable cards; fill one in by writing the page and giving its
-            entry an <code>href</code> in <code>app/examples/page.tsx</code>.
-          </p>
-        </Notice>
+        title="Complete paths through real tasks"
+        lede="Available guides come first. Each one follows a task to a working result instead of stopping at an isolated snippet."
+      />
+
+      <Section eyebrow="Available" title="Start with what ships">
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-2">
+          {groups.map(group => {
+            const available = group.items.filter(
+              item => !('planned' in item && item.planned)
+            )
+            if (available.length === 0) return null
+
+            return (
+              <div key={group.title}>
+                <h3 className="text-xl font-bold tracking-tight">
+                  {group.title}
+                </h3>
+                <p className="mt-1.5 mb-5 text-sm leading-6 text-[var(--vendra-fg-muted)]">
+                  {group.description}
+                </p>
+                <EditorialList items={available} />
+              </div>
+            )
+          })}
+        </div>
       </Section>
 
-      <Section>
-        <GalleryGroup groups={groups} />
+      <Section
+        eyebrow="Roadmap"
+        title="Planned examples"
+        lede="These are the next complete guides—not disabled cards pretending to be usable today."
+        tone="muted"
+      >
+        <RoadmapList items={planned} />
       </Section>
     </>
   )
