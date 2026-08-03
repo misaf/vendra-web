@@ -1,5 +1,11 @@
 import type { Metadata } from 'next'
-import { Gallery, Notice, Section } from '../../components/marketing'
+import {
+  EditorialList,
+  FeaturedProject,
+  RoadmapList,
+  Section
+} from '../../components/marketing'
+import { basePath } from '../../lib/site'
 
 export const metadata: Metadata = {
   title: 'Showcase',
@@ -19,11 +25,18 @@ export const metadata: Metadata = {
 
 const projects = [
   {
-    title: 'Florist storefront',
+    title: 'Houshang Flowers storefront',
     description:
-      'The first-party reference storefront. Themed, internationalised, and deployed per property behind the shared Traefik edge.',
+      'The bilingual reference storefront: property-branded, theme-selected, and deployed behind the shared Traefik edge.',
     href: '/docs/storefront',
-    tag: 'First-party'
+    tag: 'Available',
+    shot: {
+      src: `${basePath}/shots/storefront-home.png`,
+      alt: 'The Houshang Flowers English storefront home page with navigation, shopping actions, and a large floral arrangement',
+      width: 1600,
+      height: 1000,
+      host: 'houshang-flowers.com/en'
+    }
   },
   {
     title: 'Vendra operator panel',
@@ -48,34 +61,57 @@ const projects = [
 ]
 
 export default function ShowcasePage() {
+  const [featured, ...available] = projects.filter(project => !project.planned)
+  const planned = projects
+    .filter(project => project.planned)
+    .map(project => ({ title: project.title, area: 'Community' }))
+
+  if (!featured?.href || !featured.shot) return null
+
   return (
     <>
       <Section
         eyebrow="Showcase"
-        title="Built on Vendra"
-        lede="What the ecosystem looks like in production."
+        title={'Work that exists, shown as\u00a0it\u00a0is'}
+        lede="First-party surfaces today; customer case studies as their owners approve publication. No invented projects and no placeholder screenshots."
       >
-        <Notice title="Only first-party projects so far">
-          <p>
-            Every entry below is a Vendra project. Third-party projects will be
-            added as their owners agree to be named — deliberately not filled
-            with invented companies, since a fabricated showcase is a false
-            endorsement rather than a placeholder.
-          </p>
-        </Notice>
+        <FeaturedProject
+          item={{ ...featured, href: featured.href, shot: featured.shot }}
+        />
       </Section>
 
-      <Section>
-        <Gallery items={projects} />
+      <Section
+        eyebrow="More surfaces"
+        title="The rest of the first-party system"
+        tone="muted"
+      >
+        <EditorialList items={available} />
       </Section>
+
+      {planned.length ? (
+        <Section
+          eyebrow="Next"
+          title="A small public roadmap"
+          lede="Future work is listed compactly so it stays visible without competing with what is available."
+        >
+          <RoadmapList items={planned} />
+        </Section>
+      ) : null}
 
       <Section
         align="center"
         size="lg"
         title="Building something on Vendra?"
-        lede="We would like to feature it. Start a conversation and we will put together a short case study."
+        lede="We would like to feature it—with your permission, a real image, and a short account of what you built."
         tone="muted"
-        actions={[{ href: '/faq', label: 'Get in touch', primary: true }]}
+        actions={[
+          {
+            href: 'https://github.com/misaf',
+            label: 'Start a conversation',
+            primary: true,
+            external: true
+          }
+        ]}
       />
     </>
   )
