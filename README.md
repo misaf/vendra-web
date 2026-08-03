@@ -225,16 +225,17 @@ site. The blog and the FAQ are sections of this site, sharing its design system.
 
 ## The marketing surface
 
-Five pages run outside the documentation chrome — `layout: 'full'`, no sidebar,
+Six pages run outside the documentation chrome — `layout: 'full'`, no sidebar,
 no table of contents, set per section in `app/_meta.tsx`:
 
 | Route | What it is | State |
 | --- | --- | --- |
-| `/` | Landing page: hero, stack diagram, quickstart, features, showcase, latest posts | Real content |
-| `/pro` | Commercial tiers, social proof, FAQ | **Placeholder pricing** |
-| `/examples` | Worked examples grouped by problem | Part scaffold |
-| `/ui` | Themes, panel presets, blocks | Mostly scaffold |
+| `/` | Landing page: hero, real product surfaces, proof, quickstart, latest posts | Real content |
+| `/pro` | Commercial tiers, social proof, FAQ | **Draft offer** |
+| `/examples` | Available guides followed by a compact roadmap | Mixed availability |
+| `/ui` | Real bilingual theme capture, operator surface, roadmap | Mixed availability |
 | `/showcase` | Projects built on Vendra | First-party only |
+| `/about` | Team and open-development links | Real content |
 
 They are composed from `components/marketing.tsx`, which is deliberately *not*
 registered as global MDX components — a reference page should not be able to
@@ -243,17 +244,15 @@ itself; `app/globals.css` keeps only the shared tokens, the base layer, the
 Nextra chrome overrides, and the two `@keyframes` the utilities reference by
 name.
 
-### Placeholders
+### Draft and roadmap surfaces
 
-These ship with content that must be replaced before launch. Each carries a
-`TODO` block at the top of its file and a visible `<Notice>` on the page itself,
-so a draft cannot be mistaken for a finished one:
+These sections distinguish what ships from what is still planned, so a roadmap
+cannot be mistaken for an available product:
 
-- **`/pro`** — every price, seat count, and support window is invented, and the
-  CTAs point at `/faq`. Nothing on that page is a commercial offer.
-- **`/examples`, `/ui`** — entries without an `href` render as dashed,
-  non-clickable "Planned" cards. Give an entry an `href` and `check:links`
-  starts policing it like any other link.
+- **`/pro`** — prices are set, but sign-up and the advertised retention behavior
+  are not complete; the page remains visibly marked as a draft.
+- **`/examples`, `/ui`** — available work is shown first. Unavailable entries
+  are kept in compact roadmap lists rather than rendered as disabled cards.
 - **`/showcase`** deliberately lists only first-party projects. A fabricated
   showcase is a false endorsement, not a placeholder, so third-party entries go
   up as their owners agree to be named.
@@ -266,24 +265,26 @@ the permission gate, and its header says so — a wall of customer names is read
 as an endorsement, and one that has not been given is a false one. Adding a
 name is a decision about consent before it is a decision about design.
 
-Entries are set as logotypes in the site's own typography — an inline mark, the
-lead word, and a tracked line under it — rather than as uploaded logo files. The
-wall stays sharp at any size, correct in both themes, and free of image weight,
-and a business can go up without anyone chasing a vector file first.
+An entry can carry an approved monochrome logo asset. Until one is supplied it
+falls back to a small inline mark and typographic logotype, so the wall never
+invents or scrapes a customer's brand asset. Every customer receives the same
+visual treatment in the wall.
 
 ### Screenshots
 
-Outside four portraits, the site ships no images: it argues for a product with
-a user interface and shows none of it. `components/marketing.tsx` exports the
-frame those captures go in — a title bar, an address bar carrying the real
-host, and a fixed 16:10 plate.
+The site ships real English and Persian captures of the first-party Houshang
+Flowers storefront under `public/shots/`. `components/marketing.tsx` exports
+the frame around them — a title bar, an address bar carrying the real host, and
+a fixed 16:10 plate.
 
-Two slots take one:
+Three slots take one:
 
 - **Gallery cards** (`/`, `/examples`, `/ui`, `/showcase`) — give the item a
   `shot`, and the card leads with the framed capture instead of its title.
 - **`FeatureSplit` rows** — pass `media={<Screenshot shot={…} />}`. It sits
   above the points rather than replacing them.
+- **`FeaturedProject`** — gives one available project an editorial, screenshot-
+  first treatment and can layer a second locale capture over the first.
 
 ```tsx
 shot: {
@@ -300,24 +301,19 @@ else is cropped to that ratio from the top, so put the subject high in frame.
 `alt` describes what the reader would see, not the page's title. Both `width`
 and `height` are required — without them the card reflows when the image lands.
 
-Capture a whole gallery or none of it. The cards share a height but top-align
-their content, so one captured card among three drops its title a frame below
-its neighbours'. An item with no `shot` renders exactly as it does today: there
-is no skeleton and no greyed-out mock, because a picture of a panel that does
-not exist is the same false promise `/showcase` already refuses to make.
-
-`PropertyRouting` on the landing page is the other kind of figure — drawn, not
-captured. Every string in it (`<slug>.vendra.test`, `api.vendra.test`, the
-florist reference storefront) is one the documentation already commits to.
+An item with no `shot` gets no skeleton or greyed-out mock. The landing page's
+platform and controller visuals are code-native summaries of documented panel
+domains, package counts, commands, and health states—not simulated production
+data.
 
 ### Navigation
 
-The navbar groups documentation under **Learn** and **Reference** menus, in
-React Flow's shape. That grouping is presentational and lives in
-`lib/navigation.ts`: no page moved into a `/learn` or `/reference` directory, so
-every documentation URL is the one it has always been. `app/_meta.tsx` remains
-the single source of truth for labels and sidebar order, and
-`lib/navigation.ts` reads from it.
+The navbar groups the Storefront, Platform, and Controller references under a
+**Product** menu. That grouping is presentational and lives in
+`lib/navigation.ts`: every documentation URL remains the one it has always
+been. Examples, UI, and FAQ stay available in the footer rather than competing
+for primary-navigation space. `app/_meta.tsx` remains the single source of truth
+for labels and sidebar order, and `lib/navigation.ts` reads from it.
 
 ## Deployment
 
