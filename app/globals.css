@@ -1611,6 +1611,41 @@ a.vw-logo:hover .vw-logo-mark {
   gap: 0.25rem;
 }
 
+.vw-header-theme-switch {
+  margin-left: 0.35rem;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--vendra-line);
+}
+
+.vw-header-theme-switch button {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--vendra-line);
+  border-radius: 999px;
+  background: var(--vendra-surface);
+  color: var(--vendra-fg-muted);
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.vw-header-theme-switch button:hover {
+  border-color: color-mix(in srgb, var(--vendra-accent), transparent 40%);
+  background: var(--vendra-muted);
+  color: var(--vendra-fg);
+  transform: rotate(8deg);
+}
+
+.vw-header-theme-switch svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
 .vw-topnav-link,
 .vw-navmenu-trigger {
   display: inline-flex;

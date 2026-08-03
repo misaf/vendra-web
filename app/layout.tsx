@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { Inter, JetBrains_Mono, Vazirmatn } from 'next/font/google'
-import { Layout, Navbar, Footer } from 'nextra-theme-docs'
+import { Layout, Navbar, Footer, ThemeSwitch } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Head } from 'nextra/components'
 import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
@@ -174,6 +174,7 @@ export default async function RootLayout({
           keep their original top-level slugs — the grouping is presentational,
           so no URL moved. See `lib/navigation.ts`. */}
       <TopNavigation groups={navGroups} sections={navSections} />
+      <ThemeSwitch lite className="vw-header-theme-switch" />
     </Navbar>
   )
 
