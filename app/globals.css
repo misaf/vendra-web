@@ -1650,19 +1650,83 @@ a.vw-logo:hover .vw-logo-mark {
   text-align: center;
 }
 
-.vw-team-photo {
+/* The SVG that carries the duotone filter. It must be in the document to be
+   referenced by `filter: url(#…)`, but it draws nothing itself. */
+.vw-portrait-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Portrait treatment: violet duotone, halftone dither, and an edge that fades
+   into the page.
+
+   The fade is doing real work, not decoration. These are photographs taken in
+   actual rooms, and there is no cutout — dissolving the outer third is what
+   stops a kitchen or a brick wall from turning up in a team grid. */
+.vw-team-frame {
+  position: relative;
+  display: block;
   width: 10rem;
   height: 10rem;
   border-radius: 50%;
-  border: 1px solid var(--vendra-line);
-  object-fit: cover;
-  transition:
-    border-color 150ms ease,
-    transform 150ms ease;
+  overflow: hidden;
+  transition: transform 150ms ease;
 }
 
-.vw-team-link:hover .vw-team-photo {
-  border-color: var(--vendra-accent);
+.vw-team-photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: url(#vendra-duotone);
+  mask-image: radial-gradient(
+    circle at 50% 40%,
+    black 44%,
+    rgb(0 0 0 / 0.5) 68%,
+    transparent 97%
+  );
+}
+
+/* A vignette over the fade. The photographs have bright backgrounds — a window
+   behind one, a lit wall behind the other — and no cutout, so without this the
+   brightest thing in the frame is the room rather than the face. */
+.vw-team-frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at 50% 40%,
+    transparent 42%,
+    rgb(10 6 24 / 0.28) 74%,
+    rgb(10 6 24 / 0.7) 100%
+  );
+  pointer-events: none;
+}
+
+/* The dither. A dot grid at 3px, screened over the duotone, which is what gives
+   the portraits their printed-poster texture rather than a smooth gradient
+   filter look. */
+.vw-team-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(
+    circle at center,
+    rgb(0 0 0 / 0.6) 30%,
+    transparent 31%
+  );
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.vw-team-link:hover .vw-team-frame {
   transform: translateY(-2px);
 }
 

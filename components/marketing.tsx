@@ -503,6 +503,59 @@ export function FaqList({
 /* -------------------------------------------------------------------------- */
 
 /**
+ * The duotone used on the team portraits, as an SVG filter.
+ *
+ * The portraits are ordinary photographs taken in ordinary rooms; the filter is
+ * what makes them look like they belong on the same page. Luminance is
+ * flattened to grey, pushed for contrast, then mapped onto a four-stop violet
+ * ramp — shadows to near-black, midtones to the brand violet, highlights to a
+ * pale lavender. `.vw-team-frame` in `app/globals.css` adds the halftone dither
+ * and the edge fade on top.
+ *
+ * Done as a filter rather than by editing the image files so the source
+ * photographs stay untouched and replaceable: drop in a new JPEG and it
+ * arrives already in the house style, with no export step to remember.
+ */
+function PortraitFilter() {
+  return (
+    <svg className="vw-portrait-filter" aria-hidden="true" focusable="false">
+      <defs>
+        <filter
+          id="vendra-duotone"
+          colorInterpolationFilters="sRGB"
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+        >
+          {/* Rec. 709 luminance, so skin tones and hair separate the way the
+              eye expects rather than by raw channel average. */}
+          <feColorMatrix
+            type="matrix"
+            values="0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0.2126 0.7152 0.0722 0 0
+                    0      0      0      1 0"
+          />
+          {/* Contrast first: the ramp below has nothing to grip on a flat,
+              evenly-lit phone photo. */}
+          <feComponentTransfer>
+            <feFuncR type="linear" slope="1.35" intercept="-0.18" />
+            <feFuncG type="linear" slope="1.35" intercept="-0.18" />
+            <feFuncB type="linear" slope="1.35" intercept="-0.18" />
+          </feComponentTransfer>
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues="0.05 0.29 0.63 0.96" />
+            <feFuncG type="table" tableValues="0.04 0.19 0.51 0.94" />
+            <feFuncB type="table" tableValues="0.11 0.55 0.87 1" />
+          </feComponentTransfer>
+        </filter>
+      </defs>
+    </svg>
+  )
+}
+
+/**
  * The people behind Vendra.
  *
  * Deliberately distinct from `LogoWall`, which is the customer social-proof
@@ -517,18 +570,21 @@ export function FaqList({
 export function TeamGrid({ members }: { members: TeamMember[] }) {
   return (
     <div className="vw-team">
+      <PortraitFilter />
       {members.map(member => {
         const portrait = (
           <>
-            <img
-              className="vw-team-photo"
-              src={member.photo}
-              alt={`${member.name}, ${member.role}`}
-              width={320}
-              height={320}
-              loading="lazy"
-              decoding="async"
-            />
+            <span className="vw-team-frame">
+              <img
+                className="vw-team-photo"
+                src={member.photo}
+                alt={`${member.name}, ${member.role}`}
+                width={320}
+                height={320}
+                loading="lazy"
+                decoding="async"
+              />
+            </span>
             <div className="vw-team-name">{member.name}</div>
             <div className="vw-team-role">{member.role}</div>
             {member.bio ? <p className="vw-team-bio">{member.bio}</p> : null}
