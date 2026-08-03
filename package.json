@@ -15,11 +15,12 @@
     "check:links": "node scripts/check-links.mjs",
     "check:drift": "node scripts/check-drift.mjs",
     "check:html": "node scripts/check-html.mjs",
+    "check:selectors": "node scripts/check-selectors.mjs",
     "check:blog": "node scripts/check-blog.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "node --test \"scripts/**/*.test.mjs\"",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run check:links && npm run check:drift && npm run check:blog && npm test && npm run build && npm run check:html"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run check:links && npm run check:drift && npm run check:blog && npm test && npm run build && npm run check:html && npm run check:selectors"
   },
   "dependencies": {
     "next": "^16.2.12",
