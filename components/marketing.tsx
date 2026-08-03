@@ -7,8 +7,8 @@
  * wider, louder, and deliberately not registered as global MDX components, so a
  * docs page cannot accidentally drop a pricing table into a reference section.
  *
- * Styling reuses the `.vendra-*` tokens and adds a `.vw-*` layer in
- * `app/globals.css` for the marketing-only pieces.
+ * Styling uses Tailwind utilities directly. Global CSS is reserved for shared
+ * tokens and the few diagrams/effects that need complex selectors.
  */
 
 import type { ReactNode } from 'react'
@@ -41,13 +41,29 @@ export function Section({
   align?: 'left' | 'center'
 }) {
   return (
-    <section className={`vw-section vw-section-${tone}`}>
-      <div className="vw-container">
+    <section
+      className={`relative py-18 ${tone === 'muted' ? 'border-y border-[var(--vendra-line)] bg-[var(--vendra-muted)] before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(var(--vendra-line)_1px,transparent_1px),linear-gradient(90deg,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[3rem_3rem] before:opacity-22 before:[mask-image:radial-gradient(circle_at_50%_50%,black,transparent_75%)]' : ''}`}
+    >
+      <div className="relative mx-auto w-full max-w-6xl px-6">
         {eyebrow || title || lede ? (
-          <header className={`vw-section-head vw-align-${align}`}>
-            {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
-            {title ? <h2 className="vw-section-title">{title}</h2> : null}
-            {lede ? <p className="vw-section-lede">{lede}</p> : null}
+          <header
+            className={`mb-10 max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}
+          >
+            {eyebrow ? (
+              <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+                {eyebrow}
+              </div>
+            ) : null}
+            {title ? (
+              <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+                {title}
+              </h2>
+            ) : null}
+            {lede ? (
+              <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
+                {lede}
+              </p>
+            ) : null}
           </header>
         ) : null}
         {children}
@@ -66,14 +82,17 @@ export function Actions({
     external?: boolean
   }[]
 }) {
+  const buttonClass = (primary?: boolean) =>
+    `inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold no-underline transition ${primary ? 'border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800 dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-300' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`
+
   return (
-    <div className="vw-actions">
+    <div className="mt-8 flex flex-wrap gap-3">
       {items.map(item =>
         item.external ? (
           <a
             key={item.href}
             href={item.href}
-            className={`vendra-btn ${item.primary ? 'vendra-btn-primary' : 'vendra-btn-secondary'}`}
+            className={buttonClass(item.primary)}
             rel="noreferrer"
             target="_blank"
           >
@@ -83,7 +102,7 @@ export function Actions({
           <Link
             key={item.href}
             href={item.href}
-            className={`vendra-btn ${item.primary ? 'vendra-btn-primary' : 'vendra-btn-secondary'}`}
+            className={buttonClass(item.primary)}
           >
             {item.label}
           </Link>
@@ -112,18 +131,31 @@ export function LandingHero({
   chips?: string[]
 }) {
   return (
-    <section className="vw-hero">
+    <section className="relative overflow-hidden py-16 min-[36rem]:pt-20 before:absolute before:inset-0 before:-z-1 before:bg-[radial-gradient(circle_at_12%_-10%,rgb(124_58_237/12%),transparent_32rem),radial-gradient(circle_at_88%_0%,rgb(14_165_233/10%),transparent_28rem)] max-[36rem]:py-12">
       <HeroCanvas />
-      <div className="vw-container vw-hero-layout">
-        <div className="vw-hero-copy">
-          {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
-          <h1 className="vw-hero-title">{title}</h1>
-          {children ? <div className="vw-hero-lede">{children}</div> : null}
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1.08fr)_minmax(23rem,0.92fr)] items-center gap-[clamp(2.5rem,6vw,6.5rem)] px-6 max-[64rem]:grid-cols-1">
+        <div className="max-[64rem]:max-w-3xl">
+          {eyebrow ? (
+            <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+              {eyebrow}
+            </div>
+          ) : null}
+          <h1 className="mt-4 max-w-[17ch] text-[clamp(2.25rem,6vw,4rem)] leading-[1.03] font-[750] tracking-[-0.045em]">
+            {title}
+          </h1>
+          {children ? (
+            <div className="mt-6 max-w-160 text-lg leading-[1.8] text-[var(--vendra-fg-subtle)]">
+              {children}
+            </div>
+          ) : null}
           <Actions items={actions} />
           {chips.length ? (
-            <div className="vw-hero-chips">
+            <div className="mt-9 flex flex-wrap gap-2">
               {chips.map(chip => (
-                <span key={chip} className="vendra-chip">
+                <span
+                  key={chip}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)]"
+                >
                   {chip}
                 </span>
               ))}
@@ -163,38 +195,63 @@ const heroSystems = [
 function HeroArchitecture() {
   return (
     <div
-      className="vw-hero-architecture"
+      className="relative w-full max-w-xl rounded-[1.25rem] border border-[var(--vendra-line-strong)] bg-[linear-gradient(var(--vendra-surface-raised),var(--vendra-surface-raised))_padding-box,linear-gradient(145deg,rgb(124_58_237/35%),rgb(16_185_129/15%))_border-box] p-3 shadow-[0_30px_80px_-45px_rgb(18_18_30/55%)] backdrop-blur-2xl before:absolute before:inset-[2rem_12%_1rem] before:-z-1 before:bg-[var(--vendra-accent)] before:opacity-10 before:blur-[5rem]"
       aria-label="Vendra system architecture"
     >
-      <div className="vw-hero-architecture-head">
+      <div className="flex items-center justify-between gap-4 px-1 pt-1.5 pb-3.5 text-[0.6875rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase max-[36rem]:flex-col max-[36rem]:items-start max-[36rem]:gap-1.5">
         <span>One system</span>
-        <span className="vw-architecture-status">
-          <i aria-hidden="true" /> Three clear boundaries
+        <span className="inline-flex items-center gap-1.5">
+          <i
+            className="size-[0.45rem] rounded-full bg-[var(--vendra-accent)] shadow-[0_0_0.75rem_var(--vendra-accent)] [animation:vw-status-pulse_2.4s_ease-in-out_infinite]"
+            aria-hidden="true"
+          />{' '}
+          Three clear boundaries
         </span>
       </div>
-      <div className="vw-architecture-flow">
+      <div className="flex flex-col">
         {heroSystems.map((system, index) => (
-          <div className="vw-architecture-step" key={system.href}>
-            <Link className="vw-architecture-node" href={system.href}>
-              <span className="vw-architecture-index">{system.index}</span>
-              <span className="vw-architecture-node-copy">
-                <strong>{system.label}</strong>
-                <small>{system.role}</small>
+          <div key={system.href}>
+            <Link
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_25%)] hover:shadow-[0_12px_30px_-24px_var(--vendra-accent)]"
+              href={system.href}
+            >
+              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[var(--vendra-muted)] font-mono text-[0.7rem] font-[750] text-[var(--vendra-accent)]">
+                {system.index}
               </span>
-              <span className="vw-architecture-tech">{system.tech}</span>
+              <span className="flex min-w-0 flex-col gap-0.5">
+                <strong className="text-[0.925rem] tracking-[-0.015em]">
+                  {system.label}
+                </strong>
+                <small className="text-xs text-[var(--vendra-fg-subtle)]">
+                  {system.role}
+                </small>
+              </span>
+              <span className="font-mono text-[0.6875rem] text-[var(--vendra-fg-muted)] max-[36rem]:hidden">
+                {system.tech}
+              </span>
             </Link>
             {index < heroSystems.length - 1 ? (
-              <div className="vw-architecture-connector" aria-hidden="true">
-                <span />
-                <b>→</b>
+              <div
+                className="relative ml-4 grid h-7 w-8 place-items-center text-[var(--vendra-accent)]"
+                aria-hidden="true"
+              >
+                <span className="absolute h-full w-px bg-[var(--vendra-line-strong)]" />
+                <b
+                  className={`z-1 rotate-90 bg-[var(--vendra-surface-raised)] p-0.5 text-xs [animation:vw-flow-step_2.4s_ease-in-out_infinite] ${index === 1 ? '[animation-delay:0.8s]' : ''}`}
+                >
+                  →
+                </b>
               </div>
             ) : null}
           </div>
         ))}
       </div>
-      <div className="vw-architecture-loop" aria-hidden="true">
+      <div
+        className="flex items-center justify-between gap-4 px-1 pt-3.5 pb-1 text-[0.6875rem] font-bold tracking-[0.04em] text-[var(--vendra-fg-subtle)]"
+        aria-hidden="true"
+      >
         <span>merchant intent</span>
-        <i />
+        <i className="h-px flex-1 bg-linear-to-r from-transparent via-[var(--vendra-line-strong)] to-transparent" />
         <span>customer experience</span>
       </div>
     </div>
@@ -220,28 +277,47 @@ export function StackDiagram({
   }[]
 }) {
   return (
-    <div className="vw-stack" role="list">
+    <div
+      className="flex flex-col items-stretch min-[60rem]:grid min-[60rem]:grid-cols-3 min-[60rem]:gap-4"
+      role="list"
+    >
       {tiers.map((tier, i) => (
-        <div className="vw-stack-row" key={tier.href} role="listitem">
-          <Link href={tier.href} className="vw-stack-tier">
-            <div className="vw-stack-head">
-              <span className="vw-stack-label">{tier.label}</span>
-              <span className="vendra-tag vendra-tag-neutral">{tier.tech}</span>
+        <div className="min-[60rem]:contents" key={tier.href} role="listitem">
+          <Link
+            href={tier.href}
+            className="block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.5 hover:border-[var(--vendra-accent)]"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[1.05rem] font-[650] tracking-[-0.02em]">
+                {tier.label}
+              </span>
+              <span className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)]">
+                {tier.tech}
+              </span>
             </div>
-            <div className="vw-stack-role">{tier.role}</div>
-            <p className="vw-stack-detail">{tier.detail}</p>
+            <div className="mt-1.5 text-[0.8125rem] font-semibold tracking-[0.04em] text-[var(--vendra-fg-subtle)] uppercase">
+              {tier.role}
+            </div>
+            <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[var(--vendra-fg-subtle)]">
+              {tier.detail}
+            </p>
             <div
-              className={`vw-stack-preview vw-stack-preview-${i}`}
+              className={`mt-4 grid h-18 gap-1.5 overflow-hidden rounded-[0.6rem] border border-[var(--vendra-line)] bg-[var(--vendra-muted)] p-2.5 [&>span]:block [&>span]:min-h-1.5 [&>span]:rounded-full [&>span]:bg-[var(--vendra-line-strong)] ${i === 1 ? 'grid-cols-3' : i === 2 ? 'grid-cols-[0.55fr_1.45fr]' : 'grid-cols-[1.3fr_0.8fr]'}`}
               aria-hidden="true"
             >
-              <span className="vw-stack-preview-bar" />
+              <span
+                className={`${i === 1 ? '!col-span-3' : '!row-span-3'} !rounded-md !bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent),transparent_72%),color-mix(in_srgb,#7c3aed,transparent_82%))]`}
+              />
               <span />
               <span />
               <span />
             </div>
           </Link>
           {i < tiers.length - 1 ? (
-            <div className="vw-stack-arrow" aria-hidden="true">
+            <div
+              className="py-2 text-center text-[var(--vendra-fg-subtle)] min-[60rem]:hidden"
+              aria-hidden="true"
+            >
               ↓
             </div>
           ) : null}
@@ -251,9 +327,10 @@ export function StackDiagram({
   )
 }
 
-/** Alternating text/visual feature band. */
+/** Alternating editorial rows for the architectural reasons behind Vendra. */
 export function FeatureSplit({
   eyebrow,
+  index,
   title,
   children,
   points = [],
@@ -261,6 +338,7 @@ export function FeatureSplit({
   flip = false
 }: {
   eyebrow?: string
+  index?: string
   title: ReactNode
   children?: ReactNode
   points?: string[]
@@ -268,20 +346,45 @@ export function FeatureSplit({
   flip?: boolean
 }) {
   return (
-    <div className={`vw-split ${flip ? 'vw-split-flip' : ''}`}>
-      <div className="vw-split-copy">
-        {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
-        <h3 className="vw-split-title">{title}</h3>
-        {children ? <div className="vw-split-body">{children}</div> : null}
+    <div className="group relative grid items-start gap-10 border-t border-[var(--vendra-line)] py-14 first:border-t-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.95fr)] lg:gap-20">
+      <div className={flip ? 'lg:order-2' : ''}>
+        {eyebrow || index ? (
+          <div className="flex items-center gap-3 text-xs font-semibold tracking-[0.16em] uppercase">
+            {index ? (
+              <span className="font-mono tracking-normal text-[var(--vendra-accent)]">
+                {index}
+              </span>
+            ) : null}
+            {eyebrow ? (
+              <span className="text-[var(--vendra-fg-subtle)]">{eyebrow}</span>
+            ) : null}
+          </div>
+        ) : null}
+        <h3 className="mt-3 max-w-xl text-[clamp(1.5rem,3vw,2rem)] leading-tight font-bold tracking-[-0.03em]">
+          {title}
+        </h3>
+        {children ? (
+          <div className="mt-3 leading-7 text-[var(--vendra-fg-subtle)]">
+            {children}
+          </div>
+        ) : null}
         {action ? (
-          <Link className="vw-arrow-link" href={action.href}>
+          <Link
+            className="group mt-5 inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)]"
+            href={action.href}
+          >
             {action.label} <span aria-hidden="true">→</span>
           </Link>
         ) : null}
       </div>
-      <ul className="vw-split-points">
+      <ul className="m-0 overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-0 shadow-[0_18px_45px_-42px_var(--vendra-fg)]">
         {points.map(point => (
-          <li key={point}>{point}</li>
+          <li
+            className="relative border-t border-[var(--vendra-line)] py-4 pr-5 pl-11 text-[0.9375rem] leading-6 first:border-t-0 before:absolute before:top-[1.4rem] before:left-5 before:size-1.5 before:rounded-full before:bg-[var(--vendra-accent)] before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--vendra-accent),transparent_88%)]"
+            key={point}
+          >
+            {point}
+          </li>
         ))}
       </ul>
     </div>
@@ -348,14 +451,14 @@ const customerMarks: Record<CustomerMark, ReactNode> = {
  */
 export function LogoWall({ customers }: { customers: Customer[] }) {
   return (
-    <div className="vw-logos">
+    <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-6">
       {customers.map(customer => {
         // A plain <a>, not next/link: these are other people's sites, so there
         // is no route to prefetch and nothing for `basePath` to rewrite.
         const Tag = customer.href ? 'a' : 'div'
         return (
           <Tag
-            className="vw-logo"
+            className="group flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
             key={customer.name}
             title={customer.name}
             {...(customer.href
@@ -367,7 +470,7 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               : {})}
           >
             <svg
-              className="vw-logo-mark"
+              className="size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -378,10 +481,14 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
             >
               {customerMarks[customer.mark]}
             </svg>
-            <span className="vw-logo-type">
-              <span className="vw-logo-lead">{customer.lead}</span>
+            <span className="flex flex-col leading-none">
+              <span className="text-lg font-bold tracking-tight">
+                {customer.lead}
+              </span>
               {customer.sub ? (
-                <span className="vw-logo-sub">{customer.sub}</span>
+                <span className="mt-1 text-[0.6rem] font-semibold tracking-[0.22em] uppercase opacity-80">
+                  {customer.sub}
+                </span>
               ) : null}
             </span>
           </Tag>
@@ -398,11 +505,13 @@ export function Quickstart({
   steps: { label: string; command: string }[]
 }) {
   return (
-    <div className="vw-quickstart">
+    <div className="grid gap-4 md:grid-cols-3">
       {steps.map(step => (
-        <div className="vw-quickstart-step" key={step.command}>
-          <div className="vw-quickstart-label">{step.label}</div>
-          <pre className="vw-quickstart-code">
+        <div key={step.command}>
+          <div className="mb-2 text-xs font-bold tracking-[0.12em] text-[var(--vendra-fg-subtle)] uppercase">
+            {step.label}
+          </div>
+          <pre className="m-0 overflow-x-auto rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-muted)] px-4 py-3.5 font-mono text-[0.8125rem] leading-6">
             <code>{step.command}</code>
           </pre>
         </div>
@@ -433,21 +542,27 @@ export type GalleryItem = {
  */
 export function Gallery({ items }: { items: GalleryItem[] }) {
   return (
-    <div className="vw-gallery">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-4">
       {items.map(item => {
         const body = (
           <>
-            <div className="vw-card-head">
-              <h3 className="vw-card-title">{item.title}</h3>
+            <div className="flex items-start justify-between gap-3">
+              <h3 className="text-base font-semibold tracking-tight">
+                {item.title}
+              </h3>
               {item.tag ? (
-                <span className="vendra-tag vendra-tag-neutral">
+                <span className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)]">
                   {item.tag}
                 </span>
               ) : null}
             </div>
-            <p className="vw-card-desc">{item.description}</p>
+            <p className="mt-2 text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+              {item.description}
+            </p>
             {item.planned ? (
-              <span className="vw-card-planned">Planned</span>
+              <span className="mt-3 self-start rounded-md border border-dashed border-[var(--vendra-line)] px-2 py-0.5 text-xs">
+                Planned
+              </span>
             ) : null}
           </>
         )
@@ -456,12 +571,15 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
           <Link
             key={item.title}
             href={item.href}
-            className="vw-card vw-card-link"
+            className="flex flex-col rounded-xl border border-[var(--vendra-line)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[var(--vendra-accent)]"
           >
             {body}
           </Link>
         ) : (
-          <div key={item.title} className="vw-card vw-card-static">
+          <div
+            key={item.title}
+            className="flex flex-col rounded-xl border border-dashed border-[var(--vendra-line)] px-5 py-4 opacity-75"
+          >
             {body}
           </div>
         )
@@ -477,12 +595,14 @@ export function GalleryGroup({
   groups: { title: string; description?: string; items: GalleryItem[] }[]
 }) {
   return (
-    <div className="vw-gallery-groups">
+    <div className="flex flex-col gap-12">
       {groups.map(group => (
         <div key={group.title}>
-          <h3 className="vw-group-title">{group.title}</h3>
+          <h3 className="text-xl font-bold tracking-tight">{group.title}</h3>
           {group.description ? (
-            <p className="vw-group-desc">{group.description}</p>
+            <p className="mt-1.5 mb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+              {group.description}
+            </p>
           ) : null}
           <Gallery items={group.items} />
         </div>
@@ -515,31 +635,42 @@ export type Plan = {
  */
 export function PricingTable({ plans }: { plans: Plan[] }) {
   return (
-    <div className="vw-plans">
+    <div className="grid gap-4 lg:grid-cols-3">
       {plans.map(plan => (
         <div
           key={plan.name}
-          className={`vw-plan ${plan.featured ? 'vw-plan-featured' : ''}`}
+          className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[0_20px_50px_-35px_var(--vendra-accent)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
         >
           {plan.featured ? (
-            <div className="vw-plan-badge">Most popular</div>
+            <div className="absolute -top-3 left-5 rounded-full bg-[var(--vendra-accent)] px-3 py-1 text-xs font-bold text-white">
+              Most popular
+            </div>
           ) : null}
-          <h3 className="vw-plan-name">{plan.name}</h3>
-          <div className="vw-plan-price">
+          <h3 className="text-lg font-bold tracking-tight">{plan.name}</h3>
+          <div className="mt-4 text-3xl font-bold tracking-tight">
             {plan.price}
             {plan.cadence ? (
-              <span className="vw-plan-cadence">{plan.cadence}</span>
+              <span className="ml-1 text-sm font-normal text-[var(--vendra-fg-subtle)]">
+                {plan.cadence}
+              </span>
             ) : null}
           </div>
-          <p className="vw-plan-summary">{plan.summary}</p>
-          <ul className="vw-plan-features">
+          <p className="mt-3 text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+            {plan.summary}
+          </p>
+          <ul className="my-5 flex flex-1 list-none flex-col gap-2 p-0 text-sm">
             {plan.features.map(feature => (
-              <li key={feature}>{feature}</li>
+              <li
+                className="flex gap-2 before:text-[var(--vendra-accent)] before:content-['✓']"
+                key={feature}
+              >
+                {feature}
+              </li>
             ))}
           </ul>
           <Link
             href={plan.cta.href}
-            className={`vendra-btn ${plan.featured ? 'vendra-btn-primary' : 'vendra-btn-secondary'} vw-plan-cta`}
+            className={`inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition ${plan.featured ? 'border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800 dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
           >
             {plan.cta.label}
           </Link>
@@ -558,9 +689,11 @@ export function Notice({
   children: ReactNode
 }) {
   return (
-    <div className="vw-notice">
-      <div className="vw-notice-title">{title}</div>
-      <div className="vw-notice-body">{children}</div>
+    <div className="rounded-xl border border-[color-mix(in_srgb,var(--vendra-accent),transparent_55%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_94%)] p-5">
+      <div className="text-sm font-bold text-[var(--vendra-fg)]">{title}</div>
+      <div className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+        {children}
+      </div>
     </div>
   )
 }
@@ -572,11 +705,18 @@ export function FaqList({
   items: { question: string; answer: ReactNode }[]
 }) {
   return (
-    <div className="vw-faq">
+    <div className="flex flex-col border-t border-[var(--vendra-line)]">
       {items.map(item => (
-        <details key={item.question} className="vw-faq-item">
-          <summary className="vw-faq-q">{item.question}</summary>
-          <div className="vw-faq-a">{item.answer}</div>
+        <details
+          key={item.question}
+          className="group border-b border-[var(--vendra-line)]"
+        >
+          <summary className="cursor-pointer list-none py-4 text-base font-semibold [&::-webkit-details-marker]:hidden after:float-right after:text-[var(--vendra-fg-subtle)] after:content-['+'] group-open:after:content-['−']">
+            {item.question}
+          </summary>
+          <div className="pb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+            {item.answer}
+          </div>
         </details>
       ))}
     </div>
@@ -594,8 +734,8 @@ export function FaqList({
  * what makes them look like they belong on the same page. Luminance is
  * flattened to grey, pushed for contrast, then mapped onto a four-stop violet
  * ramp — shadows to near-black, midtones to the brand violet, highlights to a
- * pale lavender. `.vw-team-frame` in `app/globals.css` adds the halftone dither
- * and the edge fade on top.
+ * pale lavender. Tailwind pseudo-element utilities add the halftone dither and
+ * edge fade on top.
  *
  * Done as a filter rather than by editing the image files so the source
  * photographs stay untouched and replaceable: drop in a new JPEG and it
@@ -603,7 +743,7 @@ export function FaqList({
  */
 function PortraitFilter() {
   return (
-    <svg className="vw-portrait-filter" aria-hidden="true" focusable="false">
+    <svg className="absolute size-0" aria-hidden="true" focusable="false">
       <defs>
         <filter
           id="vendra-duotone"
@@ -657,7 +797,11 @@ function SocialIcon({ label }: { label: string }) {
   }
 
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" className="vw-social-icon">
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="size-3.5 shrink-0 fill-current"
+    >
       {paths[label]}
     </svg>
   )
@@ -676,15 +820,25 @@ function SocialIcon({ label }: { label: string }) {
  * viewport.
  */
 export function TeamGrid({ members }: { members: TeamMember[] }) {
+  const socialHover: Record<string, string> = {
+    GitHub: 'hover:border-[#6e7681] hover:text-[var(--vendra-fg)]',
+    LinkedIn: 'hover:border-[#0a66c2] hover:text-[#0a66c2]',
+    Instagram: 'hover:border-[#d946ef] hover:text-[#c026d3]',
+    YouTube: 'hover:border-[#ff0033] hover:text-[#e6002e]'
+  }
+
   return (
-    <div className="vw-team">
+    <div className="mx-auto grid max-w-5xl grid-cols-[repeat(auto-fit,minmax(17rem,1fr))] gap-6">
       <PortraitFilter />
       {members.map(member => {
         return (
-          <div key={member.name} className="vw-team-member">
-            <span className="vw-team-frame">
+          <div
+            key={member.name}
+            className="group flex flex-col items-center rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-6 pt-8 pb-6 text-center transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_50%)] hover:shadow-[0_22px_45px_-38px_var(--vendra-accent)]"
+          >
+            <span className="relative block size-40 overflow-hidden rounded-full transition-transform before:pointer-events-none before:absolute before:inset-0 before:z-1 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_50%_40%,transparent_42%,rgb(10_6_24/28%)_74%,rgb(10_6_24/70%)_100%)] after:pointer-events-none after:absolute after:inset-0 after:z-2 after:rounded-[inherit] after:bg-[radial-gradient(circle_at_center,rgb(0_0_0/60%)_30%,transparent_31%)] after:bg-size-[3px_3px] after:opacity-60 after:mix-blend-overlay group-hover:scale-[1.025]">
               <img
-                className="vw-team-photo"
+                className="block size-full object-cover [filter:url(#vendra-duotone)] [mask-image:radial-gradient(circle_at_50%_40%,black_44%,rgb(0_0_0/50%)_68%,transparent_97%)]"
                 src={member.photo}
                 alt={`${member.name}, ${member.role}`}
                 width={320}
@@ -693,18 +847,27 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
                 decoding="async"
               />
             </span>
-            <div className="vw-team-name">{member.name}</div>
-            <div className="vw-team-role">{member.role}</div>
-            {member.bio ? <p className="vw-team-bio">{member.bio}</p> : null}
+            <div className="mt-4 text-[1.05rem] font-semibold tracking-tight">
+              {member.name}
+            </div>
+            <div className="mt-1 text-xs font-bold tracking-[0.1em] text-[var(--vendra-accent)] uppercase">
+              {member.role}
+            </div>
+            {member.bio ? (
+              <p className="mt-2.5 max-w-sm text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+                {member.bio}
+              </p>
+            ) : null}
             {member.links?.length ? (
               <div
-                className="vw-team-socials"
+                className="mt-4 flex flex-wrap justify-center gap-1.5"
                 aria-label={`${member.name}'s profiles`}
               >
                 {member.links.map(link => (
                   <a
                     key={link.href}
                     href={link.href}
+                    className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--vendra-fg-muted)] transition hover:-translate-y-px hover:bg-[var(--vendra-muted)] ${socialHover[link.label] ?? 'hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
                     rel="noreferrer"
                     target="_blank"
                   >
