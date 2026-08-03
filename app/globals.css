@@ -1648,6 +1648,7 @@ a.vw-logo:hover .vw-logo-mark {
 
 .vw-topnav-link,
 .vw-navmenu-trigger {
+  position: relative;
   display: inline-flex;
   min-height: 2.25rem;
   align-items: center;
@@ -1658,6 +1659,18 @@ a.vw-logo:hover .vw-logo-mark {
   transition:
     background 150ms ease,
     color 150ms ease;
+}
+
+.vw-topnav-link[aria-current='page']::after,
+.vw-navmenu-trigger[data-active]::after {
+  content: '';
+  position: absolute;
+  right: 0.65rem;
+  bottom: 0.2rem;
+  left: 0.65rem;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--vendra-accent);
 }
 
 .vw-topnav-link {
@@ -1762,7 +1775,28 @@ a.vw-logo:hover .vw-logo-mark {
   color: var(--vendra-fg);
 }
 
-.vw-navmenu-item span {
+.vw-navmenu-item-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.vw-navmenu-item-main i {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.4rem;
+  background: var(--vendra-surface);
+  color: var(--vendra-accent);
+  font-family: var(--x-font-mono);
+  font-size: 0.65rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.vw-navmenu-arrow {
   color: var(--vendra-fg-subtle);
   opacity: 0;
   translate: -0.2rem 0;
@@ -1771,8 +1805,8 @@ a.vw-logo:hover .vw-logo-mark {
     translate 150ms ease;
 }
 
-.vw-navmenu-item:hover span,
-.vw-navmenu-item[aria-current='page'] span {
+.vw-navmenu-item:hover .vw-navmenu-arrow,
+.vw-navmenu-item[aria-current='page'] .vw-navmenu-arrow {
   opacity: 1;
   translate: 0;
 }
@@ -1783,7 +1817,7 @@ a.vw-logo:hover .vw-logo-mark {
   display: grid;
   gap: 2rem 1.5rem;
   grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  max-width: 56rem;
+  max-width: 62rem;
   margin-inline: auto;
 }
 

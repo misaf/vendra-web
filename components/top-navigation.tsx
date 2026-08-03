@@ -45,8 +45,13 @@ function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
               className="vw-navmenu-item"
               aria-current={current ? 'page' : undefined}
             >
-              {item.label}
-              <span aria-hidden="true">→</span>
+              <span className="vw-navmenu-item-main">
+                <i aria-hidden="true">{item.label.slice(0, 1)}</i>
+                {item.label}
+              </span>
+              <span className="vw-navmenu-arrow" aria-hidden="true">
+                →
+              </span>
             </Link>
           )
         })}
