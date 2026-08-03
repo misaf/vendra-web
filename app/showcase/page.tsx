@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Actions, Gallery, Notice, Section } from '../../components/marketing'
+import { Gallery, Notice, Section } from '../../components/marketing'
 
 export const metadata: Metadata = {
   title: 'Showcase',
@@ -69,20 +69,14 @@ export default function ShowcasePage() {
         <Gallery items={projects} />
       </Section>
 
-      <Section tone="muted">
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
-            Building something on Vendra?
-          </h2>
-          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
-            We would like to feature it. Start a conversation and we will put
-            together a short case study.
-          </p>
-          <Actions
-            items={[{ href: '/faq', label: 'Get in touch', primary: true }]}
-          />
-        </div>
-      </Section>
+      <Section
+        align="center"
+        size="lg"
+        title="Building something on Vendra?"
+        lede="We would like to feature it. Start a conversation and we will put together a short case study."
+        tone="muted"
+        actions={[{ href: '/faq', label: 'Get in touch', primary: true }]}
+      />
     </>
   )
 }
