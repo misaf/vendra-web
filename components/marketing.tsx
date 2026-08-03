@@ -16,6 +16,7 @@ import Link from 'next/link'
 import type { TeamMember } from '../lib/team'
 import type { Customer, CustomerMark } from '../lib/customers'
 import { HeroCanvas } from './hero-canvas'
+import { Chevron } from './icons'
 
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
@@ -30,19 +31,30 @@ export function Section({
   eyebrow,
   title,
   lede,
+  actions,
   tone = 'plain',
-  align = 'left'
+  align = 'left',
+  size = 'default'
 }: {
   children?: ReactNode
   eyebrow?: string
   title?: ReactNode
   lede?: ReactNode
+  /** Calls to action under the lede — closing bands, mostly. */
+  actions?: ActionItem[]
   tone?: 'plain' | 'muted'
   align?: 'left' | 'center'
+  /**
+   * `lg` for a band that should land — the closing call to action. Every
+   * section carrying identical padding is why the page reads as a list of
+   * equals with no arrival at the end of it; this is the one lever that says
+   * "stop here", so spending it more than once a page spends it on nothing.
+   */
+  size?: 'default' | 'lg'
 }) {
   return (
     <section
-      className={`relative py-18 ${tone === 'muted' ? 'border-y border-[var(--vendra-line)] bg-[var(--vendra-muted)] before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(var(--vendra-line)_1px,transparent_1px),linear-gradient(90deg,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[3rem_3rem] before:opacity-22 before:[mask-image:radial-gradient(circle_at_50%_50%,black,transparent_75%)]' : ''}`}
+      className={`relative ${size === 'lg' ? 'py-20 md:py-30' : 'py-14 md:py-18'} ${tone === 'muted' ? 'border-y border-[var(--vendra-line)] bg-[var(--vendra-muted)] before:pointer-events-none before:absolute before:inset-0 before:bg-[linear-gradient(var(--vendra-line)_1px,transparent_1px),linear-gradient(90deg,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[3rem_3rem] before:opacity-30 before:[mask-image:radial-gradient(circle_at_50%_50%,black,transparent_75%)]' : ''}`}
     >
       <div className="relative mx-auto w-full max-w-6xl px-6">
         {eyebrow || title || lede ? (
@@ -55,15 +67,16 @@ export function Section({
               </div>
             ) : null}
             {title ? (
-              <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+              <h2 className={`text-title font-bold ${eyebrow ? 'mt-3' : ''}`}>
                 {title}
               </h2>
             ) : null}
             {lede ? (
-              <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
+              <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)]">
                 {lede}
               </p>
             ) : null}
+            {actions?.length ? <Actions align={align} items={actions} /> : null}
           </header>
         ) : null}
         {children}
@@ -72,21 +85,27 @@ export function Section({
   )
 }
 
+export type ActionItem = {
+  href: string
+  label: string
+  primary?: boolean
+  external?: boolean
+}
+
 export function Actions({
-  items
+  items,
+  align = 'left'
 }: {
-  items: {
-    href: string
-    label: string
-    primary?: boolean
-    external?: boolean
-  }[]
+  items: ActionItem[]
+  align?: 'left' | 'center'
 }) {
   const buttonClass = (primary?: boolean) =>
     `inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold no-underline transition ${primary ? 'border-neutral-950 bg-neutral-950 text-white hover:bg-neutral-800 dark:border-neutral-50 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-300' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`
 
   return (
-    <div className="mt-8 flex flex-wrap gap-3">
+    <div
+      className={`mt-8 flex flex-wrap gap-3 ${align === 'center' ? 'justify-center' : ''}`}
+    >
       {items.map(item =>
         item.external ? (
           <a
@@ -131,7 +150,7 @@ export function LandingHero({
   chips?: string[]
 }) {
   return (
-    <section className="relative overflow-hidden py-16 min-[36rem]:pt-20 before:absolute before:inset-0 before:-z-1 before:bg-[radial-gradient(circle_at_12%_-10%,rgb(124_58_237/12%),transparent_32rem),radial-gradient(circle_at_88%_0%,rgb(14_165_233/10%),transparent_28rem)] max-[36rem]:py-12">
+    <section className="relative overflow-hidden py-16 min-[36rem]:pt-20 before:absolute before:inset-0 before:-z-1 before:bg-[radial-gradient(circle_at_12%_-10%,color-mix(in_srgb,var(--vendra-accent-2),transparent_88%),transparent_32rem),radial-gradient(circle_at_88%_0%,color-mix(in_srgb,var(--vendra-accent-3),transparent_90%),transparent_28rem)] max-[36rem]:py-12">
       <HeroCanvas />
       <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1.08fr)_minmax(23rem,0.92fr)] items-center gap-[clamp(2.5rem,6vw,6.5rem)] px-6 max-[64rem]:grid-cols-1">
         <div className="max-[64rem]:max-w-3xl">
@@ -140,11 +159,9 @@ export function LandingHero({
               {eyebrow}
             </div>
           ) : null}
-          <h1 className="mt-4 max-w-[17ch] text-[clamp(2.25rem,6vw,4rem)] leading-[1.03] font-[750] tracking-[-0.045em]">
-            {title}
-          </h1>
+          <h1 className="mt-4 max-w-[17ch] text-hero font-[750]">{title}</h1>
           {children ? (
-            <div className="mt-6 max-w-160 text-lg leading-[1.8] text-[var(--vendra-fg-subtle)]">
+            <div className="mt-6 max-w-160 text-lg leading-[1.8] text-[var(--vendra-fg-muted)]">
               {children}
             </div>
           ) : null}
@@ -195,7 +212,7 @@ const heroSystems = [
 function HeroArchitecture() {
   return (
     <div
-      className="relative w-full max-w-xl rounded-[1.25rem] border border-[var(--vendra-line-strong)] bg-[linear-gradient(var(--vendra-surface-raised),var(--vendra-surface-raised))_padding-box,linear-gradient(145deg,rgb(124_58_237/35%),rgb(16_185_129/15%))_border-box] p-3 shadow-[0_30px_80px_-45px_rgb(18_18_30/55%)] backdrop-blur-2xl before:absolute before:inset-[2rem_12%_1rem] before:-z-1 before:bg-[var(--vendra-accent)] before:opacity-10 before:blur-[5rem]"
+      className="relative w-full max-w-xl rounded-[1.25rem] border border-[var(--vendra-line-strong)] bg-[linear-gradient(var(--vendra-surface-raised),var(--vendra-surface-raised))_padding-box,linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-2),transparent_65%),color-mix(in_srgb,var(--vendra-accent),transparent_85%))_border-box] p-3 shadow-[var(--vendra-shadow-lg)] backdrop-blur-2xl before:absolute before:inset-[2rem_12%_1rem] before:-z-1 before:bg-[var(--vendra-accent)] before:opacity-10 before:blur-[5rem]"
       aria-label="Vendra system architecture"
     >
       <div className="flex items-center justify-between gap-4 px-1 pt-1.5 pb-3.5 text-[0.6875rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase max-[36rem]:flex-col max-[36rem]:items-start max-[36rem]:gap-1.5">
@@ -212,7 +229,7 @@ function HeroArchitecture() {
         {heroSystems.map((system, index) => (
           <div key={system.href}>
             <Link
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_25%)] hover:shadow-[0_12px_30px_-24px_var(--vendra-accent)]"
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_25%)] hover:shadow-[var(--vendra-glow-md)]"
               href={system.href}
             >
               <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[var(--vendra-muted)] font-mono text-[0.7rem] font-[750] text-[var(--vendra-accent)]">
@@ -259,6 +276,26 @@ function HeroArchitecture() {
 }
 
 /**
+ * Per-tier accents, in the order the tiers are passed on the landing page:
+ * storefront, platform, controller. The same three hues, in the same order,
+ * colour the planes of the hero lattice — so the diagram and the figure above
+ * it agree about which system is which rather than each picking its own
+ * palette. Written out as whole class strings because Tailwind scans source
+ * text: an interpolated `--vendra-accent-${n}` would never be generated.
+ */
+const tierHover = [
+  'hover:border-[var(--vendra-accent-2)]',
+  'hover:border-[var(--vendra-accent)]',
+  'hover:border-[var(--vendra-accent-3)]'
+]
+
+const tierWash = [
+  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-2),transparent_66%),color-mix(in_srgb,var(--vendra-accent-2),transparent_88%))]',
+  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent),transparent_66%),color-mix(in_srgb,var(--vendra-accent),transparent_88%))]',
+  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-3),transparent_66%),color-mix(in_srgb,var(--vendra-accent-3),transparent_88%))]'
+]
+
+/**
  * The stack diagram that stands in for React Flow's live editor.
  *
  * Static rather than interactive on purpose: the thing being sold here is an
@@ -285,7 +322,7 @@ export function StackDiagram({
         <div className="min-[60rem]:contents" key={tier.href} role="listitem">
           <Link
             href={tier.href}
-            className="block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.5 hover:border-[var(--vendra-accent)]"
+            className={`block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.5 ${tierHover[i] ?? tierHover[1]}`}
           >
             <div className="flex items-center justify-between gap-4">
               <span className="text-[1.05rem] font-[650] tracking-[-0.02em]">
@@ -298,7 +335,7 @@ export function StackDiagram({
             <div className="mt-1.5 text-[0.8125rem] font-semibold tracking-[0.04em] text-[var(--vendra-fg-subtle)] uppercase">
               {tier.role}
             </div>
-            <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[var(--vendra-fg-subtle)]">
+            <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[var(--vendra-fg-muted)]">
               {tier.detail}
             </p>
             <div
@@ -306,7 +343,7 @@ export function StackDiagram({
               aria-hidden="true"
             >
               <span
-                className={`${i === 1 ? '!col-span-3' : '!row-span-3'} !rounded-md !bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent),transparent_72%),color-mix(in_srgb,#7c3aed,transparent_82%))]`}
+                className={`${i === 1 ? '!col-span-3' : '!row-span-3'} !rounded-md ${tierWash[i] ?? tierWash[1]}`}
               />
               <span />
               <span />
@@ -327,6 +364,128 @@ export function StackDiagram({
   )
 }
 
+export type Shot = {
+  /** Path under `public/`, base path applied by the caller's asset helper. */
+  src: string
+  /**
+   * What the screenshot shows, for a reader who cannot see it. Not the page
+   * title — "the orders table, filtered to unfulfilled" rather than "Orders".
+   */
+  alt: string
+  /** Intrinsic pixel size. Required: without both, the frame reflows on load. */
+  width: number
+  height: number
+  /** Host shown in the frame's address bar. Omit for a chrome-less plate. */
+  host?: string
+}
+
+/**
+ * A screenshot in browser chrome.
+ *
+ * The site argues for a product with a user interface and, until now, showed
+ * none of it: outside four portraits there is not a single pixel of Vendra on
+ * any page. This is the frame those screenshots go in — a title bar, an address
+ * bar carrying the real host, and a fixed 16:10 plate so a row of cards keeps
+ * its rhythm whether or not the images have loaded, and whatever the source
+ * captures happen to be cropped to.
+ *
+ * Deliberately not a placeholder: with no `src` there is no frame and no
+ * skeleton, and the surrounding component renders exactly as it does today.
+ * A greyed-out mock of a panel that does not exist is the same false promise as
+ * a showcase full of invented companies, which `app/showcase/page.tsx` already
+ * refuses to make.
+ */
+export function Screenshot({ shot }: { shot: Shot }) {
+  return (
+    <figure className="m-0 overflow-hidden rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-muted)] shadow-[var(--vendra-shadow-md)]">
+      {shot.host ? (
+        <div className="flex items-center gap-2 border-b border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-3 py-2">
+          <span className="flex gap-1" aria-hidden="true">
+            <i className="size-2 rounded-full bg-[var(--vendra-line-strong)]" />
+            <i className="size-2 rounded-full bg-[var(--vendra-line-strong)]" />
+            <i className="size-2 rounded-full bg-[var(--vendra-line-strong)]" />
+          </span>
+          <span className="min-w-0 flex-1 truncate rounded-md bg-[var(--vendra-muted)] px-2 py-0.5 text-center font-mono text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+            {shot.host}
+          </span>
+        </div>
+      ) : null}
+      <img
+        className="block aspect-16/10 w-full object-cover object-top"
+        src={shot.src}
+        alt={shot.alt}
+        width={shot.width}
+        height={shot.height}
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  )
+}
+
+/**
+ * The routing model behind "one codebase, many properties", drawn.
+ *
+ * Every string in it is one the documentation already commits to — the
+ * `<slug>.vendra.test` property hosts and the shared `api.vendra.test` from
+ * `getting-started/local`, and the florist reference storefront that ships as
+ * `vendra-storefront-florist`. Nothing here is a mock of a page that has not
+ * been built; it is the architecture in the shape a reader recognises, which is
+ * the same standard `HeroArchitecture` and the hero lattice are held to.
+ */
+export function PropertyRouting() {
+  const hosts = ['florist.vendra.test', '<slug>.vendra.test']
+
+  return (
+    <div className="rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-5 shadow-[var(--vendra-shadow-md)]">
+      <div className="flex flex-col gap-2">
+        {hosts.map(host => (
+          <div
+            className="flex items-center gap-2 rounded-lg border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-3 py-2"
+            key={host}
+          >
+            <span className="flex gap-1" aria-hidden="true">
+              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
+              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
+              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
+            </span>
+            <span className="min-w-0 flex-1 truncate font-mono text-xs text-[var(--vendra-fg-muted)]">
+              {host}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div
+        className="my-3 flex items-center gap-2 text-[var(--vendra-accent)]"
+        aria-hidden="true"
+      >
+        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
+        <b className="text-xs">↓</b>
+        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
+      </div>
+
+      <div className="rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_60%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_92%)] px-3 py-2.5">
+        <div className="font-mono text-xs font-semibold text-[var(--vendra-fg)]">
+          vendra-storefront:latest
+        </div>
+        <div className="mt-1 text-xs text-[var(--vendra-fg-muted)]">
+          One image. Identity arrives at container start, never at build time.
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center gap-2 rounded-lg border border-dashed border-[var(--vendra-line)] px-3 py-2">
+        <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
+          api.vendra.test
+        </span>
+        <span className="ml-auto text-[0.65rem] font-semibold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+          shared
+        </span>
+      </div>
+    </div>
+  )
+}
+
 /** Alternating editorial rows for the architectural reasons behind Vendra. */
 export function FeatureSplit({
   eyebrow,
@@ -334,6 +493,7 @@ export function FeatureSplit({
   title,
   children,
   points = [],
+  media,
   action,
   flip = false
 }: {
@@ -342,6 +502,14 @@ export function FeatureSplit({
   title: ReactNode
   children?: ReactNode
   points?: string[]
+  /**
+   * A `Screenshot`, or a figure like `PropertyRouting`, above the points.
+   * Composes with them rather than replacing them: a figure shows the shape of
+   * the thing and the list carries the claims that have no picture, and a row
+   * that trades its four selling points for one diagram has lost the argument
+   * to win the layout.
+   */
+  media?: ReactNode
   action?: { href: string; label: string }
   flip?: boolean
 }) {
@@ -360,11 +528,9 @@ export function FeatureSplit({
             ) : null}
           </div>
         ) : null}
-        <h3 className="mt-3 max-w-xl text-[clamp(1.5rem,3vw,2rem)] leading-tight font-bold tracking-[-0.03em]">
-          {title}
-        </h3>
+        <h3 className="mt-3 max-w-xl text-subtitle font-bold">{title}</h3>
         {children ? (
-          <div className="mt-3 leading-7 text-[var(--vendra-fg-subtle)]">
+          <div className="mt-3 leading-7 text-[var(--vendra-fg-muted)]">
             {children}
           </div>
         ) : null}
@@ -377,16 +543,21 @@ export function FeatureSplit({
           </Link>
         ) : null}
       </div>
-      <ul className="m-0 overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-0 shadow-[0_18px_45px_-42px_var(--vendra-fg)]">
-        {points.map(point => (
-          <li
-            className="relative border-t border-[var(--vendra-line)] py-4 pr-5 pl-11 text-[0.9375rem] leading-6 first:border-t-0 before:absolute before:top-[1.4rem] before:left-5 before:size-1.5 before:rounded-full before:bg-[var(--vendra-accent)] before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--vendra-accent),transparent_88%)]"
-            key={point}
-          >
-            {point}
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-col gap-4">
+        {media}
+        {points.length ? (
+          <ul className="m-0 overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-0 shadow-[var(--vendra-shadow-md)]">
+            {points.map(point => (
+              <li
+                className="relative border-t border-[var(--vendra-line)] py-4 pr-5 pl-11 text-[0.9375rem] leading-6 first:border-t-0 before:absolute before:top-[1.4rem] before:left-5 before:size-1.5 before:rounded-full before:bg-[var(--vendra-accent)] before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--vendra-accent),transparent_88%)]"
+                key={point}
+              >
+                {point}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
     </div>
   )
 }
@@ -451,7 +622,10 @@ const customerMarks: Record<CustomerMark, ReactNode> = {
  */
 export function LogoWall({ customers }: { customers: Customer[] }) {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-6">
+    /* Held to `max-w-4xl` inside the section's `max-w-6xl`: four logotypes
+       spread across the full band sit far enough apart to read as four
+       unrelated marks rather than one wall. */
+    <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-14 gap-y-6">
       {customers.map(customer => {
         // A plain <a>, not next/link: these are other people's sites, so there
         // is no route to prefetch and nothing for `basePath` to rewrite.
@@ -531,6 +705,13 @@ export type GalleryItem = {
   tag?: string
   /** Marks an entry that has no destination yet. */
   planned?: boolean
+  /**
+   * A capture of the thing the card describes. Drop the file in
+   * `public/shots/` and point at `/shots/<name>.png`; 1600×1000 (16:10 at 2x)
+   * matches the frame, and anything else is cropped to it from the top.
+   * Cards without one keep the text-only layout.
+   */
+  shot?: Shot
 }
 
 /**
@@ -539,6 +720,11 @@ export type GalleryItem = {
  * An item without an `href` renders as a non-interactive card labelled
  * "Planned", so a gallery can be laid out before its contents exist without
  * shipping links that go nowhere — `check:links` would catch those anyway.
+ *
+ * A card with a `shot` leads with it. Capture a whole gallery or none of it:
+ * the cards stretch to a shared height but their content is top-aligned, so a
+ * single captured card in a row of three drops its title a frame's height below
+ * its neighbours' and the row reads as broken rather than varied.
  */
 export function Gallery({ items }: { items: GalleryItem[] }) {
   return (
@@ -546,6 +732,11 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
       {items.map(item => {
         const body = (
           <>
+            {item.shot ? (
+              <div className="mb-4">
+                <Screenshot shot={item.shot} />
+              </div>
+            ) : null}
             <div className="flex items-start justify-between gap-3">
               <h3 className="text-base font-semibold tracking-tight">
                 {item.title}
@@ -556,7 +747,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                 </span>
               ) : null}
             </div>
-            <p className="mt-2 text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+            <p className="mt-2 text-sm leading-6 text-[var(--vendra-fg-muted)]">
               {item.description}
             </p>
             {item.planned ? (
@@ -600,7 +791,7 @@ export function GalleryGroup({
         <div key={group.title}>
           <h3 className="text-xl font-bold tracking-tight">{group.title}</h3>
           {group.description ? (
-            <p className="mt-1.5 mb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+            <p className="mt-1.5 mb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
               {group.description}
             </p>
           ) : null}
@@ -639,7 +830,7 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
       {plans.map(plan => (
         <div
           key={plan.name}
-          className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[0_20px_50px_-35px_var(--vendra-accent)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
+          className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[var(--vendra-glow-lg)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
         >
           {plan.featured ? (
             <div className="absolute -top-3 left-5 rounded-full bg-[var(--vendra-accent)] px-3 py-1 text-xs font-bold text-white">
@@ -655,7 +846,7 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
               </span>
             ) : null}
           </div>
-          <p className="mt-3 text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+          <p className="mt-3 text-sm leading-6 text-[var(--vendra-fg-muted)]">
             {plan.summary}
           </p>
           <ul className="my-5 flex flex-1 list-none flex-col gap-2 p-0 text-sm">
@@ -691,7 +882,7 @@ export function Notice({
   return (
     <div className="rounded-xl border border-[color-mix(in_srgb,var(--vendra-accent),transparent_55%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_94%)] p-5">
       <div className="text-sm font-bold text-[var(--vendra-fg)]">{title}</div>
-      <div className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+      <div className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
         {children}
       </div>
     </div>
@@ -711,10 +902,14 @@ export function FaqList({
           key={item.question}
           className="group border-b border-[var(--vendra-line)]"
         >
-          <summary className="cursor-pointer list-none py-4 text-base font-semibold [&::-webkit-details-marker]:hidden after:float-right after:text-[var(--vendra-fg-subtle)] after:content-['+'] group-open:after:content-['−']">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-base font-semibold transition-colors hover:text-[var(--vendra-accent)] [&::-webkit-details-marker]:hidden">
             {item.question}
+            {/* The same mark, at the same size, as the navbar's menu trigger —
+                a chevron that rotates rather than a glyph that swaps, so the
+                open and closed states are one element moving. */}
+            <Chevron className="shrink-0 text-[var(--vendra-fg-subtle)] transition-transform duration-150 group-open:rotate-180" />
           </summary>
-          <div className="pb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-subtle)]">
+          <div className="pb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
             {item.answer}
           </div>
         </details>
@@ -834,7 +1029,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
         return (
           <div
             key={member.name}
-            className="group flex flex-col items-center rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-6 pt-8 pb-6 text-center transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_50%)] hover:shadow-[0_22px_45px_-38px_var(--vendra-accent)]"
+            className="group flex flex-col items-center rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-6 pt-8 pb-6 text-center transition hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_50%)] hover:shadow-[var(--vendra-glow-lg)]"
           >
             <span className="relative block size-40 overflow-hidden rounded-full transition-transform before:pointer-events-none before:absolute before:inset-0 before:z-1 before:rounded-[inherit] before:bg-[radial-gradient(circle_at_50%_40%,transparent_42%,rgb(10_6_24/28%)_74%,rgb(10_6_24/70%)_100%)] after:pointer-events-none after:absolute after:inset-0 after:z-2 after:rounded-[inherit] after:bg-[radial-gradient(circle_at_center,rgb(0_0_0/60%)_30%,transparent_31%)] after:bg-size-[3px_3px] after:opacity-60 after:mix-blend-overlay group-hover:scale-[1.025]">
               <img
@@ -854,7 +1049,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
               {member.role}
             </div>
             {member.bio ? (
-              <p className="mt-2.5 max-w-sm text-sm leading-6 text-[var(--vendra-fg-subtle)]">
+              <p className="mt-2.5 max-w-sm text-sm leading-6 text-[var(--vendra-fg-muted)]">
                 {member.bio}
               </p>
             ) : null}
