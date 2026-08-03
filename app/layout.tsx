@@ -104,17 +104,12 @@ const footerSections = [
 ]
 
 function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
-  const box =
-    size === 'lg'
-      ? 'size-7 rounded-lg text-xs'
-      : 'size-6 rounded-md text-[11px]'
   return (
-    <span className="inline-flex items-center gap-2">
-      <span
-        className={`inline-flex ${box} items-center justify-center bg-neutral-950 font-semibold text-white dark:bg-neutral-50 dark:text-neutral-950`}
-      >
-        V
-      </span>
+    <span className={`vw-wordmark vw-wordmark-${size}`}>
+      <svg className="vw-wordmark-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M7 7.5 16 25 25 7.5h-5.2L16 16l-3.8-8.5H7Z" />
+        <path className="vw-wordmark-cut" d="m12.2 7.5 3.8 8.6 3.8-8.6" />
+      </svg>
       <span className="text-sm font-semibold tracking-tight">Vendra</span>
     </span>
   )
