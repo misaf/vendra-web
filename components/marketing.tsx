@@ -322,6 +322,14 @@ const customerMarks: Record<CustomerMark, ReactNode> = {
       <path d="M19 5c0 7.2-3.9 11.4-9.4 11.4A5.6 5.6 0 0 1 4 10.8C4 6.5 9.1 5 19 5Z" />
       <path d="M16 8c-4.4 1.6-7.6 4.9-9.5 10" />
     </>
+  ),
+  // A fast shield/track mark — sport and forward motion.
+  sport: (
+    <>
+      <path d="M12 3.5 20 7v5.2c0 4.1-3.2 7-8 8.3-4.8-1.3-8-4.2-8-8.3V7l8-3.5Z" />
+      <path d="m8 14 3-5 1.6 3H16" />
+      <path d="M7 16h8" />
+    </>
   )
 }
 

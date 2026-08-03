@@ -16,7 +16,7 @@
  */
 
 /** Which inline mark a logotype is drawn with. See `LogoWall`. */
-export type CustomerMark = 'bloom' | 'trade' | 'leaf'
+export type CustomerMark = 'bloom' | 'trade' | 'leaf' | 'sport'
 
 export type Customer = {
   /** Full legal-ish name, used as the accessible label and React key. */
@@ -53,5 +53,11 @@ export const customers: Customer[] = [
     lead: 'Hes',
     sub: 'Flower Art',
     mark: 'leaf'
+  },
+  {
+    name: 'Deer Sportt',
+    lead: 'Deer',
+    sub: 'Sportt',
+    mark: 'sport'
   }
 ]
