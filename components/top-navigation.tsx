@@ -107,12 +107,35 @@ export function TopNavigation({
   sections: NavSection[]
 }) {
   const pathname = usePathname()
-  const leadingSections = sections.filter(section =>
-    ['/', '/docs'].includes(section.href)
-  )
-  const remainingSections = sections.filter(
-    section => !['/', '/docs'].includes(section.href)
-  )
+  const compactRef = useRef<HTMLDetailsElement>(null)
+
+  useEffect(() => {
+    const close = () => {
+      if (compactRef.current) compactRef.current.open = false
+    }
+
+    const onPointerDown = (event: PointerEvent) => {
+      const node = event.target
+      if (node instanceof Node && !compactRef.current?.contains(node)) close()
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || !compactRef.current?.open) return
+      close()
+      compactRef.current.querySelector('summary')?.focus()
+    }
+
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (compactRef.current) compactRef.current.open = false
+  }, [pathname])
 
   const sectionLink = (section: NavSection) => {
     const current = isCurrent(pathname, section.href)
@@ -134,17 +157,68 @@ export function TopNavigation({
   }
 
   return (
-    <nav
-      className="flex items-center max-lg:hidden"
-      aria-label="Primary navigation"
-    >
-      <div className="flex items-center gap-1">
-        {leadingSections.map(sectionLink)}
-        {groups.map(group => (
-          <NavMenu key={group.label} group={group} pathname={pathname} />
-        ))}
-        {remainingSections.map(sectionLink)}
-      </div>
-    </nav>
+    <>
+      <nav
+        className="hidden items-center xl:flex"
+        aria-label="Primary navigation"
+      >
+        <div className="flex items-center gap-1">
+          {groups.map(group => (
+            <NavMenu key={group.label} group={group} pathname={pathname} />
+          ))}
+          {sections.map(sectionLink)}
+        </div>
+      </nav>
+
+      <details
+        className="group relative hidden lg:block xl:hidden"
+        ref={compactRef}
+      >
+        <summary className="inline-flex min-h-9 cursor-pointer list-none items-center gap-2 rounded-lg border border-[var(--vendra-line)] px-3 text-sm font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)] [&::-webkit-details-marker]:hidden">
+          Menu
+          <Chevron className="transition-transform duration-150 group-open:rotate-180" />
+        </summary>
+        <nav
+          className="absolute top-[calc(100%+0.65rem)] right-0 z-40 min-w-64 rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] p-2 shadow-[var(--vendra-shadow-md)] backdrop-blur-xl"
+          aria-label="Compact primary navigation"
+        >
+          {groups.map(group => (
+            <div key={group.label}>
+              <div className="px-2.5 pt-1.5 pb-1 text-[0.65rem] font-bold tracking-[0.1em] text-[var(--vendra-fg-subtle)] uppercase">
+                {group.label}
+              </div>
+              {group.items.map(item => {
+                const current = isCurrent(pathname, item.href)
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
+                    aria-current={current ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
+          <div className="mt-1 border-t border-[var(--vendra-line)] pt-1">
+            {sections.map(section => {
+              const current = isCurrent(pathname, section.href)
+              return (
+                <Link
+                  key={section.href}
+                  href={section.href}
+                  className={`flex items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] font-semibold text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
+                  aria-current={current ? 'page' : undefined}
+                >
+                  {section.label}
+                </Link>
+              )
+            })}
+          </div>
+        </nav>
+      </details>
+    </>
   )
 }

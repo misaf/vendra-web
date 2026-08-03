@@ -61,32 +61,34 @@ const section = (slug: keyof typeof meta): NavSection => ({
 /**
  * Navbar groups.
  *
- * The documentation sections keep their original top-level slugs — nothing was
- * moved under `/learn` or `/reference`, so no URL changed and every existing
- * link still resolves. The grouping is presentational, and it lives here rather
- * than in `_meta.tsx` because Nextra's sidebar wants the flat list.
+ * The three product systems keep their documentation slugs. Product is a
+ * presentational menu, and it lives here rather than in `_meta.tsx` because
+ * Nextra's sidebar wants the complete flat reference tree.
  *
  * Declared as slugs rather than literal hrefs so `sectionLabel` still throws on
  * a section that no longer exists.
  */
 export const navGroups: NavGroup[] = [
   {
-    label: 'Explore',
-    items: [section('examples'), section('ui'), section('showcase')]
+    label: 'Product',
+    items: [
+      docsSection('storefront'),
+      docsSection('platform'),
+      docsSection('controller')
+    ]
   }
 ]
 
 /**
  * Top-level sections shown flat in the navbar, after the groups.
  *
- * Blog and FAQ sit here rather than in a "More" menu, and are not part of the
- * Learn or Reference groups: they are their own sections of the site, not
- * documentation. `app/_meta.tsx` keeps them out of the docs sidebar to match.
+ * The header keeps only the primary paths flat. Examples, UI, and FAQ remain
+ * available from the footer and docs context without competing for equal
+ * weight in the primary navigation.
  */
 export const navSections: NavSection[] = [
-  { href: '/', label: 'Home' },
   docsSection('index'),
+  section('showcase'),
   section('blog'),
-  section('faq'),
   section('pro')
 ]

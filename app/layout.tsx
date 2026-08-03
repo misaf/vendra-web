@@ -100,6 +100,17 @@ const footerSections = [
       { href: '/docs/operations', label: sectionLabel('operations') },
       { href: '/docs/operations/troubleshooting', label: 'Troubleshooting' }
     ]
+  },
+  {
+    title: 'Explore',
+    links: [
+      { href: '/showcase', label: 'Showcase' },
+      { href: '/about', label: 'About' },
+      { href: '/examples', label: 'Examples' },
+      { href: '/ui', label: 'UI library' },
+      { href: '/blog', label: 'Blog' },
+      { href: '/faq', label: 'FAQ' }
+    ]
   }
 ]
 
@@ -132,15 +143,27 @@ function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
 const footer = (
   <Footer className="mt-16">
     <div className="w-full">
-      <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+      <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-xs">
           <Wordmark />
           <p className="mt-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
             A modular Laravel platform, a Go infrastructure controller, and a
             runtime-configured Next.js storefront — documented as one system.
           </p>
+          <div className="mt-4 flex items-center gap-3 text-[0.625rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+            {[
+              ['Storefront', 'bg-[var(--vendra-accent-2)]'],
+              ['Platform', 'bg-[var(--vendra-accent)]'],
+              ['Controller', 'bg-[var(--vendra-accent-3)]']
+            ].map(([label, color]) => (
+              <span className="inline-flex items-center gap-1.5" key={label}>
+                <i className={`size-1.5 rounded-full ${color}`} />
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-10 text-sm sm:grid-cols-4 lg:min-w-xl">
           {footerSections.map(section => (
             <div key={section.title}>
               <div className="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
@@ -177,11 +200,12 @@ export default async function RootLayout({
   const navbar = (
     <Navbar logo={<Wordmark size="lg" />}>
       {/* Nextra does not hide custom navbar children on small screens, so they
-          would overflow behind the hamburger. The sidebar covers mobile nav.
+          would overflow behind the hamburger. Nextra covers mobile navigation,
+          while TopNavigation supplies a compact menu at tablet widths.
 
-          Learn and Reference are menus over the documentation sections, which
-          keep their original top-level slugs — the grouping is presentational,
-          so no URL moved. See `lib/navigation.ts`. */}
+          Product is a menu over the three system references, which keep their
+          original slugs — the grouping is presentational, so no URL moved. See
+          `lib/navigation.ts`. */}
       <TopNavigation groups={navGroups} sections={navSections} />
       <ThemeSwitch
         lite
