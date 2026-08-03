@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { Inter, JetBrains_Mono, Vazirmatn } from 'next/font/google'
+import {
+  Bricolage_Grotesque,
+  Inter,
+  JetBrains_Mono,
+  Vazirmatn
+} from 'next/font/google'
 import { Layout, Navbar, Footer, ThemeSwitch } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Head } from 'nextra/components'
@@ -20,6 +25,26 @@ const inter = Inter({
 const vazirmatn = Vazirmatn({
   subsets: ['arabic'],
   variable: '--font-vazirmatn',
+  display: 'swap'
+})
+
+/**
+ * The display face, used by the `font-display` utility in `globals.css` and by
+ * nothing else — five marketing headings, no body copy and no UI.
+ *
+ * `axes: ['opsz']` is the reason for choosing this family over another. Google
+ * serves a variable font with only the `wght` range unless further axes are
+ * asked for by name, so without it the optical-size axis is simply absent from
+ * the file and `font-optical-sizing: auto` has nothing to act on. With it, one
+ * download draws the 4rem landing headline and the 2rem `FeatureSplit`
+ * subtitle differently — open and wide-apertured at the top of the scale,
+ * sturdier and more compact at the bottom — which is the part Inter at two
+ * sizes cannot do.
+ */
+const bricolage = Bricolage_Grotesque({
+  subsets: ['latin'],
+  axes: ['opsz'],
+  variable: '--font-bricolage',
   display: 'swap'
 })
 
@@ -215,7 +240,22 @@ export default async function RootLayout({
   )
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    // The four `next/font` variable classes belong on <html>, not on <body>.
+    //
+    // They are what define `--font-inter` and friends, and `globals.css`
+    // consumes them from `:root` — `--x-font-sans: var(--font-inter), …`. A
+    // custom property is resolved in the scope it is *declared* in, not where
+    // it is eventually used, so with the classes one level down the `var()`
+    // referred to something undefined at `:root` and the whole chain silently
+    // fell through to its bare tail. Every font on the site rendered as
+    // `ui-sans-serif` — that is, as the system face — while looking entirely
+    // deliberate, which is why it survived: at body sizes SF and Inter are
+    // near enough to pass, and nothing errors when a `var()` falls back.
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${vazirmatn.variable} ${jetbrainsMono.variable} ${bricolage.variable}`}
+    >
       {/* Nextra's theme reads `--nextra-bg` for every opaque surface it paints
           — most visibly the search results popover (`bg-nextra-bg/70`) — and
           only `<Head>` emits it. Without this the variable is undefined, so the
@@ -234,9 +274,7 @@ export default async function RootLayout({
           lightness: { light: 40, dark: 55 }
         }}
       />
-      <body
-        className={`${inter.variable} ${vazirmatn.variable} ${jetbrainsMono.variable}`}
-      >
+      <body>
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}
