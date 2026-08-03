@@ -18,18 +18,18 @@ export const metadata: Metadata = {
 }
 
 /* -------------------------------------------------------------------------- */
-/* TODO — PRICES ARE STILL PLACEHOLDERS. The plan *structure* below is real:   */
-/* reseller subscribers, limits counted in concurrent websites, a 7-day free   */
-/* trial, and a conversation above three. The money is not.                    */
+/* Prices are set: Basic €10/month, Pro €20/month. The rest of the structure   */
+/* was already real — reseller subscribers, limits counted in concurrent       */
+/* websites, a 7-day free trial, and a conversation above three.               */
 /*                                                                            */
-/* Before this page goes public, replace:                                      */
+/* TODO before this page goes public:                                          */
 /*                                                                            */
-/*   1. `price` and `cadence` on Basic and Pro                                 */
-/*   2. `cta.href` on the paid tiers — they point at /faq as a placeholder and */
+/*   1. `cta.href` on the paid tiers — they point at /faq as a placeholder and */
 /*      need a real contact route, quote form, or mailto:                      */
-/*   3. the `<Notice>`, once 1 and 2 are done                                  */
 /*                                                                            */
-/* Two things this page now PROMISES that the platform does not yet do:        */
+/* Now that the page quotes a figure it reads as a commercial offer, which     */
+/* raises the cost of the two things it PROMISES that the platform does not    */
+/* yet do:                                                                     */
 /*                                                                            */
 /*   a. "goes offline after 7 days" needs grace_days = 0 on the trial plan.    */
 /*      Subscription::suspendAt() is ends_at + grace_days, so any non-zero     */
@@ -62,7 +62,7 @@ const plans: Plan[] = [
   },
   {
     name: 'Basic',
-    price: 'TBD',
+    price: '€10',
     cadence: '/ month',
     summary: 'For a reseller running a single client website in production.',
     features: [
@@ -75,7 +75,7 @@ const plans: Plan[] = [
   },
   {
     name: 'Pro',
-    price: 'TBD',
+    price: '€20',
     cadence: '/ month',
     summary:
       'For resellers carrying a small portfolio of client shops at once.',
@@ -109,8 +109,9 @@ const faq = [
     answer: (
       <p>
         Resellers — agencies and builders who run Vendra websites on behalf of
-        their own clients. There is no plan sold to a shop&rsquo;s end customers,
-        because a shop&rsquo;s customers are not our customers: they are yours.
+        their own clients. There is no plan sold to a shop&rsquo;s end
+        customers, because a shop&rsquo;s customers are not our customers: they
+        are yours.
       </p>
     )
   },
@@ -173,9 +174,8 @@ const faq = [
  * The Pro page.
  *
  * Structure follows a conventional three-tier commercial page: offer, pricing,
- * social proof, FAQ. What it deliberately does not do is present invented
- * numbers as though they were real — see the notice at the top of the page and
- * the TODO block above.
+ * social proof, FAQ. The prices are real; what is still missing is a way to act
+ * on them — see the notice at the top of the page and the TODO block above.
  */
 export default function ProPage() {
   return (
@@ -185,14 +185,13 @@ export default function ProPage() {
         title="Plans are counted in websites"
         lede="Build client shops on Vendra and pay for how many you run at once. Start free for seven days, and move up when a client signs — the limit is the only thing that changes."
       >
-        <Notice title="Draft — prices not set">
+        <Notice title="Draft — sign-up is not open yet">
           <p>
-            The plan structure here is real: reseller subscribers, limits
-            counted in concurrent websites, a seven-day free trial, and a
-            conversation above three. The <strong>prices are not</strong> — Basic
-            and Pro read &ldquo;TBD&rdquo; because no figure has been set, and
-            nothing on this page is a commercial offer until they are. See the
-            TODO block in <code>app/pro/page.tsx</code>.
+            Prices are set: <strong>€10 a month</strong> for Basic and{' '}
+            <strong>€20 a month</strong> for Pro, both per month and counted in
+            concurrent websites. There is no self-serve checkout yet, so every
+            plan below starts as a conversation. See the TODO block in{' '}
+            <code>app/pro/page.tsx</code>.
           </p>
         </Notice>
       </Section>
