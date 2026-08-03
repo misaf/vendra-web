@@ -27,7 +27,7 @@ export type TeamMember = {
   photo: string
   /** One line on what they actually do. */
   bio?: string
-  href?: string
+  links?: { label: string; href: string }[]
 }
 
 export const team: TeamMember[] = [
@@ -36,12 +36,23 @@ export const team: TeamMember[] = [
     role: 'Founder',
     photo: `${basePath}/team/misaf.jpg`,
     bio: 'Builds the platform, the controller, and most of what is written about them.',
-    href: 'https://github.com/misaf'
+    links: [
+      { label: 'GitHub', href: 'https://github.com/misaf' },
+      {
+        label: 'LinkedIn',
+        href: 'https://www.linkedin.com/in/ehsan-mahmoodi-a10aba283/'
+      },
+      { label: 'Instagram', href: 'https://www.instagram.com/misaf1990' },
+      { label: 'YouTube', href: 'https://www.youtube.com/@misaf1990' }
+    ]
   },
   {
     name: 'Arefeh',
     role: 'Support',
     photo: `${basePath}/team/arefeh.jpg`,
-    bio: 'Answers the questions that become FAQ entries, and keeps subscribers unblocked.'
+    bio: 'Answers the questions that become FAQ entries, and keeps subscribers unblocked.',
+    links: [
+      { label: 'Instagram', href: 'https://www.instagram.com/karimiii.71' }
+    ]
   }
 ]

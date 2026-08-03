@@ -1801,10 +1801,6 @@ a.vw-logo:hover .vw-logo-mark {
   pointer-events: none;
 }
 
-.vw-team-link:hover .vw-team-frame {
-  transform: translateY(-2px);
-}
-
 .vw-team-name {
   margin-top: 1rem;
   font-size: 1.05rem;
@@ -1827,6 +1823,45 @@ a.vw-logo:hover .vw-logo-mark {
   color: var(--vendra-fg-subtle);
   font-size: 0.9rem;
   line-height: 1.65;
+}
+
+.vw-team-socials {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.vw-team-socials a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 999px;
+  color: var(--vendra-fg-muted);
+  font-size: 0.75rem;
+  font-weight: 650;
+  transition:
+    border-color 150ms ease,
+    background 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.vw-social-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: none;
+  fill: currentColor;
+}
+
+.vw-team-socials a:hover {
+  border-color: color-mix(in srgb, var(--vendra-accent), transparent 35%);
+  background: var(--vendra-muted);
+  color: var(--vendra-fg);
+  transform: translateY(-1px);
 }
 
 /* -- Footer switcher strip -------------------------------------------------- */

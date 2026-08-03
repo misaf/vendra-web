@@ -555,6 +555,29 @@ function PortraitFilter() {
   )
 }
 
+function SocialIcon({ label }: { label: string }) {
+  const paths: Record<string, ReactNode> = {
+    GitHub: (
+      <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.35 1.09 2.92.83.09-.65.35-1.09.64-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.6 9.6 0 0 1 12 6.82a9.6 9.6 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" />
+    ),
+    LinkedIn: (
+      <path d="M6.5 8.2H3.2V19h3.3V8.2ZM4.85 3A1.92 1.92 0 1 0 4.85 6.84 1.92 1.92 0 0 0 4.85 3ZM19.2 12.8c0-3.25-1.73-4.76-4.04-4.76a3.5 3.5 0 0 0-3.17 1.74V8.2H8.7V19H12v-5.35c0-1.41.27-2.78 2.02-2.78 1.73 0 1.75 1.62 1.75 2.87V19h3.3l.13-6.2Z" />
+    ),
+    Instagram: (
+      <path d="M7.2 2h9.6A5.2 5.2 0 0 1 22 7.2v9.6a5.2 5.2 0 0 1-5.2 5.2H7.2A5.2 5.2 0 0 1 2 16.8V7.2A5.2 5.2 0 0 1 7.2 2Zm-.18 2A3.02 3.02 0 0 0 4 7.02v9.96A3.02 3.02 0 0 0 7.02 20h9.96A3.02 3.02 0 0 0 20 16.98V7.02A3.02 3.02 0 0 0 16.98 4H7.02ZM17.5 5.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" />
+    ),
+    YouTube: (
+      <path d="M21.6 7.2a2.5 2.5 0 0 0-1.76-1.77C18.28 5 12 5 12 5s-6.28 0-7.84.43A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.76 1.77C5.72 19 12 19 12 19s6.28 0 7.84-.43a2.5 2.5 0 0 0 1.76-1.77A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z" />
+    )
+  }
+
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="vw-social-icon">
+      {paths[label]}
+    </svg>
+  )
+}
+
 /**
  * The people behind Vendra.
  *
@@ -572,8 +595,8 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
     <div className="vw-team">
       <PortraitFilter />
       {members.map(member => {
-        const portrait = (
-          <>
+        return (
+          <div key={member.name} className="vw-team-member">
             <span className="vw-team-frame">
               <img
                 className="vw-team-photo"
@@ -588,22 +611,24 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
             <div className="vw-team-name">{member.name}</div>
             <div className="vw-team-role">{member.role}</div>
             {member.bio ? <p className="vw-team-bio">{member.bio}</p> : null}
-          </>
-        )
-
-        return member.href ? (
-          <a
-            key={member.name}
-            className="vw-team-member vw-team-link"
-            href={member.href}
-            rel="noreferrer"
-            target="_blank"
-          >
-            {portrait}
-          </a>
-        ) : (
-          <div key={member.name} className="vw-team-member">
-            {portrait}
+            {member.links?.length ? (
+              <div
+                className="vw-team-socials"
+                aria-label={`${member.name}'s profiles`}
+              >
+                {member.links.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <SocialIcon label={link.label} />
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
         )
       })}
