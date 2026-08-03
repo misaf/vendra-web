@@ -28,15 +28,17 @@ function AuthorBadge({ name }: { name: string }) {
   const content = (
     <>
       {author.avatar ? (
-        <img
-          className="vendra-post-avatar"
-          src={author.avatar}
-          alt=""
-          width={20}
-          height={20}
-          loading="lazy"
-          decoding="async"
-        />
+        <span className="vendra-post-avatar-frame">
+          <img
+            className="vendra-post-avatar"
+            src={author.avatar}
+            alt=""
+            width={24}
+            height={24}
+            loading="lazy"
+            decoding="async"
+          />
+        </span>
       ) : null}
       {author.name}
     </>

@@ -895,12 +895,41 @@ pre {
 }
 
 .vendra-post-avatar {
-  width: 1.25rem;
-  height: 1.25rem;
+  display: block;
+  width: 100%;
+  height: 100%;
   border-radius: 9999px;
   object-fit: cover;
-  /* Keeps a light avatar from dissolving into a light page background. */
-  box-shadow: inset 0 0 0 1px var(--vendra-line);
+  filter: grayscale(1) contrast(1.18) sepia(0.18) saturate(1.65)
+    hue-rotate(218deg);
+  mask-image: radial-gradient(
+    circle,
+    black 62%,
+    rgb(0 0 0 / 0.72) 78%,
+    transparent 100%
+  );
+  transition:
+    filter 150ms ease,
+    transform 150ms ease;
+}
+
+.vendra-post-avatar-frame {
+  display: inline-grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex: none;
+  padding: 1px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, #7c3aed, transparent 55%);
+  border-radius: 50%;
+  background: color-mix(in srgb, #7c3aed, transparent 88%);
+  box-shadow: 0 4px 12px -8px #7c3aed;
+  overflow: hidden;
+}
+
+.vendra-post-author-link:hover .vendra-post-avatar {
+  filter: grayscale(0.65) contrast(1.1) saturate(1.2);
+  transform: scale(1.06);
 }
 
 .vendra-post-author-link {
