@@ -31,23 +31,46 @@
  *   hero      the landing headline, the largest type on the site
  *   title     section <h2> on the marketing pages
  *   subtitle  <h3> inside a section, `FeatureSplit` and friends
+ *
+ * Every one of these five call sites pairs its step with `font-display` (see
+ * the utility below). The tracking is drawn for that face, not for Inter: it
+ * is roughly a hundredth of an em looser than the body face wanted, because
+ * Bricolage Grotesque is already narrower and tighter-fitting at display
+ * sizes and Inter's tracking closed the counters shut.
  */
 @theme {
   --text-display: 3.25rem;
   --text-display--line-height: 1.05;
-  --text-display--letter-spacing: -0.03em;
+  --text-display--letter-spacing: -0.025em;
 
   --text-hero: clamp(2.25rem, 6vw, 4rem);
   --text-hero--line-height: 1.03;
-  --text-hero--letter-spacing: -0.045em;
+  --text-hero--letter-spacing: -0.035em;
 
   --text-title: clamp(1.75rem, 3.5vw, 2.5rem);
   --text-title--line-height: 1.15;
-  --text-title--letter-spacing: -0.035em;
+  --text-title--letter-spacing: -0.03em;
 
   --text-subtitle: clamp(1.5rem, 3vw, 2rem);
   --text-subtitle--line-height: 1.2;
-  --text-subtitle--letter-spacing: -0.03em;
+  --text-subtitle--letter-spacing: -0.025em;
+}
+
+/* The display face, applied per element rather than to `:is(h1,…,h6)`.
+ *
+ * That scoping is the whole point: the marketing surface should not look like
+ * a reference page, and a rule on every heading would repaint the docs too.
+ * Pairing the utility with a display step by hand keeps the face on the five
+ * headings that are selling and off the several hundred that are explaining.
+ *
+ * `font-optical-sizing: auto` is the default, but it is spelled out because it
+ * is load-bearing here: `app/layout.tsx` requests the `opsz` axis explicitly,
+ * so the same font file draws open, wide-apertured letterforms at the 4rem
+ * hero and a sturdier, more compact fit at the 2rem subtitle. Drop the axis
+ * from the font import and this silently degrades to one static drawing. */
+@utility font-display {
+  font-family: var(--x-font-display);
+  font-optical-sizing: auto;
 }
 
 /* `--nextra-primary-*` and `--nextra-bg` are set by `<Head>` in
@@ -60,6 +83,14 @@
   --x-font-mono:
     var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  /* Display only — never inherited by body copy or UI. Falls back through the
+     body stack so a failed font load degrades to the previous appearance
+     rather than to Times. Bricolage covers Latin only, so the `:lang(fa)`
+     reset at the end of the base section has to take it back off again. */
+  --x-font-display:
+    var(--font-bricolage), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
 
   --vendra-accent: hsl(
     var(--nextra-primary-hue),
@@ -81,6 +112,41 @@
   --vendra-accent-2: rgb(124 58 237);
   --vendra-accent-3: rgb(14 165 233);
 
+  /* The solid-fill pair, for the one element per page that is the primary
+     call to action. `--vendra-accent` itself cannot do this job: at the
+     primary's light-theme lightness (40%) white label text lands at 3.3:1,
+     under the 4.5:1 a 14px button label needs. Dropping to 30% lightness
+     takes it to 5.4:1 while staying recognisably the same green, so the
+     button follows the brand hue instead of opting out of it. The dark theme
+     has the opposite problem and the opposite fix: the accent is already
+     lifted to 55% there, so it becomes the fill and the label goes dark
+     (10.5:1). Both are derived from `--nextra-primary-*`, so changing the
+     brand hue in `app/layout.tsx` moves the button with it. */
+  --vendra-accent-strong: hsl(
+    var(--nextra-primary-hue),
+    var(--nextra-primary-saturation),
+    30%
+  );
+  --vendra-on-accent: rgb(255 255 255);
+
+  /* The three hues again, at a lightness that survives being set as *text*.
+   *
+   * A brand colour has two jobs with very different requirements. As a border,
+   * a status dot, a glow or a badge fill it carries no contrast requirement at
+   * all, and the vivid step is the right one — that is what the site looks
+   * like. As a text colour under 18.66px it needs 4.5:1, and the vivid step
+   * does not have it: measured on white, the green is 3.27:1 and the sky blue
+   * 2.77:1. That is what the small accent labels were — the `01/02/03`
+   * indices, the `S`/`P`/`C` badges, `Healthy`, `30 packages`.
+   *
+   * So the fill tokens keep their vividness and these carry the text. Only the
+   * light theme actually darkens; on the dark theme the lifted hues already
+   * clear the bar (green 10.0:1, sky 8.8:1) and only the violet needed a step
+   * up, from 4.46:1 to 6.9:1. */
+  --vendra-accent-text: var(--vendra-accent-strong); /* 5.38:1 on white */
+  --vendra-accent-2-text: rgb(109 40 217); /* violet-700, 7.10:1 */
+  --vendra-accent-3-text: rgb(3 105 161); /* sky-700,    5.93:1 */
+
   /* One border + three surface steps drive every component below, so light and
      dark stay in sync without per-component dark: variants. */
   --vendra-line: rgb(9 9 11 / 0.09);
@@ -91,7 +157,15 @@
 
   --vendra-fg: rgb(9 9 11);
   --vendra-fg-muted: rgb(82 82 91);
-  --vendra-fg-subtle: rgb(113 113 122);
+  /* Was rgb(113 113 122), which is 4.83:1 on white — comfortably passing, and
+     therefore easy to sign off on. But almost nothing that uses it sits on
+     white: this is the eyebrow colour, and eyebrows sit on `muted` bands,
+     where the same value measures 4.30:1 and quietly misses. Checking a token
+     against the page background rather than against the surfaces it is
+     actually used on is how a miss like that survives review. Darkened until
+     it clears on the tinted band (4.95:1) rather than on the one it is rarely
+     seen against (5.35:1). */
+  --vendra-fg-subtle: rgb(106 106 115);
   --vendra-bg: rgb(255 255 255);
 
   /* Elevation, in three steps: a badge or wordmark, a panel that floats over
@@ -117,6 +191,18 @@
   --vendra-accent-2: rgb(139 92 246);
   --vendra-accent-3: rgb(56 189 248);
 
+  /* See the light-theme note: on a near-black page the lifted accent is the
+     fill and the label is the near-black. */
+  --vendra-accent-strong: var(--vendra-accent);
+  --vendra-on-accent: rgb(9 9 11);
+
+  /* Green and sky already clear 4.5:1 against the page, so as text they are
+     simply themselves. The violet sat at 4.46:1 — close enough to pass by eye
+     and not by measurement — so it takes one step lighter. */
+  --vendra-accent-text: var(--vendra-accent);
+  --vendra-accent-2-text: rgb(167 139 250); /* violet-400, 6.94:1 */
+  --vendra-accent-3-text: var(--vendra-accent-3);
+
   --vendra-line: rgb(255 255 255 / 0.1);
   --vendra-line-strong: rgb(255 255 255 / 0.17);
   --vendra-surface: rgb(255 255 255 / 0.035);
@@ -125,7 +211,11 @@
 
   --vendra-fg: rgb(250 250 250);
   --vendra-fg-muted: rgb(190 190 196);
-  --vendra-fg-subtle: rgb(148 148 156);
+  /* Lifted from rgb(148 148 156) for the mirror of the light-theme reason: it
+     passed against the page and missed (4.12:1) against the raised surfaces it
+     is actually used on — the `Screenshot` browser chrome, menu panels. Now
+     4.77:1 there and 7.3:1 on the page. */
+  --vendra-fg-subtle: rgb(160 160 168);
   --vendra-bg: rgb(9 9 11);
 
   /* Same geometry, pushed to black and further opened up: a 40% zinc shadow
@@ -167,9 +257,19 @@ body {
 }
 
 /* Persian sets flat: the tracking above is drawn for Latin display type and
-   pinches Arabic-script joins. Unlayered so it beats the utilities. */
+   pinches Arabic-script joins. Unlayered so it beats the utilities.
+
+   The family is repeated here, and not only in the `@layer base` rule above,
+   for the same reason: `font-display` is a utility, so it is layered, so it
+   would otherwise win over the layered `:lang(fa)` default and hand a Persian
+   heading a Latin-only face. Bricolage has no Arabic coverage at all, so the
+   result is not a styling regression but a fallback-rendered heading in
+   whatever the system happens to substitute. */
 :is(:lang(fa), [lang='fa']) {
   letter-spacing: 0;
+  font-family:
+    var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
+    sans-serif;
 }
 
 ::selection {
@@ -285,9 +385,16 @@ pre {
     transform 0.15s ease;
 }
 
+/* A 3px lift, not the 1px this used to be. One pixel is below the threshold
+   at which a lift reads as a lift — it registered as a faint jitter, which is
+   the worst of both: the transition was still being paid for and none of it
+   was being perceived. The accompanying glow does most of the work; the
+   translate is what makes the glow legible as elevation rather than as a
+   colour change. */
 .nextra-card:hover {
   border-color: var(--vendra-accent);
-  transform: translateY(-1px);
+  transform: translateY(-3px);
+  box-shadow: var(--vendra-glow-sm);
 }
 
 /* Nextra emits a card's description <p> before its title, so cards read
@@ -348,7 +455,14 @@ pre {
    There is no class to hook — the strip is the band's first child, identified
    here by the `<hr>` and `<footer>` that follow it — so it is selected
    structurally. A browser without `:has()` simply keeps Nextra's default, which
-   is the current appearance and not a broken one. */
+   is the current appearance and not a broken one.
+
+   Three assumptions about markup this repository does not own, which is one
+   more than is safe to leave unwatched: a Nextra minor that renames
+   `.nextra-border`, drops the `<hr>`, or puts anything between it and the
+   `<footer>` unstyles the strip silently and ships a bare button. It and the
+   other Nextra hooks below are asserted against the built HTML by
+   `scripts/check-selectors.mjs`, so that becomes a failed build. */
 :is(div:has(> hr.nextra-border + footer)) > div:first-child {
   justify-content: flex-end;
   padding-block: 0.75rem;
