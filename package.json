@@ -7,10 +7,11 @@
   "type": "module",
   "scripts": {
     "dev": "next",
-    "build": "next build",
+    "build": "node --no-experimental-webstorage node_modules/next/dist/bin/next build",
     "postbuild": "pagefind --site out --output-path out/_pagefind && node scripts/sync-search-index.mjs",
     "start": "npx --yes serve out",
     "typecheck": "tsc --noEmit --pretty false --incremental false",
+    "lint": "eslint . --max-warnings=0",
     "check:links": "node scripts/check-links.mjs",
     "check:drift": "node scripts/check-drift.mjs",
     "check:html": "node scripts/check-html.mjs",
@@ -18,7 +19,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "node --test \"scripts/**/*.test.mjs\"",
-    "check": "npm run format:check && npm run typecheck && npm run check:links && npm run check:drift && npm run check:blog && npm test && npm run build && npm run check:html"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run check:links && npm run check:drift && npm run check:blog && npm test && npm run build && npm run check:html"
   },
   "dependencies": {
     "next": "^16.2.12",
@@ -31,6 +32,8 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.2.12",
     "pagefind": "^1.5.2",
     "postcss": "^8.5.25",
     "prettier": "3.9.6",
