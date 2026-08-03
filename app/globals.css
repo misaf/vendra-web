@@ -209,8 +209,17 @@ body {
   opacity: 0.92;
 }
 
-/* Page title: larger and tighter than the theme default. */
-main h1 {
+/* Page title: larger and tighter than the theme default.
+
+   Unlayered, because it has to beat Nextra's own `x:text-4xl` on the same
+   element — and `[data-display]` is carved out of it for the same reason the
+   heading tracking moved into `@layer base`: unlayered wins over every layered
+   utility, so without the exclusion this rule silently defeats `text-display`
+   on the one component built to opt out of it. `components/vendra.tsx`'s `Hero`
+   is that component, and it is registered for MDX authors but not yet used by
+   any page, so the conflict would have surfaced as "the size prop does
+   nothing" on somebody's first attempt to use it. */
+main h1:not([data-display]) {
   font-size: 2.5rem;
   line-height: 1.1;
   letter-spacing: -0.03em;

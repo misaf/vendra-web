@@ -162,7 +162,12 @@ export function Hero({
   return (
     <div className="relative isolate mt-6 overflow-hidden rounded-3xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-8 before:absolute before:inset-0 before:-z-2 before:bg-[linear-gradient(to_right,var(--vendra-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[56px_56px] before:[mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_30%,transparent_75%)] after:absolute after:inset-[-40%_40%_40%_-20%] after:-z-1 after:bg-[radial-gradient(circle,hsla(var(--nextra-primary-hue),var(--nextra-primary-saturation),var(--nextra-primary-lightness),0.16),transparent_65%)] md:p-12">
       {eyebrow ? <div className={eyebrowClass}>{eyebrow}</div> : null}
-      <h1 className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50">
+      {/* `data-display` opts this heading out of the `main h1` size in
+          `globals.css`, which would otherwise win — see the note there. */}
+      <h1
+        data-display=""
+        className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50"
+      >
         {title}
       </h1>
       {/* <div>, not <p>: MDX wraps block children in their own paragraph. */}
