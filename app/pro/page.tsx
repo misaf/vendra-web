@@ -58,7 +58,7 @@ const plans: Plan[] = [
       'No card required to start',
       'Goes offline after 7 days — data kept 30'
     ],
-    cta: { href: '/getting-started', label: 'Start building' }
+    cta: { href: '/docs/getting-started', label: 'Start building' }
   },
   {
     name: 'Basic',

@@ -1,0 +1,102 @@
+---
+description: "The provisioner contract rules, request limits, identity matching, and bearer token handling between Laravel and the controller."
+---
+
+import { Callout } from 'nextra/components'
+
+# Provisioner contract
+
+<Lede>
+  Laravel calls the provisioner through a queued job using a bearer token. The
+  request carries template, property identity, selected image, and encoded
+  runtime configuration.
+</Lede>
+
+<Flow
+  label="Round trip"
+  nodes={[
+    'Queued job',
+    'Template + identity + image + config',
+    'Provisioner',
+    'Status + reference + digest'
+  ]}
+/>
+
+## Contract rules
+
+<DefList
+  items={[
+    { term: 'Body limit', description: 'Request bodies are capped at 1 MiB.' },
+    {
+      term: 'Slug format',
+      description: 'Lowercase letters, digits, and internal hyphens.'
+    },
+    {
+      term: 'Identity match',
+      description:
+        'Configuration slug and domain must exactly match the request identity.'
+    },
+    {
+      term: 'Schema validation',
+      description:
+        'The full storefront-required schema is validated before rendering.'
+    },
+    {
+      term: 'Serialized mutations',
+      description: 'Property and certificate mutations never run concurrently.'
+    },
+    {
+      term: 'Health gate',
+      description:
+        'The controller waits for container health before reporting success.'
+    },
+    {
+      term: 'Retry ownership',
+      description:
+        'Retry and reconciliation state is owned by Laravel, not the provisioner.'
+    }
+  ]}
+/>
+
+## Authentication
+
+Set one long random value as `VENDRA_PROVISIONER_TOKEN` in
+`/etc/vendra/controller.env`. The controller uses it to authenticate inbound
+calls, and injects the same secret into the platform app as
+`STOREFRONT_PROVISIONER_TOKEN`, which Laravel’s queued provisioner job sends as
+its bearer token.
+
+<Flow
+  label="One secret, two names"
+  nodes={[
+    'VENDRA_PROVISIONER_TOKEN',
+    'Controller injects',
+    'STOREFRONT_PROVISIONER_TOKEN'
+  ]}
+/>
+
+<Callout type="error">
+  Keep the service internal to the platform network. This credential is unrelated
+  to the proposed per-storefront API credential — do not reuse one for the other.
+</Callout>
+
+<Callout type="info">
+  Consult `api/openapi.yaml` in the controller repository whenever request or
+  response fields change. This page intentionally describes behavior rather than
+  duplicating the full schema.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/controller/provisioning',
+      title: 'Provisioner API',
+      description: 'Endpoints and the storefront request lifecycle.'
+    },
+    {
+      href: '/docs/controller/security',
+      title: 'Security and recovery',
+      description: 'Why only this service holds the Docker socket.'
+    }
+  ]}
+/>

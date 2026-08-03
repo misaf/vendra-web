@@ -1,0 +1,84 @@
+---
+description: "Which storefront surfaces are backed by the canonical API and which are browser-local demos, plus localization, themes, and quality checks."
+---
+
+import { Callout } from 'nextra/components'
+
+# Features and limits
+
+<Lede>
+  Some surfaces are backed by the canonical API. Others are browser-local demos.
+  Knowing which is which matters before you show this to a customer.
+</Lede>
+
+## What is real, and what is not
+
+<Boundary
+  doTitle="API-backed"
+  dontTitle="Browser-local demo"
+  dos={[
+    'Product listing, categories, detail pages, related products',
+    'Blog listing, posts, categories, related posts',
+    'FAQ categories, search, and filtering',
+    'Localized metadata, sitemap, robots, structured data'
+  ]}
+  donts={[
+    'Cart, favorites, and order history (localStorage)',
+    'The account panel — this is not authentication',
+    'Checkout — creates local demo state only',
+    'Newsletter submission — a simulated flow'
+  ]}
+/>
+
+<Callout type="error">
+  Do not represent the demo surfaces as production commerce integrations, and do
+  not collect real payment data through them. Checkout does not submit payment or
+  order data to Laravel.
+</Callout>
+
+## Localization
+
+The bundled locales are `en` and `fa`, and more may be added. User-visible
+changes normally require updates to both base catalogs. Property-specific wording
+belongs in runtime message overrides, not the base catalog.
+
+## Themes
+
+The current published theme is `default`.
+
+<Flow
+  label="Where each decision is made"
+  nodes={['Theme composition — build time', 'Property branding — runtime']}
+/>
+
+Supporting a second theme requires adding its page exports and publishing a
+compatible image. It is not a visitor-facing runtime toggle.
+
+## Quality checks
+
+<CommandList
+  items={[
+    { cmd: 'npm run lint', description: 'Lint the source.' },
+    { cmd: 'npm run typecheck', description: 'Type-check without emitting.' },
+    { cmd: 'npm run build', description: 'Production build.' },
+    { cmd: 'npm run check', description: 'All three in sequence.' }
+  ]}
+/>
+
+Verify the public UI in English and Persian, including RTL, responsive layouts,
+accessibility, and both light and dark color schemes.
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/storefront/configuration',
+      title: 'Property configuration',
+      description: 'Where runtime message overrides are defined.'
+    },
+    {
+      href: '/docs/storefront/deployment',
+      title: 'Build and deployment',
+      description: 'Publishing an image that supports a theme.'
+    }
+  ]}
+/>

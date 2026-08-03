@@ -6,6 +6,7 @@
  * around. Renaming a section there renames it everywhere.
  */
 import meta from '../app/_meta'
+import docsMeta from '../app/docs/_meta'
 
 /**
  * An entry in `_meta.tsx` is either a bare label or a config object carrying
@@ -37,19 +38,24 @@ export type NavGroup = {
  * render an empty link, which is easy to miss in review and invisible to
  * `check:links` (the href would still resolve).
  */
-export function sectionLabel(slug: keyof typeof meta): string {
-  const entry = meta[slug] as MetaEntry | undefined
+export function sectionLabel(slug: keyof typeof docsMeta): string {
+  const entry = docsMeta[slug] as MetaEntry | undefined
   if (!entry) {
     throw new Error(
-      `No section "${slug}" in app/_meta.tsx. Known sections: ${Object.keys(meta).join(', ')}.`
+      `No section "${slug}" in app/docs/_meta.tsx. Known sections: ${Object.keys(docsMeta).join(', ')}.`
     )
   }
   return labelOf(entry, String(slug))
 }
 
+const docsSection = (slug: keyof typeof docsMeta): NavSection => ({
+  href: slug === 'index' ? '/docs' : `/docs/${String(slug)}`,
+  label: sectionLabel(slug)
+})
+
 const section = (slug: keyof typeof meta): NavSection => ({
   href: `/${String(slug)}`,
-  label: sectionLabel(slug)
+  label: labelOf(meta[slug] as MetaEntry, String(slug))
 })
 
 /**

@@ -1,0 +1,98 @@
+---
+description: "Vendra's request path through Traefik, the asynchronous storefront provisioning flow, and which component owns each piece of state."
+---
+
+import { Callout } from 'nextra/components'
+
+# Architecture
+
+<Lede>
+  One public edge, one canonical API, and a deliberately asynchronous
+  provisioning path. This page describes how a request reaches a storefront and
+  which system owns each piece of state.
+</Lede>
+
+## Request path
+
+Traefik is the only public edge. It terminates TLS and routes the platform hosts
+and customer storefront domains. A storefront serves pages from its own Next.js
+container and reads commerce and content data from the canonical Laravel API.
+
+<Panel title="How a page is served" className="space-y-5">
+  <Flow
+    label="Server rendering"
+    nodes={[
+      'Customer domain',
+      'Traefik',
+      'Property container',
+      'api.<base>/api'
+    ]}
+  />
+  <Flow
+    label="Browser reads"
+    nodes={['Browser', 'Same-origin /api/proxy', 'Property container', 'api.<base>/api']}
+  />
+</Panel>
+
+The browser never talks to the canonical API directly. Routing every client read
+through the same-origin proxy keeps API origins and the optional storefront
+credential out of the JavaScript bundle.
+
+## Provisioning path
+
+Creating a property is intentionally asynchronous.
+
+<Steps
+  items={[
+    {
+      title: 'Laravel records desired state',
+      body: 'It creates the tenant and a durable StorefrontDeployment record before any container exists.'
+    },
+    {
+      title: 'A queued job calls the provisioner',
+      body: 'The job sends an authenticated request to the Go provisioner.'
+    },
+    {
+      title: 'The provisioner validates',
+      body: 'It checks the complete property configuration against the storefront schema.'
+    },
+    {
+      title: 'The controller renders and starts',
+      body: 'It writes a per-property Compose project, pulls the image, and waits for /api/health.'
+    },
+    {
+      title: 'Laravel records the result',
+      body: 'It stores the returned status, controller reference, and resolved image digest.'
+    }
+  ]}
+/>
+
+<Callout type="warning">
+  The Laravel web process never receives the Docker socket. Only the provisioner
+  can mutate Docker state.
+</Callout>
+
+## State ownership
+
+| State | Owner | Recovery source |
+| --- | --- | --- |
+| Tenants, domains, billing, deployment requests | Laravel database | Database backup |
+| Host config and secrets | Operator | `/etc/vendra` backup or secret manager |
+| ACME account/certificates | Controller state | `<state_dir>/acme` backup |
+| Generated Compose/property files | Controller | Re-render and reconcile |
+| Cart, favorites, demo orders | Visitor browser | Not durable server state |
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/overview/repositories',
+      title: 'Repository boundaries',
+      description: 'Which rules keep these layers from bleeding into each other.'
+    },
+    {
+      href: '/docs/controller/provisioning',
+      title: 'Provisioner API',
+      description: 'The endpoints behind step two of the provisioning path.'
+    }
+  ]}
+/>

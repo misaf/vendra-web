@@ -1,0 +1,94 @@
+---
+description: "Generate a valid property configuration, render and start the storefront container, and verify both locales and API-backed data."
+---
+
+import { Callout } from 'nextra/components'
+
+# First storefront
+
+<Lede>
+  The property slug and domain must agree in three places: Laravel, the
+  controller command, and the encoded storefront configuration. A mismatch in
+  any one of them fails validation.
+</Lede>
+
+## 1. Generate configuration
+
+From the storefront repository:
+
+```bash
+npm run property:config <slug> -- --json > /tmp/<slug>.json
+```
+
+The configuration requires identity, localized name, business type, currency,
+address, contact, and social fields. `ogImage` may be empty. The controller
+validates the complete shape before creating a container.
+
+## 2. Render and start manually
+
+```bash
+sudo vendra property add <slug> <domain> \
+  --image ghcr.io/your-org/storefront@sha256:<digest> \
+  --configuration /tmp/<slug>.json \
+  --config /etc/vendra/controller.yaml
+sudo vendra property up <slug>
+```
+
+<Callout type="info">
+  Normal production onboarding uses the Laravel Console property form and its
+  queued provisioner job instead of these manual commands. Use them for
+  bootstrapping and debugging.
+</Callout>
+
+## 3. Verify
+
+```bash
+sudo vendra property ls
+sudo vendra stack status
+sudo vendra stack logs <slug>
+curl -I https://<domain>/en
+curl https://api.<base-domain>/up
+```
+
+Then check by hand:
+
+<DefList
+  items={[
+    {
+      term: 'Both locales',
+      description: 'Visit /en and /fa, and confirm RTL behavior on the Persian routes.'
+    },
+    {
+      term: 'API-backed surfaces',
+      description: 'Products, blog, and FAQ must return real data, not empty states.'
+    },
+    {
+      term: 'Themes',
+      description: 'Check both light and dark color schemes.'
+    },
+    {
+      term: '/api/health',
+      description: 'The endpoint Docker and Traefik both probe.'
+    }
+  ]}
+/>
+
+<Callout type="warning">
+  Rendering a shell is not proof that canonical API requests resolve the correct
+  tenant. Verify that the data on the page belongs to this property.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/storefront/configuration',
+      title: 'Property configuration',
+      description: 'The full schema and environment contract.'
+    },
+    {
+      href: '/docs/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'When provisioning fails or the container never goes healthy.'
+    }
+  ]}
+/>

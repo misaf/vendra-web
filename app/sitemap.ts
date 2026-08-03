@@ -27,7 +27,7 @@ function collectRoutes(
   return out
 }
 
-/** `/overview/architecture` -> `app/overview/architecture/page.mdx` */
+/** `/docs/overview/architecture` -> `app/docs/overview/architecture/page.mdx` */
 function sourceFile(route: string): string {
   const segment = route === '/' ? '' : route.slice(1)
   return resolve(process.cwd(), 'app', segment, 'page.mdx')

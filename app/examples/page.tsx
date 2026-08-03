@@ -27,7 +27,7 @@ const groups = [
         title: 'Adding a first-party package',
         description:
           'Scaffold a domain package, wire its service provider, and pin it for release.',
-        href: '/platform/packages',
+        href: '/docs/platform/packages',
         tag: 'Guide'
       },
       {
@@ -58,7 +58,7 @@ const groups = [
         title: 'Provisioning a property',
         description:
           'From an API call to a running Compose project behind the shared edge.',
-        href: '/controller',
+        href: '/docs/controller',
         tag: 'Guide'
       },
       {
@@ -71,7 +71,7 @@ const groups = [
         title: 'Recovering a failed stack',
         description:
           'Diagnose a container that refuses to start and bring it back safely.',
-        href: '/operations/troubleshooting',
+        href: '/docs/operations/troubleshooting',
         tag: 'Operations'
       }
     ]
@@ -84,7 +84,7 @@ const groups = [
         title: 'Selecting a theme per property',
         description:
           'Compose page templates from a theme without forking the storefront.',
-        href: '/storefront/configuration',
+        href: '/docs/storefront/configuration',
         tag: 'Guide'
       },
       {
@@ -97,7 +97,7 @@ const groups = [
         title: 'Deploying behind Traefik',
         description:
           'Build once, run per property, and route through the shared edge.',
-        href: '/storefront/deployment',
+        href: '/docs/storefront/deployment',
         tag: 'Guide'
       }
     ]
@@ -110,7 +110,7 @@ const groups = [
         title: 'Reading the catalogue over JSON:API',
         description:
           'Filtering, sparse fieldsets, and pagination against the public API.',
-        href: '/api',
+        href: '/docs/api',
         tag: 'Reference'
       },
       {

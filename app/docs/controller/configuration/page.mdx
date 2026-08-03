@@ -1,0 +1,100 @@
+---
+description: "Controller configuration precedence, the important controller.yaml keys, and where secrets must be stored."
+---
+
+import { Callout } from 'nextra/components'
+
+# Configuration
+
+<Lede>
+  Configuration comes from five sources. When two of them set the same value,
+  the one earlier in this chain wins.
+</Lede>
+
+<Flow
+  label="Precedence, highest first"
+  nodes={[
+    'Command flags',
+    'Process environment',
+    'controller.env',
+    'controller.yaml',
+    'Defaults'
+  ]}
+/>
+
+## YAML keys
+
+<DefList
+  items={[
+    {
+      term: 'state_dir',
+      description:
+        'Generated projects, the property registry, certificates, and ACME state.'
+    },
+    { term: 'base_domain', description: 'Platform DNS base.' },
+    { term: 'network', description: 'Shared external Traefik network.' },
+    { term: 'listen', description: 'Internal provisioner listen address.' },
+    {
+      term: 'health_timeout',
+      description: 'Maximum wait for Compose health before failing.'
+    },
+    {
+      term: 'certificate_mode',
+      description: '`acme` for public hosts, or `self-signed` locally.'
+    },
+    {
+      term: 'images.*',
+      description:
+        'Platform, optional website, fallback storefront, and provisioner images.'
+    },
+    {
+      term: 'no_pull',
+      description:
+        'Use locally available application images instead of explicit pulls.'
+    }
+  ]}
+/>
+
+Use digest-pinned images in production. A property’s request-level image
+overrides the fallback storefront image, which lets different storefront digests
+coexist on one host.
+
+## Secrets
+
+Store secrets in `/etc/vendra/controller.env` with mode `0600`:
+
+<DefList
+  items={[
+    {
+      term: 'VENDRA_PROVISIONER_TOKEN',
+      description: 'Shared bearer token between Laravel and the provisioner.'
+    },
+    { term: 'APP_KEY', description: 'Laravel application key.' },
+    { term: 'Database credentials', description: 'MySQL user and password.' },
+    {
+      term: 'Mail and other runtime secrets',
+      description: 'Anything the platform containers need at runtime.'
+    }
+  ]}
+/>
+
+Process environment values override this file.
+
+<Callout type="error">
+  Never commit `controller.env`, and never place secrets in `controller.yaml`.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/controller/cli',
+      title: 'CLI reference',
+      description: 'Commands that consume this configuration.'
+    },
+    {
+      href: '/docs/controller/security',
+      title: 'Security and recovery',
+      description: 'What to back up, and how to restore it.'
+    }
+  ]}
+/>

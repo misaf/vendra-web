@@ -22,21 +22,21 @@ const projects = [
     title: 'Florist storefront',
     description:
       'The first-party reference storefront. Themed, internationalised, and deployed per property behind the shared Traefik edge.',
-    href: '/storefront',
+    href: '/docs/storefront',
     tag: 'First-party'
   },
   {
     title: 'Vendra operator panel',
     description:
       'The Filament administration surface for tenants, properties, billing, and platform administration.',
-    href: '/platform',
+    href: '/docs/platform',
     tag: 'First-party'
   },
   {
     title: 'Ecosystem documentation',
     description:
       'This site: documentation, examples, and the blog, built on Nextra and validated by five offline checks.',
-    href: '/overview',
+    href: '/docs/overview',
     tag: 'First-party'
   },
   {

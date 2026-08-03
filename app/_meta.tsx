@@ -64,16 +64,8 @@ export default {
   ui: { title: 'UI', ...marketing },
   showcase: { title: 'Showcase', ...marketing },
 
-  // Learn
-  'getting-started': 'Getting Started',
-  overview: 'Overview',
-  operations: 'Operations',
-
-  // Reference
-  platform: 'Platform',
-  controller: 'Controller',
-  storefront: 'Storefront',
-  api: 'APIs',
+  // Documentation has its own route tree and sidebar under /docs.
+  docs: { title: 'Documentation', display: 'hidden' },
 
   // Standalone sections, deliberately not part of the documentation
   blog: { title: 'Blog', ...standalone },

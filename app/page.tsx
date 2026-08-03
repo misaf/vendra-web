@@ -50,7 +50,7 @@ export default async function Landing() {
           </>
         }
         actions={[
-          { href: '/getting-started', label: 'Get started', primary: true },
+          { href: '/docs/getting-started', label: 'Get started', primary: true },
           { href: '/pro', label: 'Explore Pro' }
         ]}
         chips={[
@@ -76,7 +76,7 @@ export default async function Landing() {
         <StackDiagram
           tiers={[
             {
-              href: '/storefront',
+              href: '/docs/storefront',
               label: 'Storefront',
               tech: 'Next.js 16',
               role: 'Presentation',
@@ -84,7 +84,7 @@ export default async function Landing() {
                 'Runtime-configured per property, with selectable themes. Owns presentation and browser-local state — never business state.'
             },
             {
-              href: '/platform',
+              href: '/docs/platform',
               label: 'Platform',
               tech: 'Laravel 13',
               role: 'Business state',
@@ -92,7 +92,7 @@ export default async function Landing() {
                 'Filament panels, tenancy, billing, and 38 first-party packages. The source of truth for everything a merchant owns.'
             },
             {
-              href: '/controller',
+              href: '/docs/controller',
               label: 'Controller',
               tech: 'Go',
               role: 'Host runtime',
@@ -116,7 +116,7 @@ export default async function Landing() {
           ]}
         />
         <div className="vw-actions" style={{ justifyContent: 'center' }}>
-          <Link className="vw-arrow-link" href="/getting-started">
+          <Link className="vw-arrow-link" href="/docs/getting-started">
             Full installation guide <span aria-hidden="true">→</span>
           </Link>
         </div>
@@ -132,7 +132,7 @@ export default async function Landing() {
             'Split from one monorepo into path repositories on release',
             'Add a domain without touching the ones already there'
           ]}
-          action={{ href: '/platform/packages', label: 'Browse the packages' }}
+          action={{ href: '/docs/platform/packages', label: 'Browse the packages' }}
         >
           <p>
             The platform is a Laravel application, but the domains live in
@@ -152,7 +152,7 @@ export default async function Landing() {
             'Health checks, recovery, and backups as first-class commands',
             'The web application never holds a Docker socket'
           ]}
-          action={{ href: '/controller', label: 'How the controller works' }}
+          action={{ href: '/docs/controller', label: 'How the controller works' }}
         >
           <p>
             Laravel could shell out to Docker itself. It does not, and the
@@ -170,7 +170,7 @@ export default async function Landing() {
             'Internationalised, with per-property locale sets',
             'Deploys as a single container image'
           ]}
-          action={{ href: '/storefront', label: 'Storefront architecture' }}
+          action={{ href: '/docs/storefront', label: 'Storefront architecture' }}
         >
           <p>
             The storefront reads which property it is serving at request time,
@@ -203,14 +203,14 @@ export default async function Landing() {
               title: 'Florist storefront',
               description:
                 'The reference storefront: themed, internationalised, and deployed per property behind Traefik.',
-              href: '/storefront',
+              href: '/docs/storefront',
               tag: 'Reference'
             },
             {
               title: 'Operator control panel',
               description:
                 'Filament panels for tenants, billing, and platform administration.',
-              href: '/platform',
+              href: '/docs/platform',
               tag: 'Platform'
             },
             {
@@ -258,8 +258,8 @@ export default async function Landing() {
           </p>
           <Actions
             items={[
-              { href: '/getting-started', label: 'Get started', primary: true },
-              { href: '/overview/architecture', label: 'View architecture' }
+              { href: '/docs/getting-started', label: 'Get started', primary: true },
+              { href: '/docs/overview/architecture', label: 'View architecture' }
             ]}
           />
         </div>

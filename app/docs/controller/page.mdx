@@ -1,0 +1,101 @@
+---
+description: "vendra-controller is Vendra's infrastructure control plane: a host CLI and an internal provisioner service, and the only component that mutates Docker state."
+---
+
+import { Callout } from 'nextra/components'
+
+# Go controller
+
+<Lede>
+  `vendra-controller` is Vendra’s infrastructure control plane. It is the only
+  component allowed to mutate Docker state on a host.
+</Lede>
+
+## Two binaries, shared internals
+
+<DefList
+  items={[
+    {
+      term: 'vendra',
+      tag: { tone: 'neutral', label: 'Host CLI' },
+      description: 'Operator command line for stack and property lifecycle.'
+    },
+    {
+      term: 'provisioner',
+      tag: { tone: 'emerald', label: 'Internal service' },
+      description:
+        'Authenticated internal HTTP service called by Laravel’s queued job.'
+    }
+  ]}
+/>
+
+Both are built from the same internal packages, so the CLI and the API cannot
+drift apart in how they render or start a property.
+
+## Managed projects
+
+<DefList
+  items={[
+    {
+      term: 'proxy',
+      description: 'Traefik plus a restricted Docker socket proxy.'
+    },
+    {
+      term: 'platform',
+      description:
+        'Database, Redis, Laravel services, monitoring, and the provisioner.'
+    },
+    { term: 'website', description: 'Optional public ecosystem website.' },
+    {
+      term: '<property-slug>',
+      description: 'One Compose project per storefront property.'
+    }
+  ]}
+/>
+
+Generated runtime state lives under `state_dir`, which defaults to
+`/var/lib/vendra`.
+
+<Callout type="warning">
+  Do not edit embedded or rendered Compose manifests directly. Rendering
+  replaces them, and your changes will disappear on the next `stack up`.
+</Callout>
+
+## Build locally
+
+```bash
+cd vendra-controller
+go build -o ./bin/vendra ./cmd/vendra
+./bin/vendra version
+go test ./...
+```
+
+Production hosts should install a versioned binary artifact rather than a source
+checkout and Go toolchain.
+
+## Explore the controller
+
+<FeatureGrid
+  items={[
+    {
+      href: '/docs/controller/configuration',
+      title: 'Configuration',
+      description: 'YAML keys, precedence order, and where secrets belong.'
+    },
+    {
+      href: '/docs/controller/cli',
+      title: 'CLI reference',
+      description: 'Stack and property lifecycle commands.'
+    },
+    {
+      href: '/docs/controller/provisioning',
+      title: 'Provisioner API',
+      description: 'The three internal endpoints and their request lifecycle.'
+    },
+    {
+      href: '/docs/controller/security',
+      title: 'Security and recovery',
+      description: 'Docker boundary, TLS behavior, backups, and restore.'
+    }
+  ]}
+/>

@@ -1,0 +1,96 @@
+---
+description: "The first-party misaf/vendra-* package catalog and the conventions every package follows."
+---
+
+# Package catalog
+
+<Lede>
+  First-party packages live under `vendra-platform/packages`. Packages on the
+  same release line use aligned `self.version` constraints, so they move together.
+</Lede>
+
+## Catalog
+
+<DefList
+  items={[
+    {
+      term: 'Foundation',
+      description: 'Support, API, Tenant, Testing'
+    },
+    {
+      term: 'Catalog and sales',
+      description:
+        'Product, Attribute, Currency, Cart, Transaction, Subscription'
+    },
+    {
+      term: 'Content and marketing',
+      description:
+        'Blog, Custom Page, FAQ, Multimedia, Tagger, Newsletter, Affiliate'
+    },
+    {
+      term: 'Customers and access',
+      description:
+        'User, User Profile, Address, Phone, Document, Verification, Permission, Socialite'
+    },
+    {
+      term: 'Operations and localization',
+      description:
+        'Activity Log, Authify Log, Developer Logins, Language, Localization'
+    },
+    {
+      term: 'API modules',
+      description:
+        'Affiliate, Attribute, Blog, Cart, Custom Page, FAQ, Multimedia, and Product API packages'
+    }
+  ]}
+/>
+
+## Package conventions
+
+<DefList
+  items={[
+    {
+      term: 'README is the contract',
+      description:
+        'Each package README is its user-facing feature and usage contract.'
+    },
+    {
+      term: 'Publish only what is documented',
+      description:
+        'Package resources and configuration are published only when documented.'
+    },
+    {
+      term: 'Shared navigation taxonomy',
+      description:
+        'Filament resources use the shared cluster and navigation taxonomy from Support.'
+    },
+    {
+      term: 'One domain model',
+      description:
+        'API packages map domain objects to API Platform resources. They do not invent a second domain model.'
+    },
+    {
+      term: 'Contracts over concretes',
+      description:
+        'Tenant-aware behavior is activated through contracts rather than hard-coded dependencies on the concrete tenant provider.'
+    }
+  ]}
+/>
+
+For implementation details, read the package’s own README and tests in the
+platform repository.
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/platform/development',
+      title: 'Development and testing',
+      description: 'Run the suite and static analysis across packages.'
+    },
+    {
+      href: '/docs/overview/repositories',
+      title: 'Repository boundaries',
+      description: 'Why domain behavior belongs in packages, not the host.'
+    }
+  ]}
+/>

@@ -1,0 +1,122 @@
+---
+description: "How the vendra, vendra-controller, and vendra-storefront-florist repositories divide responsibility, and which system is authoritative for each kind of state."
+---
+
+# Ecosystem map
+
+<Lede>
+  Vendra is split into three runtime products and this documentation site. Each
+  repository owns one layer of the system, and none of them share a database.
+</Lede>
+
+## Repositories
+
+<DefList
+  items={[
+    {
+      term: 'vendra',
+      meta: 'Laravel application',
+      description:
+        'Tenants, resellers, commerce and content data, admin panels, queues, billing, and the public API.'
+    },
+    {
+      term: 'vendra-controller',
+      meta: 'Go CLI and HTTP service',
+      description:
+        'Host initialization, Compose rendering, containers, networks, TLS, and property lifecycle.'
+    },
+    {
+      term: 'vendra-storefront-florist',
+      meta: 'Next.js application',
+      description:
+        'Public storefront UI, runtime property branding, API proxying, and localized presentation.'
+    },
+    {
+      term: 'vendra-ecosystem-docs',
+      meta: 'Nextra site',
+      description:
+        'Cross-repository architecture and operator guidance — this site.'
+    }
+  ]}
+/>
+
+## Sources of truth
+
+When two systems disagree, these win.
+
+<DefList
+  items={[
+    {
+      term: 'Laravel database',
+      description: 'Authoritative for tenants and storefront deployments.'
+    },
+    {
+      term: 'controller.yaml',
+      description: 'Authoritative for host-level desired state.'
+    },
+    {
+      term: 'property .env',
+      description:
+        'Holds each property’s runtime configuration. The safe properties.yml registry contains only slug, domain, image, and theme.'
+    },
+    {
+      term: 'properties/schema.json',
+      meta: 'storefront repository',
+      description: 'Defines the property configuration shape.'
+    },
+    {
+      term: 'api/openapi.yaml',
+      meta: 'controller repository',
+      description: 'Defines the internal provisioner API.'
+    }
+  ]}
+/>
+
+## Choose your path
+
+<FeatureGrid
+  items={[
+    {
+      href: '/docs/platform',
+      title: 'Application engineer',
+      description:
+        'Start with the Laravel platform, then the storefront that renders it.'
+    },
+    {
+      href: '/docs/controller',
+      title: 'Infrastructure engineer',
+      description: 'Start with the Go controller, then the operations runbook.'
+    },
+    {
+      href: '/docs/getting-started',
+      title: 'New installation',
+      description: 'Follow Getting Started for local or production setup.'
+    },
+    {
+      href: '/docs/api',
+      title: 'Integration work',
+      description:
+        'Read the API landscape, including the current tenant-resolution limitation.'
+    }
+  ]}
+/>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/overview/architecture',
+      title: 'Architecture',
+      description: 'Request path, provisioning flow, and state ownership.'
+    },
+    {
+      href: '/docs/overview/repositories',
+      title: 'Repository boundaries',
+      description: 'The rules that keep each repository in its lane.'
+    },
+    {
+      href: '/docs/overview/glossary',
+      title: 'Glossary',
+      description: 'Property, tenant, deployment, and the other easily confused terms.'
+    }
+  ]}
+/>

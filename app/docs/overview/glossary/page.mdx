@@ -1,0 +1,157 @@
+---
+description: "Definitions for the Vendra terms that are easy to confuse: property, tenant, reseller, storefront, deployment, and stack."
+---
+
+import { Callout } from 'nextra/components'
+
+# Glossary
+
+<Lede>
+  Several of these terms are used interchangeably in conversation but mean
+  distinct things in the code. The distinctions matter most when something goes
+  wrong.
+</Lede>
+
+## Core entities
+
+<DefList
+  items={[
+    {
+      term: 'Tenant',
+      description:
+        'The business-data boundary inside Laravel. Owns catalog, content, users, and orders. Lives in the database and is authoritative.'
+    },
+    {
+      term: 'Property',
+      description:
+        'One tenant’s public presence: a slug, a domain, an image, and a configuration. The unit the controller renders and runs.'
+    },
+    {
+      term: 'Storefront',
+      description:
+        'The Next.js application that serves a property. One shared, tenant-neutral image serves every property in the fleet.'
+    },
+    {
+      term: 'Reseller',
+      description:
+        'A host-owned account that owns many tenant properties, one owner login, and subscription records. Property quota is enforced per reseller.'
+    }
+  ]}
+/>
+
+<Callout type="info">
+  A tenant and a property are created together but fail independently. Removing
+  controller state stops a property without deleting its tenant, and deleting a
+  tenant is a separate business-data operation.
+</Callout>
+
+## Runtime and lifecycle
+
+<DefList
+  items={[
+    {
+      term: 'Stack',
+      description:
+        'Everything the controller runs on one host: the proxy, platform, optional website, and every property project.'
+    },
+    {
+      term: 'Compose project',
+      description:
+        'One generated Docker Compose unit. There is one per property, plus proxy, platform, and website.'
+    },
+    {
+      term: 'Deployment',
+      description:
+        'A durable Laravel record of desired storefront state — requested image, configuration, and resulting status. Authoritative for replaying the fleet.'
+    },
+    {
+      term: 'Provisioning',
+      description:
+        'The asynchronous path from a Laravel deployment record to a running container, via the queued job and the provisioner API.'
+    },
+    {
+      term: 'Reconciliation',
+      description:
+        'Replaying authoritative Laravel deployments to bring hosts back in line. Owned by Laravel, not the controller.'
+    },
+    {
+      term: 'Drift',
+      description:
+        'A mismatch between the safe property registry and the rendered directories on disk. Surfaced by `vendra property ls`.'
+    }
+  ]}
+/>
+
+## Configuration
+
+<DefList
+  items={[
+    {
+      term: 'controller.yaml',
+      description:
+        'Host-level desired state. Authoritative for the host. Never contains secrets.'
+    },
+    {
+      term: 'controller.env',
+      description:
+        'Host secrets, mode 0600. Overridden by process environment values.'
+    },
+    {
+      term: 'Property configuration',
+      description:
+        'The validated JSON object describing one property’s identity and branding, injected as `STOREFRONT_CONFIG_BASE64`.'
+    },
+    {
+      term: 'properties.yml',
+      description:
+        'The safe registry. Holds only slug, domain, image, and theme — it cannot reconstruct a full property configuration.'
+    },
+    {
+      term: 'Compatibility set',
+      description:
+        'A tested combination of controller binary, platform image, provisioner image, and storefront image digests.'
+    }
+  ]}
+/>
+
+## Boundaries
+
+<DefList
+  items={[
+    {
+      term: 'Canonical API',
+      description:
+        'The single Laravel API host at `api.<base>` that serves every property. Its host cannot identify a tenant.'
+    },
+    {
+      term: 'Provisioner',
+      description:
+        'The internal Go HTTP service Laravel calls to create storefronts. The only component holding a write-capable Docker socket.'
+    },
+    {
+      term: 'Tenant routing',
+      description:
+        'Selecting a tenant from request headers. Not authentication — see the storefront API limitation.'
+    },
+    {
+      term: 'Composition root',
+      description:
+        'The thin Laravel host that binds first-party packages to concrete implementations, without defining domain behavior itself.'
+    }
+  ]}
+/>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/overview',
+      title: 'Ecosystem map',
+      description: 'Where each of these lives across the repositories.'
+    },
+    {
+      href: '/docs/overview/architecture',
+      title: 'Architecture',
+      description: 'How the entities interact at runtime.'
+    }
+  ]}
+/>

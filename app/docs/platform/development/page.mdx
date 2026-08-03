@@ -1,0 +1,87 @@
+---
+description: "Set up the native Laravel development loop, run the parallel test suite and static analysis, and clear stale caches."
+---
+
+# Development and testing
+
+<Lede>
+  The native Laravel loop, without Docker. Use this for application work; use the
+  local ecosystem workflow when you need the full Traefik topology.
+</Lede>
+
+## Setup
+
+```bash
+cd vendra-platform
+composer setup
+composer dev
+```
+
+<CommandList
+  items={[
+    {
+      cmd: 'composer setup',
+      description:
+        'Installs PHP and JavaScript dependencies, creates .env, generates the application key, migrates the database, and builds frontend assets.'
+    },
+    {
+      cmd: 'composer dev',
+      description:
+        'Starts the web server, queue listener, logs, and the Vite watcher.'
+    }
+  ]}
+/>
+
+Packages are linked through Composer path repositories under `packages/*`. Run
+`composer dump-autoload` when discovery or class maps appear stale.
+
+## Checks
+
+<CommandList
+  items={[
+    {
+      cmd: 'composer test',
+      description:
+        'Optimized project test script: clears configuration and runs the suite in parallel.'
+    },
+    {
+      cmd: 'php artisan test --parallel --compact --filter=testName',
+      description: 'Targeted test while iterating.'
+    },
+    { cmd: 'composer stan', description: 'Static analysis.' },
+    {
+      cmd: 'vendor/bin/pint --dirty --format agent',
+      description: 'Formats only changed files.'
+    }
+  ]}
+/>
+
+Prefer the smallest relevant scope while iterating, then run `composer test` for
+the complete parallel suite. Omit parallelism only for shared mutable resources,
+race debugging, or other tests that cannot be isolated.
+
+## Common resets
+
+When changes do not appear to take effect:
+
+```bash
+composer dump-autoload
+php artisan package:discover
+php artisan config:clear
+php artisan optimize:clear
+```
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/getting-started/local',
+      title: 'Local ecosystem',
+      description: 'Run the same code behind the production topology.'
+    },
+    {
+      href: '/docs/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'Moving a tested change to a host.'
+    }
+  ]}
+/>

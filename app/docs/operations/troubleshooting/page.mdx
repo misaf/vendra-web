@@ -1,0 +1,123 @@
+---
+description: "Symptom-first fixes for empty storefront data, failed provisioning, unhealthy containers, and stale Laravel or frontend changes."
+---
+
+import { Callout } from 'nextra/components'
+
+# Troubleshooting
+
+<Lede>
+  Organized by symptom. Start from what you can see, not from what you suspect.
+</Lede>
+
+## Storefront renders empty data sections
+
+<Steps
+  items={[
+    {
+      title: 'Confirm the property domain is active in Laravel',
+      body: 'An inactive domain fails tenant resolution silently.'
+    },
+    {
+      title: 'Check server logs and the browser network panel separately',
+      body: 'Server-side and browser-side reads take different paths and fail differently.'
+    },
+    {
+      title: 'In self-signed mode, trust both certificates',
+      body: 'Accept both the API and the storefront certificate.'
+    },
+    {
+      title: 'Verify VENDRA_API_URL and the encoded configuration domain',
+      body: 'A mismatch here produces a page that renders but has no data.'
+    }
+  ]}
+/>
+
+<Callout type="info">
+  Empty sections in local development are far more often an untrusted certificate
+  than a data problem.
+</Callout>
+
+## Property provisioning fails
+
+<Steps
+  items={[
+    {
+      title: 'Inspect the Laravel deployment record and queued-job logs',
+      body: 'The authoritative record of what was requested.'
+    },
+    {
+      title: 'Inspect platform-provisioner-1 logs',
+      body: 'Look for Docker and registry errors.'
+    },
+    {
+      title: 'Confirm the bearer token matches on both sides',
+      body: 'VENDRA_PROVISIONER_TOKEN and STOREFRONT_PROVISIONER_TOKEN are the same secret.'
+    },
+    {
+      title: 'Confirm the image exists and the architecture is pullable',
+      body: 'An arm64 host cannot pull an amd64-only image.'
+    },
+    {
+      title: 'For local tags, set no_pull: true',
+      body: 'And use exactly matching image names.'
+    }
+  ]}
+/>
+
+## Container never becomes healthy
+
+<Steps
+  items={[
+    {
+      title: 'Call /api/health',
+      body: 'From inside the container, and through the property route.'
+    },
+    {
+      title: 'Decode and validate STOREFRONT_CONFIG_BASE64',
+      body: 'Validate it without logging secrets.'
+    },
+    {
+      title: 'Confirm certificate trust',
+      body: 'Through NODE_EXTRA_CA_CERTS in self-signed mode.'
+    },
+    {
+      title: 'Check theme support',
+      body: 'The configured image must support the requested default theme.'
+    }
+  ]}
+/>
+
+## Laravel changes appear stale
+
+```bash
+composer dump-autoload
+php artisan package:discover
+php artisan config:clear
+php artisan optimize:clear
+```
+
+## Frontend changes appear stale
+
+Run `npm run property` after changing property or schema data, then restart the
+dev server or rebuild the image.
+
+<Callout type="warning">
+  `NEXT_PUBLIC_*` changes always require a rebuild. They are inlined at build
+  time and cannot be changed by restarting a container.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/operations',
+      title: 'Operations runbook',
+      description: 'Daily checks and recovery.'
+    },
+    {
+      href: '/docs/controller/cli',
+      title: 'CLI reference',
+      description: 'The commands used throughout this page.'
+    }
+  ]}
+/>

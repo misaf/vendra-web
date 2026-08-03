@@ -1,0 +1,104 @@
+---
+description: "The boundary rules for the Laravel platform, Go controller, and Next.js storefront, and the order to apply coordinated cross-repository changes."
+---
+
+# Repository boundaries
+
+<Lede>
+  Each repository has a rule that keeps it from absorbing another’s
+  responsibilities. Most cross-repository bugs come from breaking one of them.
+</Lede>
+
+## Platform rules
+
+The Laravel host is a thin composition root. Domain behavior belongs in
+first-party `misaf/vendra-*` packages. Packages depend on contracts from
+`vendra-support`; only the host connects concrete tenants, resellers, wallets,
+notifications, and panel providers.
+
+<Boundary
+  doTitle="The host does"
+  dontTitle="The host does not"
+  dos={[
+    'Bind concrete tenant, reseller, and wallet implementations',
+    'Register panel providers and notification channels',
+    'Wire queued provisioning to the controller'
+  ]}
+  donts={[
+    'Define domain models or business actions',
+    'Reimplement behavior that belongs in a package',
+    'Let packages depend on concrete host classes'
+  ]}
+/>
+
+## Controller rules
+
+All Docker and Compose execution flows through the controller’s shared internal
+packages. Renderers and HTTP handlers do not invoke shell commands directly.
+Runtime manifests are generated artifacts and must not be edited by hand.
+
+## Storefront rules
+
+<DefList
+  items={[
+    {
+      term: 'src/modules/<feature>',
+      description: 'Feature code. Imports from other modules go through index.ts.'
+    },
+    {
+      term: 'src/shared',
+      description: 'Shared infrastructure. Must remain property-neutral.'
+    },
+    {
+      term: 'src/themes/<theme>/pages',
+      description: 'Route composition for a theme.'
+    }
+  ]}
+/>
+
+Everything under `src/` stays property-neutral. Brand data and copy arrive only
+through the validated runtime property configuration.
+
+## Cross-repository changes
+
+Changes to provisioning or storefront configuration usually require coordinated
+updates to all three repositories, in this order:
+
+<Steps
+  items={[
+    {
+      title: 'Storefront schema first',
+      body: 'Define or update the schema and the runtime behavior that reads it.'
+    },
+    {
+      title: 'Laravel producer next',
+      body: 'Update the configuration producer and the persisted deployment contract.'
+    },
+    {
+      title: 'Controller validation',
+      body: 'Update validation and the embedded Compose template.'
+    },
+    {
+      title: 'Documentation and verification',
+      body: 'Update these pages and verify one configuration against one published image.'
+    }
+  ]}
+/>
+
+Release the consumer before or together with the producer whenever the change is
+not backward-compatible.
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'Rolling a coordinated change across the fleet.'
+    },
+    {
+      href: '/docs/platform/packages',
+      title: 'Package catalog',
+      description: 'What lives in the first-party packages.'
+    }
+  ]}
+/>

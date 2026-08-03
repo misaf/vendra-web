@@ -79,25 +79,25 @@ const footerSections = [
   {
     title: 'Build',
     links: [
-      { href: '/getting-started', label: sectionLabel('getting-started') },
-      { href: '/overview/architecture', label: 'Architecture' },
-      { href: '/overview/repositories', label: 'Repositories' }
+      { href: '/docs/getting-started', label: sectionLabel('getting-started') },
+      { href: '/docs/overview/architecture', label: 'Architecture' },
+      { href: '/docs/overview/repositories', label: 'Repositories' }
     ]
   },
   {
     title: 'Products',
     links: [
-      { href: '/platform', label: sectionLabel('platform') },
-      { href: '/controller', label: sectionLabel('controller') },
-      { href: '/storefront', label: sectionLabel('storefront') }
+      { href: '/docs/platform', label: sectionLabel('platform') },
+      { href: '/docs/controller', label: sectionLabel('controller') },
+      { href: '/docs/storefront', label: sectionLabel('storefront') }
     ]
   },
   {
     title: 'Operate',
     links: [
-      { href: '/api', label: sectionLabel('api') },
-      { href: '/operations', label: sectionLabel('operations') },
-      { href: '/operations/troubleshooting', label: 'Troubleshooting' }
+      { href: '/docs/api', label: sectionLabel('api') },
+      { href: '/docs/operations', label: sectionLabel('operations') },
+      { href: '/docs/operations/troubleshooting', label: 'Troubleshooting' }
     ]
   }
 ]

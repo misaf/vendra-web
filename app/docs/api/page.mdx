@@ -1,0 +1,71 @@
+---
+description: "Vendra's two API boundaries: the public Laravel JSON:API and the internal Go provisioner contract, with separate credentials and threat models."
+---
+
+import { Callout } from 'nextra/components'
+
+# API landscape
+
+<Lede>
+  Vendra exposes two unrelated API boundaries. They have different audiences,
+  different credentials, and different threat models.
+</Lede>
+
+<Callout type="error">
+  Do not mix their credentials. The provisioner token and any storefront
+  credential are unrelated secrets and must never be interchanged.
+</Callout>
+
+## The two boundaries
+
+<FeatureGrid
+  items={[
+    {
+      href: '/docs/api/storefront',
+      title: 'Laravel / API Platform',
+      description:
+        'Public JSON:API for storefronts and application clients. Resource-specific user auth; tenant routing currently uses origin and domain context.',
+      meta: 'https://api.<base>/api'
+    },
+    {
+      href: '/docs/api/provisioner',
+      title: 'Go provisioner',
+      description:
+        'Internal contract called only by the Laravel queue, authenticated with a shared bearer token.',
+      meta: 'provisioner:8080/v1'
+    }
+  ]}
+/>
+
+<div className="mt-5 flex flex-wrap gap-2">
+  <Tag tone="emerald">Public</Tag>
+  <Tag>Internal</Tag>
+</div>
+
+## Laravel API
+
+The Laravel API publishes OpenAPI documentation at `/api/docs`. Domain endpoints
+follow the Filament navigation taxonomy — for example `/api/catalog/products`.
+API packages own their resources and mapping logic.
+
+## Provisioner API
+
+The Go provisioner’s exact machine contract is checked into
+`vendra-controller/api/openapi.yaml`. Use that file for generated clients or
+contract tests rather than transcribing fields from these pages.
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/api/storefront',
+      title: 'Storefront API and tenancy',
+      description:
+        'Request context, CORS, and the current tenant-resolution limitation.'
+    },
+    {
+      href: '/docs/api/provisioner',
+      title: 'Provisioner contract',
+      description: 'Contract rules, limits, and token handling.'
+    }
+  ]}
+/>

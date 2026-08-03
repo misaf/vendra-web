@@ -21,7 +21,7 @@ const themes = [
     title: 'Florist',
     description:
       'The reference storefront theme: catalogue, product detail, cart, and checkout, fully internationalised.',
-    href: '/storefront',
+    href: '/docs/storefront',
     tag: 'Available'
   },
   {
@@ -43,7 +43,7 @@ const panels = [
     title: 'Operator panel preset',
     description:
       'Filament resources for tenants, properties, and billing, ready to register.',
-    href: '/platform',
+    href: '/docs/platform',
     tag: 'Platform'
   },
   {

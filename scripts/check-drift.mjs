@@ -67,7 +67,7 @@ if (existsSync(openapiPath)) {
     problems.push('Could not parse any endpoints from openapi.yaml')
   }
 
-  const docPath = 'app/controller/provisioning/page.mdx'
+  const docPath = 'app/docs/controller/provisioning/page.mdx'
   const doc = read(docPath)
 
   // The endpoint list on that page is a <DefList> whose terms read
@@ -108,7 +108,7 @@ if (existsSync(schemaPath)) {
     Object.keys(schema.properties ?? {}).filter(key => !required.has(key))
   )
 
-  const docPath = 'app/storefront/configuration/page.mdx'
+  const docPath = 'app/docs/storefront/configuration/page.mdx'
   const doc = read(docPath)
 
   // Required fields appear as top-level keys of the ```json example block.
@@ -187,7 +187,7 @@ if (existsSync(packagesDir)) {
     slugs.filter(slug => slug.endsWith('-api')).map(slug => slug.slice(0, -4))
   )
 
-  const docPath = 'app/platform/packages/page.mdx'
+  const docPath = 'app/docs/platform/packages/page.mdx'
   const doc = read(docPath)
 
   // Only the "## Catalog" section lists packages; the conventions section below

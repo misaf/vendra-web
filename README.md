@@ -119,9 +119,9 @@ contracts in the sibling repositories against the pages describing them:
 
 | Contract | Page |
 | --- | --- |
-| `vendra-controller/api/openapi.yaml` | `app/controller/provisioning/page.mdx` |
-| `vendra-storefront-florist/properties/schema.json` | `app/storefront/configuration/page.mdx` |
-| `vendra/packages/` | `app/platform/packages/page.mdx` |
+| `vendra-controller/api/openapi.yaml` | `app/docs/controller/provisioning/page.mdx` |
+| `vendra-storefront-florist/properties/schema.json` | `app/docs/storefront/configuration/page.mdx` |
+| `vendra/packages/` | `app/docs/platform/packages/page.mdx` |
 
 Drift is reported **in both directions**. A contract item missing from the docs
 is an undocumented feature; a documented item missing from the contract is

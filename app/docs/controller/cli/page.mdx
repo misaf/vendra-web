@@ -1,0 +1,107 @@
+---
+description: "Complete vendra CLI reference for the host stack lifecycle and the per-property storefront lifecycle."
+---
+
+import { Callout } from 'nextra/components'
+
+# CLI reference
+
+<Lede>
+  The `vendra` binary manages two lifecycles: the host stack, and the individual
+  storefront properties running on it.
+</Lede>
+
+## Stack lifecycle
+
+<CommandList
+  items={[
+    { cmd: 'vendra init', description: 'Prepare host state and directories.' },
+    {
+      cmd: 'vendra stack up',
+      description:
+        'Renders manifests, ensures the network, prepares certificates, validates Compose, pulls when enabled, starts projects, and waits for health.'
+    },
+    {
+      cmd: 'vendra stack status',
+      description: 'Report stack health. Add --json for machine output.'
+    },
+    { cmd: 'vendra stack ps', description: 'List running containers.' },
+    { cmd: 'vendra stack urls', description: 'Print the routed URLs.' },
+    {
+      cmd: 'vendra stack logs [target]',
+      description: 'Tail service logs. Defaults to the php service.'
+    },
+    { cmd: 'vendra stack restart', description: 'Restart stack services.' },
+    {
+      cmd: 'vendra stack hosts --write',
+      description: 'Update /etc/hosts for local domains.'
+    },
+    { cmd: 'vendra stack down', description: 'Stop the stack.' },
+    { cmd: 'vendra version', description: 'Print the binary version.' },
+    {
+      cmd: 'vendra completion <bash|zsh|fish|powershell>',
+      description: 'Emit a shell completion script on stdout.'
+    }
+  ]}
+/>
+
+<Callout type="info">
+  For local source images, set `no_pull: true` in configuration and pass
+  `--no-pull` for direct CLI operations.
+</Callout>
+
+## Property lifecycle
+
+<CommandList
+  items={[
+    {
+      cmd: 'vendra property add <slug> <domain> --configuration config.json',
+      description: 'Create a new property. Refuses to overwrite existing state.'
+    },
+    {
+      cmd: 'vendra property render <slug> <domain> --configuration config.json',
+      description: 'Re-render property files. Idempotent.'
+    },
+    { cmd: 'vendra property up <slug>', description: 'Start the property.' },
+    {
+      cmd: 'vendra property restart <slug>',
+      description: 'Restart the property container.'
+    },
+    { cmd: 'vendra property down <slug>', description: 'Stop the property.' },
+    {
+      cmd: 'vendra property ls',
+      description:
+        'List properties, exposing drift between the safe registry and rendered directories.'
+    },
+    {
+      cmd: 'vendra property sync',
+      description:
+        'Re-render entries whose existing .env still contains configuration.'
+    },
+    {
+      cmd: 'vendra property remove <slug>',
+      description: 'Remove controller state for the property.'
+    }
+  ]}
+/>
+
+<Callout type="warning">
+  `sync` can only re-render a property when its existing `.env` still contains
+  the configuration. If it does not, replay the authoritative deployment from
+  Laravel instead — the safe registry cannot reconstruct it.
+</Callout>
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/controller/configuration',
+      title: 'Configuration',
+      description: 'The keys these commands read.'
+    },
+    {
+      href: '/docs/operations',
+      title: 'Operations runbook',
+      description: 'Which of these commands to run daily.'
+    }
+  ]}
+/>
