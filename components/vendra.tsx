@@ -46,7 +46,7 @@ const tones = {
   neutral:
     'border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] text-[var(--vendra-fg-muted)]',
   emerald:
-    'border-[color-mix(in_srgb,var(--vendra-accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--vendra-accent)_12%,transparent)] text-[var(--vendra-accent)]',
+    'border-[color-mix(in_srgb,var(--vendra-accent)_35%,transparent)] bg-[color-mix(in_srgb,var(--vendra-accent)_12%,transparent)] text-[var(--vendra-accent-text)]',
   amber:
     'border-amber-600/30 bg-amber-500/12 text-amber-700 dark:text-amber-300',
   red: 'border-red-600/30 bg-red-500/12 text-red-700 dark:text-red-300'
@@ -166,7 +166,7 @@ export function Hero({
           `globals.css`, which would otherwise win — see the note there. */}
       <h1
         data-display=""
-        className="mt-5 max-w-3xl text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50"
+        className="mt-5 max-w-3xl font-display text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50"
       >
         {title}
       </h1>
@@ -180,7 +180,14 @@ export function Hero({
             <Link
               key={action.href}
               href={action.href}
-              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors ${action.primary ? 'border-transparent bg-neutral-950 text-neutral-50 hover:bg-neutral-800 dark:bg-neutral-50 dark:text-neutral-950 dark:hover:bg-neutral-300' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
+              // The pill shape is this component's own — a docs hero, not a
+              // marketing band — but the colours are the same accent pair the
+              // marketing buttons use (`actionButtonClass` in
+              // `components/marketing.tsx`). They were a third hardcoded copy
+              // of `neutral-950`/`neutral-50`, outside the token layer and
+              // therefore immune to a brand-hue change, which is the drift the
+              // accent tokens exist to prevent.
+              className={`inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-medium transition-colors ${action.primary ? 'border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] text-[var(--vendra-on-accent)] hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)]' : 'border-[var(--vendra-line-strong)] text-[var(--vendra-fg-muted)] hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
             >
               {action.label}
             </Link>
@@ -220,12 +227,12 @@ export function FeatureGrid({
         <Link
           key={item.href}
           href={item.href}
-          className="group block rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-5 py-4 text-inherit no-underline transition hover:-translate-y-px hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-surface-raised)]"
+          className="group block rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-5 py-4 text-inherit no-underline transition hover:-translate-y-0.75 hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-surface-raised)] hover:shadow-[var(--vendra-glow-sm)]"
         >
           <div className="flex items-center gap-3">
             {item.icon ? (
               <span
-                className="grid size-8 shrink-0 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_70%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_91%)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent)]"
+                className="grid size-8 shrink-0 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_70%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_91%)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent-text)]"
                 aria-hidden="true"
               >
                 {item.icon}
@@ -236,7 +243,7 @@ export function FeatureGrid({
                 {item.title}
               </span>
               <span
-                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent)]"
+                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent-text)]"
                 aria-hidden="true"
               >
                 →
@@ -284,7 +291,7 @@ export function NextSteps({
             <span className="inline-flex items-center justify-between gap-3 font-semibold text-[var(--vendra-fg)]">
               {item.title}
               <span
-                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent)]"
+                className="text-[var(--vendra-fg-subtle)] transition group-hover:translate-x-0.5 group-hover:text-[var(--vendra-accent-text)]"
                 aria-hidden="true"
               >
                 →
@@ -318,7 +325,7 @@ export function Steps({ items }: { items: StepItem[] }) {
           key={i}
           className="relative grid grid-cols-[1.75rem_1fr] gap-3.5 pb-6 last:pb-0 not-last:before:absolute not-last:before:top-8 not-last:before:bottom-1 not-last:before:left-3.5 not-last:before:w-px not-last:before:bg-[var(--vendra-line-strong)]"
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] text-xs font-semibold text-[var(--vendra-accent)]">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] text-xs font-semibold text-[var(--vendra-accent-text)]">
             {i + 1}
           </span>
           <div className="pt-0.75">
@@ -477,7 +484,7 @@ export function Boundary({
   return (
     <div className="mt-5 grid gap-3 sm:grid-cols-2">
       <div className="rounded-xl border border-[color-mix(in_srgb,var(--vendra-accent),transparent_65%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] p-5">
-        <div className="text-sm font-semibold text-[var(--vendra-accent)]">
+        <div className="text-sm font-semibold text-[var(--vendra-accent-text)]">
           {doTitle}
         </div>
         <ul className="mt-3 list-none space-y-2 p-0 text-sm leading-6 text-[var(--vendra-fg-muted)] [&>li]:relative [&>li]:pl-4 [&>li]:before:absolute [&>li]:before:left-0 [&>li]:before:text-[var(--vendra-fg-subtle)] [&>li]:before:content-['·']">
