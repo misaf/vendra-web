@@ -22,6 +22,6 @@ pnpm-debug.log*
 # system
 .DS_Store
 
-# generated search index — now written into out/, which is ignored above.
-# Kept so a stale index from an earlier build layout stays out of commits.
+# Generated search index. The build writes it to out/ (ignored above) and
+# `scripts/sync-search-index.mjs` copies it here so `next dev` can serve it.
 public/_pagefind

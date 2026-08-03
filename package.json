@@ -8,8 +8,8 @@
   "scripts": {
     "dev": "next",
     "build": "next build",
-    "postbuild": "pagefind --site out --output-path out/_pagefind",
-    "start": "next start",
+    "postbuild": "pagefind --site out --output-path out/_pagefind && node scripts/sync-search-index.mjs",
+    "start": "npx --yes serve out",
     "typecheck": "tsc --noEmit --pretty false --incremental false",
     "check:links": "node scripts/check-links.mjs",
     "check:drift": "node scripts/check-drift.mjs",

@@ -18,12 +18,26 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-Search is not available in `dev`: the Pagefind index is generated from
-prerendered HTML by the `postbuild` step. To exercise search locally:
+Pagefind indexes prerendered HTML, so the search index only exists after a
+build. Run one before search works in `dev`:
 
 ```bash
-npm run build && npm start
+npm run build          # writes out/_pagefind, and copies it to public/_pagefind
+npm run dev            # search now answers from that snapshot
 ```
+
+The dev index is a snapshot of the last build, not of the file you are editing —
+build again to refresh it. `next dev` serves `public/` from disk per request, so
+a running dev server picks up a new index without a restart.
+
+To serve the real exported site instead:
+
+```bash
+npm run build && npm start   # npx serve out
+```
+
+`next start` does not work here: `output: export` produces static files with no
+Next.js server to run.
 
 ## Repository layout
 
