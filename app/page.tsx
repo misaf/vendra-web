@@ -50,7 +50,11 @@ export default async function Landing() {
           </>
         }
         actions={[
-          { href: '/docs/getting-started', label: 'Get started', primary: true },
+          {
+            href: '/docs/getting-started',
+            label: 'Get started',
+            primary: true
+          },
           { href: '/pro', label: 'Explore Pro' }
         ]}
         chips={[
@@ -132,7 +136,10 @@ export default async function Landing() {
             'Split from one monorepo into path repositories on release',
             'Add a domain without touching the ones already there'
           ]}
-          action={{ href: '/docs/platform/packages', label: 'Browse the packages' }}
+          action={{
+            href: '/docs/platform/packages',
+            label: 'Browse the packages'
+          }}
         >
           <p>
             The platform is a Laravel application, but the domains live in
@@ -152,7 +159,10 @@ export default async function Landing() {
             'Health checks, recovery, and backups as first-class commands',
             'The web application never holds a Docker socket'
           ]}
-          action={{ href: '/docs/controller', label: 'How the controller works' }}
+          action={{
+            href: '/docs/controller',
+            label: 'How the controller works'
+          }}
         >
           <p>
             Laravel could shell out to Docker itself. It does not, and the
@@ -170,7 +180,10 @@ export default async function Landing() {
             'Internationalised, with per-property locale sets',
             'Deploys as a single container image'
           ]}
-          action={{ href: '/docs/storefront', label: 'Storefront architecture' }}
+          action={{
+            href: '/docs/storefront',
+            label: 'Storefront architecture'
+          }}
         >
           <p>
             The storefront reads which property it is serving at request time,
