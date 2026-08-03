@@ -315,6 +315,153 @@ describe('check-html', () => {
 })
 
 /* -------------------------------------------------------------------------- */
+/* check-selectors                                                            */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Every hook the check knows about, so a fixture can satisfy all of them and
+ * then remove exactly one. Kept as markup rather than as a list of class names
+ * because the switcher-strip entry asserts an adjacency, not a class.
+ */
+const allHooks = [
+  '<div class="nextra-navbar"></div>',
+  '<div class="nextra-toc"></div>',
+  '<code class="nextra-code">x</code>',
+  '<div class="nextra-callout"></div>',
+  '<div class="nextra-cards"></div>',
+  '<div class="nextra-card"></div>',
+  '<div class="nextra-table-container"></div>',
+  '<div class="nextra-search"></div>',
+  '<div><div>switcher</div><hr class="nextra-border"/><footer>f</footer></div>'
+]
+
+/**
+ * Like `page`, but with the `next/font` variable classes on <html> — the tenth
+ * hook, and the only one carried by the document element rather than by
+ * anything in the body.
+ */
+const selectorPage = (
+  body,
+  htmlAttrs = ' class="inter_ab-module__cd__variable"'
+) => `<!doctype html><html${htmlAttrs}><body>${body}</body></html>`
+
+describe('check-selectors', () => {
+  it('passes when every hook is present', () => {
+    const dir = htmlFixture({ 'index.html': selectorPage(allHooks.join('')) })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 0, output)
+    assert.match(output, /10\/10 styling hooks present/)
+    assert.doesNotMatch(output, /dormant/)
+  })
+
+  it('catches the font variables sitting on <body> instead of <html>', () => {
+    // The regression that shipped: the classes are still in the document, so
+    // grepping for them finds them — they are just one element too low, and
+    // every `var(--font-*)` in the `:root` block resolves to nothing.
+    const dir = htmlFixture({
+      'index.html': `<!doctype html><html><body class="inter_ab-module__cd__variable">${allHooks.join('')}</body></html>`
+    })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 1)
+    assert.match(output, /next\/font variable classes/)
+  })
+
+  it('reports an absent optional hook without failing', () => {
+    // `.nextra-table-container` styles a feature no page uses yet, so its
+    // absence is not evidence of a rename. It still has to be *reported* —
+    // a rule matching nothing is the first thing to check when a treatment
+    // goes missing — but it must not turn the build red.
+    const dir = htmlFixture({
+      'index.html': selectorPage(
+        allHooks
+          .filter(hook => !hook.includes('nextra-table-container'))
+          .join('')
+      )
+    })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 0, output)
+    assert.match(output, /9\/10 styling hooks present/)
+    assert.match(output, /dormant: \.nextra-table-container/)
+  })
+
+  it('still fails when a required hook is absent', () => {
+    const dir = htmlFixture({
+      'index.html': selectorPage(
+        allHooks.filter(hook => !hook.includes('nextra-navbar')).join('')
+      )
+    })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 1)
+    assert.match(output, /nextra-navbar/)
+  })
+
+  it('accepts hooks spread across different pages', () => {
+    // Real builds are like this: only pages with a table carry the table
+    // container. The check must not require every hook on every page.
+    const dir = htmlFixture(
+      Object.fromEntries(
+        allHooks.map((hook, i) => [`page-${i}.html`, selectorPage(hook)])
+      )
+    )
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 0, output)
+  })
+
+  it('reports a renamed class, and only that one', () => {
+    const dir = htmlFixture({
+      'index.html': selectorPage(
+        allHooks.join('').replace('nextra-callout', 'nextra-admonition')
+      )
+    })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 1)
+    assert.match(output, /nextra-callout/)
+    assert.doesNotMatch(output, /nextra-navbar/)
+  })
+
+  it('reports the switcher strip when the hr/footer adjacency breaks', () => {
+    // The exact regression the structural selector is exposed to: something
+    // inserted between the rule and the footer. Both elements are still there,
+    // so a class-presence check would miss it.
+    const dir = htmlFixture({
+      'index.html': selectorPage(
+        allHooks
+          .join('')
+          .replace(
+            '<hr class="nextra-border"/><footer>',
+            '<hr class="nextra-border"/><div></div><footer>'
+          )
+      )
+    })
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: dir
+    })
+    assert.equal(code, 1)
+    assert.match(output, /hr\.nextra-border \+ footer/)
+  })
+
+  it('fails when there is nothing to check', () => {
+    const { code, output } = run('check-selectors.mjs', {
+      VENDRA_BUILD_DIR: temporaryDir('vendra-selectors-empty-')
+    })
+    assert.equal(code, 1)
+    assert.match(output, /no prerendered pages found/)
+  })
+})
+
+/* -------------------------------------------------------------------------- */
 /* check-blog                                                                 */
 /* -------------------------------------------------------------------------- */
 
