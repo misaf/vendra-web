@@ -1087,8 +1087,15 @@ pre {
 
 .vw-hero {
   position: relative;
-  padding-block: 5.5rem 3.5rem;
+  padding-block: 5rem 4rem;
   overflow: hidden;
+}
+
+.vw-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(23rem, 0.92fr);
+  align-items: center;
+  gap: clamp(2.5rem, 6vw, 6.5rem);
 }
 
 .vw-hero::before {
@@ -1122,7 +1129,7 @@ pre {
      underneath it. Sized explicitly rather than by opposing insets — <canvas>
      is a replaced element, so `left`/`bottom` alone would leave it at its
      intrinsic 300×150. */
-  width: 64%;
+  width: 58%;
   height: 118%;
   z-index: -1;
   display: block;
@@ -1146,7 +1153,7 @@ pre {
 }
 
 .vw-hero-title {
-  max-width: 24ch;
+  max-width: 17ch;
   margin-top: 1rem;
   font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 750;
@@ -1155,7 +1162,7 @@ pre {
 }
 
 .vw-hero-lede {
-  max-width: 46rem;
+  max-width: 40rem;
   margin-top: 1.5rem;
   color: var(--vendra-fg-subtle);
   font-size: 1.125rem;
@@ -1174,6 +1181,217 @@ pre {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 2.25rem;
+}
+
+.vw-hero-architecture {
+  position: relative;
+  padding: 0.75rem;
+  border: 1px solid var(--vendra-line-strong);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(var(--vendra-surface-raised), var(--vendra-surface-raised))
+      padding-box,
+    linear-gradient(145deg, rgb(124 58 237 / 35%), rgb(16 185 129 / 15%))
+      border-box;
+  box-shadow: 0 30px 80px -45px rgb(18 18 30 / 55%);
+  backdrop-filter: blur(16px);
+}
+
+.vw-hero-architecture::before {
+  content: '';
+  position: absolute;
+  inset: 2rem 12% 1rem;
+  z-index: -1;
+  background: var(--vendra-accent);
+  filter: blur(5rem);
+  opacity: 0.1;
+}
+
+.vw-hero-architecture-head,
+.vw-architecture-loop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0.4rem 0.85rem;
+  color: var(--vendra-fg-subtle);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vw-architecture-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vw-architecture-status i {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--vendra-accent);
+  box-shadow: 0 0 0.75rem var(--vendra-accent);
+  animation: vw-status-pulse 2.4s ease-in-out infinite;
+}
+
+.vw-architecture-flow {
+  display: flex;
+  flex-direction: column;
+}
+
+.vw-architecture-node {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--vendra-surface-raised), transparent 8%);
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.vw-architecture-node:hover {
+  border-color: color-mix(in srgb, var(--vendra-accent), transparent 25%);
+  box-shadow: 0 12px 30px -24px var(--vendra-accent);
+  transform: translateX(0.2rem);
+}
+
+.vw-architecture-index {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 0.55rem;
+  background: var(--vendra-muted);
+  color: var(--vendra-accent);
+  font-family: var(--x-font-mono);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.vw-architecture-node-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.vw-architecture-node-copy strong {
+  font-size: 0.925rem;
+  letter-spacing: -0.015em;
+}
+
+.vw-architecture-node-copy small {
+  color: var(--vendra-fg-subtle);
+  font-size: 0.75rem;
+}
+
+.vw-architecture-tech {
+  color: var(--vendra-fg-muted);
+  font-family: var(--x-font-mono);
+  font-size: 0.6875rem;
+}
+
+.vw-architecture-connector {
+  position: relative;
+  display: grid;
+  width: 2rem;
+  height: 1.8rem;
+  margin-left: 1rem;
+  place-items: center;
+  color: var(--vendra-accent);
+}
+
+.vw-architecture-connector span {
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background: var(--vendra-line-strong);
+}
+
+.vw-architecture-connector b {
+  z-index: 1;
+  padding: 0.1rem;
+  background: var(--vendra-surface-raised);
+  font-size: 0.75rem;
+  rotate: 90deg;
+  animation: vw-flow-step 2.4s ease-in-out infinite;
+}
+
+.vw-architecture-step:nth-child(2) .vw-architecture-connector b {
+  animation-delay: 0.8s;
+}
+
+.vw-architecture-loop {
+  padding: 0.85rem 0.4rem 0.2rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.vw-architecture-loop i {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--vendra-line-strong),
+    transparent
+  );
+}
+
+@keyframes vw-flow-step {
+  0%,
+  100% {
+    opacity: 0.35;
+    translate: 0 -0.2rem;
+  }
+  50% {
+    opacity: 1;
+    translate: 0 0.2rem;
+  }
+}
+
+@keyframes vw-status-pulse {
+  50% {
+    opacity: 0.55;
+    scale: 0.8;
+  }
+}
+
+@media (max-width: 64rem) {
+  .vw-hero-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .vw-hero-copy {
+    max-width: 48rem;
+  }
+
+  .vw-hero-architecture {
+    width: min(100%, 36rem);
+  }
+}
+
+@media (max-width: 36rem) {
+  .vw-hero {
+    padding-block: 3.5rem 3rem;
+  }
+
+  .vw-architecture-tech {
+    display: none;
+  }
+
+  .vw-hero-architecture-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
 }
 
 /* -- Stack diagram --------------------------------------------------------- */

@@ -114,22 +114,90 @@ export function LandingHero({
   return (
     <section className="vw-hero">
       <HeroCanvas />
-      <div className="vw-container">
-        {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
-        <h1 className="vw-hero-title">{title}</h1>
-        {children ? <div className="vw-hero-lede">{children}</div> : null}
-        <Actions items={actions} />
-        {chips.length ? (
-          <div className="vw-hero-chips">
-            {chips.map(chip => (
-              <span key={chip} className="vendra-chip">
-                {chip}
-              </span>
-            ))}
-          </div>
-        ) : null}
+      <div className="vw-container vw-hero-layout">
+        <div className="vw-hero-copy">
+          {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
+          <h1 className="vw-hero-title">{title}</h1>
+          {children ? <div className="vw-hero-lede">{children}</div> : null}
+          <Actions items={actions} />
+          {chips.length ? (
+            <div className="vw-hero-chips">
+              {chips.map(chip => (
+                <span key={chip} className="vendra-chip">
+                  {chip}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        <HeroArchitecture />
       </div>
     </section>
+  )
+}
+
+const heroSystems = [
+  {
+    href: '/docs/platform',
+    index: '01',
+    label: 'Platform',
+    tech: 'Laravel',
+    role: 'Business state'
+  },
+  {
+    href: '/docs/controller',
+    index: '02',
+    label: 'Controller',
+    tech: 'Go',
+    role: 'Runtime state'
+  },
+  {
+    href: '/docs/storefront',
+    index: '03',
+    label: 'Storefront',
+    tech: 'Next.js',
+    role: 'Presentation'
+  }
+]
+
+function HeroArchitecture() {
+  return (
+    <div
+      className="vw-hero-architecture"
+      aria-label="Vendra system architecture"
+    >
+      <div className="vw-hero-architecture-head">
+        <span>One system</span>
+        <span className="vw-architecture-status">
+          <i aria-hidden="true" /> Three clear boundaries
+        </span>
+      </div>
+      <div className="vw-architecture-flow">
+        {heroSystems.map((system, index) => (
+          <div className="vw-architecture-step" key={system.href}>
+            <Link className="vw-architecture-node" href={system.href}>
+              <span className="vw-architecture-index">{system.index}</span>
+              <span className="vw-architecture-node-copy">
+                <strong>{system.label}</strong>
+                <small>{system.role}</small>
+              </span>
+              <span className="vw-architecture-tech">{system.tech}</span>
+            </Link>
+            {index < heroSystems.length - 1 ? (
+              <div className="vw-architecture-connector" aria-hidden="true">
+                <span />
+                <b>→</b>
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      <div className="vw-architecture-loop" aria-hidden="true">
+        <span>merchant intent</span>
+        <i />
+        <span>customer experience</span>
+      </div>
+    </div>
   )
 }
 
