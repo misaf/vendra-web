@@ -41,8 +41,8 @@ jobs:
           echo "search index OK"
 
   deploy:
-    # Only the default branch publishes. PRs and release branches stop at check.
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    # Only the default branch publishes. PRs and other branches stop at check.
+    if: github.ref == 'refs/heads/1.x' && github.event_name == 'push'
     needs: check
     runs-on: ubuntu-latest
 
@@ -79,13 +79,20 @@ jobs:
       # output, and canonical tags plus sitemap.xml are generated here. Setting
       # it only at runtime would have no effect.
       #
-      # SITE_URL is a repository variable so the domain lives in one place.
-      # BASE_PATH stays empty: this site is served from the root of its own
-      # domain, not from a /<repo> project path.
+      # SITE_URL is an optional repository variable, for when a custom domain is
+      # attached. Unset, this falls back to the Pages origin.
+      #
+      # This is a GitHub Pages *project* site, served from
+      # https://<user>.github.io/vendra-web — not the root of its own domain —
+      # so BASE_PATH carries the /<repo> prefix. Next uses it to rewrite
+      # `next/link` hrefs and its own asset URLs; an empty value here would
+      # point every link and every `_next/` asset at the domain root and ship a
+      # broken, unstyled site. Switching to a custom domain means clearing this
+      # back to '' and setting SITE_URL + SITE_DOMAIN.
       - name: Build
         env:
           NEXT_PUBLIC_SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
-          BASE_PATH: ''
+          BASE_PATH: '/vendra-web'
         run: npm run build
 
       # GitHub Pages needs CNAME inside the artifact to keep serving the custom
