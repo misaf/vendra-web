@@ -1054,8 +1054,26 @@ pre {
 }
 
 .vw-section-muted {
+  position: relative;
   background: var(--vendra-muted);
   border-block: 1px solid var(--vendra-line);
+}
+
+.vw-section-muted::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--vendra-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--vendra-line) 1px, transparent 1px);
+  background-size: 3rem 3rem;
+  mask-image: radial-gradient(circle at 50% 50%, black, transparent 75%);
+  opacity: 0.22;
+}
+
+.vw-section-muted > .vw-container {
+  position: relative;
 }
 
 .vw-section-head {
@@ -1576,7 +1594,15 @@ pre {
 }
 
 .vw-arrow-link:hover {
-  text-decoration: underline;
+  color: var(--vendra-accent);
+}
+
+.vw-arrow-link span {
+  transition: transform 150ms ease;
+}
+
+.vw-arrow-link:hover span {
+  transform: translateX(0.2rem);
 }
 
 /* -- Logo wall ------------------------------------------------------------- */
@@ -2133,6 +2159,24 @@ a.vw-logo:hover .vw-logo-mark {
   flex-direction: column;
   align-items: center;
   text-align: center;
+  padding: 2rem 1.5rem 1.5rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 1.1rem;
+  background: var(--vendra-surface);
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.vw-team-member:hover {
+  border-color: color-mix(in srgb, var(--vendra-accent), transparent 50%);
+  box-shadow: 0 22px 45px -38px var(--vendra-accent);
+  transform: translateY(-2px);
+}
+
+.vw-team-member:hover .vw-team-frame {
+  transform: scale(1.025);
 }
 
 /* The SVG that carries the duotone filter. It must be in the document to be
@@ -2272,6 +2316,26 @@ a.vw-logo:hover .vw-logo-mark {
   background: var(--vendra-muted);
   color: var(--vendra-fg);
   transform: translateY(-1px);
+}
+
+.vw-team-socials a[href*='github.com']:hover {
+  border-color: #6e7681;
+  color: var(--vendra-fg);
+}
+
+.vw-team-socials a[href*='linkedin.com']:hover {
+  border-color: #0a66c2;
+  color: #0a66c2;
+}
+
+.vw-team-socials a[href*='instagram.com']:hover {
+  border-color: #d946ef;
+  color: #c026d3;
+}
+
+.vw-team-socials a[href*='youtube.com']:hover {
+  border-color: #ff0033;
+  color: #e6002e;
 }
 
 /* -- Footer switcher strip -------------------------------------------------- */

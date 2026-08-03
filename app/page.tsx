@@ -245,6 +245,16 @@ export default async function Landing() {
         align="center"
       >
         <TeamGrid members={team} />
+        <div className="vw-actions" style={{ justifyContent: 'center' }}>
+          <a
+            className="vw-arrow-link"
+            href="https://github.com/misaf"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Built openly on GitHub <span aria-hidden="true">→</span>
+          </a>
+        </div>
       </Section>
 
       <Section tone="muted">
@@ -258,8 +268,15 @@ export default async function Landing() {
           </p>
           <Actions
             items={[
-              { href: '/docs/getting-started', label: 'Get started', primary: true },
-              { href: '/docs/overview/architecture', label: 'View architecture' }
+              {
+                href: '/docs/getting-started',
+                label: 'Get started',
+                primary: true
+              },
+              {
+                href: '/docs/overview/architecture',
+                label: 'View architecture'
+              }
             ]}
           />
         </div>
