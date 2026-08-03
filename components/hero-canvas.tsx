@@ -182,6 +182,83 @@ function buildGeometry() {
   }
 }
 
+type Geometry = ReturnType<typeof buildGeometry>
+
+/**
+ * Everything that lives inside a GL context: the program, the three buffers,
+ * and the attribute/uniform locations.
+ *
+ * Separated from the effect because it has to be rebuildable. A WebGL context
+ * can be taken away at any time — the driver resets, the tab is backgrounded
+ * too long, the GPU process restarts — and when it comes back every object
+ * created against the old one is gone. Anything that treats setup as a
+ * once-per-mount step leaves a permanently blank canvas the first time that
+ * happens.
+ */
+type Scene = ReturnType<typeof buildScene>
+
+function buildScene(gl: WebGLRenderingContext, geometry: Geometry) {
+  const program = gl.createProgram()
+  const vs = compile(gl, gl.VERTEX_SHADER, VERT)
+  const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG)
+  if (!program || !vs || !fs) return null
+
+  gl.attachShader(program, vs)
+  gl.attachShader(program, fs)
+  gl.linkProgram(program)
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null
+  gl.useProgram(program)
+
+  const buffers = {
+    lines: gl.createBuffer(),
+    points: gl.createBuffer(),
+    struts: gl.createBuffer()
+  }
+  for (const key of ['lines', 'points', 'struts'] as const) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffers[key])
+    gl.bufferData(gl.ARRAY_BUFFER, geometry[key], gl.STATIC_DRAW)
+  }
+
+  const aPos = gl.getAttribLocation(program, 'aPos')
+  const aColor = gl.getAttribLocation(program, 'aColor')
+  const aSeed = gl.getAttribLocation(program, 'aSeed')
+
+  const STRIDE = 7 * 4
+  const bind = (buffer: WebGLBuffer | null) => {
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.enableVertexAttribArray(aPos)
+    gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, STRIDE, 0)
+    gl.enableVertexAttribArray(aColor)
+    gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, STRIDE, 12)
+    gl.enableVertexAttribArray(aSeed)
+    gl.vertexAttribPointer(aSeed, 1, gl.FLOAT, false, STRIDE, 24)
+  }
+
+  gl.enable(gl.BLEND)
+
+  return {
+    program,
+    vs,
+    fs,
+    buffers,
+    bind,
+    uProj: gl.getUniformLocation(program, 'uProj'),
+    uView: gl.getUniformLocation(program, 'uView'),
+    uTime: gl.getUniformLocation(program, 'uTime'),
+    uAlpha: gl.getUniformLocation(program, 'uAlpha')
+  }
+}
+
+function destroyScene(gl: WebGLRenderingContext, scene: Scene) {
+  // Nothing to release if the context is already gone — the objects went with
+  // it, and calling into a lost context just logs warnings.
+  if (!scene || gl.isContextLost()) return
+  for (const buffer of Object.values(scene.buffers)) gl.deleteBuffer(buffer)
+  gl.deleteProgram(scene.program)
+  gl.deleteShader(scene.vs)
+  gl.deleteShader(scene.fs)
+}
+
 export function HeroCanvas() {
   const ref = useRef<HTMLCanvasElement>(null)
 
@@ -197,48 +274,9 @@ export function HeroCanvas() {
       }) as WebGLRenderingContext | null) ?? null
     if (!gl) return
 
-    const program = gl.createProgram()
-    const vs = compile(gl, gl.VERTEX_SHADER, VERT)
-    const fs = compile(gl, gl.FRAGMENT_SHADER, FRAG)
-    if (!program || !vs || !fs) return
-
-    gl.attachShader(program, vs)
-    gl.attachShader(program, fs)
-    gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return
-    gl.useProgram(program)
-
     const geometry = buildGeometry()
-    const buffers = {
-      lines: gl.createBuffer(),
-      points: gl.createBuffer(),
-      struts: gl.createBuffer()
-    }
-    for (const key of ['lines', 'points', 'struts'] as const) {
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffers[key])
-      gl.bufferData(gl.ARRAY_BUFFER, geometry[key], gl.STATIC_DRAW)
-    }
-
-    const aPos = gl.getAttribLocation(program, 'aPos')
-    const aColor = gl.getAttribLocation(program, 'aColor')
-    const aSeed = gl.getAttribLocation(program, 'aSeed')
-    const uProj = gl.getUniformLocation(program, 'uProj')
-    const uView = gl.getUniformLocation(program, 'uView')
-    const uTime = gl.getUniformLocation(program, 'uTime')
-    const uAlpha = gl.getUniformLocation(program, 'uAlpha')
-
-    const STRIDE = 7 * 4
-    const bind = (buffer: WebGLBuffer | null) => {
-      gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
-      gl.enableVertexAttribArray(aPos)
-      gl.vertexAttribPointer(aPos, 3, gl.FLOAT, false, STRIDE, 0)
-      gl.enableVertexAttribArray(aColor)
-      gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, STRIDE, 12)
-      gl.enableVertexAttribArray(aSeed)
-      gl.vertexAttribPointer(aSeed, 1, gl.FLOAT, false, STRIDE, 24)
-    }
-
-    gl.enable(gl.BLEND)
+    let scene = buildScene(gl, geometry)
+    if (!scene) return
 
     // Blending has to follow the theme. Additive light on the dark background
     // makes the lattice glow where lines cross; the same additive pass on the
@@ -303,7 +341,7 @@ export function HeroCanvas() {
 
       const delta = Math.min((now - last) / 1000, 0.05)
       last = now
-      if (!onscreen || document.hidden) return
+      if (!scene || gl.isContextLost() || !onscreen || document.hidden) return
 
       // Reduced motion still gets the figure, just held still.
       if (!reduced.matches) time += delta
@@ -321,26 +359,40 @@ export function HeroCanvas() {
       const gain = dark ? 1 : 0.72
 
       gl.uniformMatrix4fv(
-        uProj,
+        scene.uProj,
         false,
         perspective(0.9, width / height, 0.1, 100)
       )
-      gl.uniformMatrix4fv(uView, false, orbitView(yaw, pitch, 6.8))
-      gl.uniform1f(uTime, time)
+      gl.uniformMatrix4fv(scene.uView, false, orbitView(yaw, pitch, 6.8))
+      gl.uniform1f(scene.uTime, time)
 
-      bind(buffers.struts)
-      gl.uniform1f(uAlpha, 0.55 * gain)
+      scene.bind(scene.buffers.struts)
+      gl.uniform1f(scene.uAlpha, 0.55 * gain)
       gl.drawArrays(gl.LINES, 0, geometry.struts.length / 7)
 
-      bind(buffers.lines)
-      gl.uniform1f(uAlpha, 0.6 * gain)
+      scene.bind(scene.buffers.lines)
+      gl.uniform1f(scene.uAlpha, 0.6 * gain)
       gl.drawArrays(gl.LINES, 0, geometry.lines.length / 7)
 
-      bind(buffers.points)
-      gl.uniform1f(uAlpha, 0.6 * gain)
+      scene.bind(scene.buffers.points)
+      gl.uniform1f(scene.uAlpha, 0.6 * gain)
       gl.drawArrays(gl.POINTS, 0, geometry.points.length / 7)
     }
     frame = requestAnimationFrame(render)
+
+    // Losing the context is normal, not exceptional. Calling preventDefault is
+    // what tells the browser we intend to recover — without it `contextrestored`
+    // never fires and the hero stays blank for the rest of the visit.
+    const onLost = (event: Event) => {
+      event.preventDefault()
+      scene = null
+    }
+    const onRestored = () => {
+      scene = buildScene(gl, geometry)
+      resize()
+    }
+    canvas.addEventListener('webglcontextlost', onLost)
+    canvas.addEventListener('webglcontextrestored', onRestored)
 
     return () => {
       cancelAnimationFrame(frame)
@@ -348,11 +400,17 @@ export function HeroCanvas() {
       visibility.disconnect()
       theme.disconnect()
       window.removeEventListener('pointermove', onPointer)
-      for (const buffer of Object.values(buffers)) gl.deleteBuffer(buffer)
-      gl.deleteProgram(program)
-      gl.deleteShader(vs)
-      gl.deleteShader(fs)
-      gl.getExtension('WEBGL_lose_context')?.loseContext()
+      canvas.removeEventListener('webglcontextlost', onLost)
+      canvas.removeEventListener('webglcontextrestored', onRestored)
+      destroyScene(gl, scene)
+
+      // Deliberately NOT calling `WEBGL_lose_context.loseContext()` here.
+      // `getContext` caches one context per <canvas>, and a context killed that
+      // way stays dead: every later `getContext` on the element hands back the
+      // same lost object. Any remount onto the same element — React's
+      // development double-invoke of effects does exactly this — then rebuilds
+      // against a corpse and renders nothing. Dropping the references is enough;
+      // the context goes when the element does.
     }
   }, [])
 
