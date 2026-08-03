@@ -3,9 +3,10 @@
  * `lib/navigation.ts` reads it back so the navbar and footer cannot drift from
  * it.
  *
- * The landing page, `/pro`, and the three galleries are `type: 'page'` with the
- * docs chrome switched off — they are marketing and index pages, not reference
- * material, so a sidebar and a table of contents would only get in the way.
+ * The landing page, `/pro`, `/about`, and the three galleries are `type: 'page'`
+ * with the docs chrome switched off — they are marketing and index pages, not
+ * reference material, so a sidebar and a table of contents would only get in
+ * the way.
  *
  * `blog` and `faq` are `type: 'page'` too. They are sections of the site in
  * their own right, not documentation: a post is not a reference page, and
@@ -14,8 +15,8 @@
  * only the docs sidebar and its breadcrumb/pagination go.
  *
  * Documentation sections keep the slugs they have always had. The navbar groups
- * them under Learn and Reference (see `lib/navigation.ts`), but that grouping is
- * presentational: no page moved, so no existing URL broke.
+ * the three product systems under Product (see `lib/navigation.ts`), but that
+ * grouping is presentational: no page moved, so no existing URL broke.
  */
 
 /**
@@ -63,6 +64,7 @@ export default {
   examples: { title: 'Examples', ...marketing },
   ui: { title: 'UI', ...marketing },
   showcase: { title: 'Showcase', ...marketing },
+  about: { title: 'About', ...marketing },
 
   // Documentation has its own route tree and sidebar under /docs.
   docs: { title: 'Documentation', display: 'hidden' },
