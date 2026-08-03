@@ -28,7 +28,7 @@ function AuthorBadge({ name }: { name: string }) {
   const content = (
     <>
       {author.avatar ? (
-        <span className="inline-grid size-6 shrink-0 place-items-center overflow-hidden rounded-full border border-[color-mix(in_srgb,#7c3aed,transparent_55%)] bg-[color-mix(in_srgb,#7c3aed,transparent_88%)] p-px shadow-[0_4px_12px_-8px_#7c3aed]">
+        <span className="inline-grid size-6 shrink-0 place-items-center overflow-hidden rounded-full border border-[color-mix(in_srgb,var(--vendra-accent-2),transparent_55%)] bg-[color-mix(in_srgb,var(--vendra-accent-2),transparent_88%)] p-px shadow-[0_4px_12px_-8px_var(--vendra-accent-2)]">
           <img
             className="block size-full rounded-full object-cover [filter:grayscale(1)_contrast(1.18)_sepia(0.18)_saturate(1.65)_hue-rotate(218deg)] [mask-image:radial-gradient(circle,black_62%,rgb(0_0_0/0.72)_78%,transparent_100%)] transition group-hover:scale-105 group-hover:[filter:grayscale(0.65)_contrast(1.1)_saturate(1.2)]"
             src={author.avatar}
@@ -146,7 +146,7 @@ export function PostList({
   empty?: string
 }) {
   if (posts.length === 0) {
-    return <p className="mt-8 text-[var(--vendra-fg-subtle)]">{empty}</p>
+    return <p className="mt-8 text-[var(--vendra-fg-muted)]">{empty}</p>
   }
 
   return (
