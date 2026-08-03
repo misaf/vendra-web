@@ -187,25 +187,31 @@ export function LandingHero({
 
 const heroSystems = [
   {
-    href: '/docs/platform',
+    href: '/docs/storefront',
     index: '01',
+    label: 'Storefront',
+    tech: 'Next.js',
+    role: 'Presentation',
+    signal: '2 locales',
+    accent: '[--hero-accent:var(--vendra-accent-2)]'
+  },
+  {
+    href: '/docs/platform',
+    index: '02',
     label: 'Platform',
     tech: 'Laravel',
-    role: 'Business state'
+    role: 'Business state',
+    signal: '30 packages',
+    accent: '[--hero-accent:var(--vendra-accent)]'
   },
   {
     href: '/docs/controller',
-    index: '02',
+    index: '03',
     label: 'Controller',
     tech: 'Go',
-    role: 'Runtime state'
-  },
-  {
-    href: '/docs/storefront',
-    index: '03',
-    label: 'Storefront',
-    tech: 'Next.js',
-    role: 'Presentation'
+    role: 'Runtime state',
+    signal: 'Healthy',
+    accent: '[--hero-accent:var(--vendra-accent-3)]'
   }
 ]
 
@@ -227,12 +233,12 @@ function HeroArchitecture() {
       </div>
       <div className="flex flex-col">
         {heroSystems.map((system, index) => (
-          <div key={system.href}>
+          <div className={system.accent} key={system.href}>
             <Link
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--vendra-accent),transparent_25%)] hover:shadow-[var(--vendra-glow-md)]"
+              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-0.75 hover:border-[color-mix(in_srgb,var(--hero-accent),transparent_25%)] hover:shadow-[0_12px_30px_-24px_var(--hero-accent)]"
               href={system.href}
             >
-              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[var(--vendra-muted)] font-mono text-[0.7rem] font-[750] text-[var(--vendra-accent)]">
+              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[color-mix(in_srgb,var(--hero-accent),transparent_90%)] font-mono text-[0.7rem] font-[750] text-[var(--hero-accent)]">
                 {system.index}
               </span>
               <span className="flex min-w-0 flex-col gap-0.5">
@@ -243,8 +249,14 @@ function HeroArchitecture() {
                   {system.role}
                 </small>
               </span>
-              <span className="font-mono text-[0.6875rem] text-[var(--vendra-fg-muted)] max-[36rem]:hidden">
-                {system.tech}
+              <span className="flex flex-col items-end gap-1 max-[36rem]:hidden">
+                <span className="font-mono text-[0.6875rem] text-[var(--vendra-fg-muted)]">
+                  {system.tech}
+                </span>
+                <span className="inline-flex items-center gap-1.5 text-[0.625rem] font-semibold text-[var(--hero-accent)]">
+                  <i className="size-1.5 rounded-full bg-current" />
+                  {system.signal}
+                </span>
               </span>
             </Link>
             {index < heroSystems.length - 1 ? (
@@ -486,6 +498,103 @@ export function PropertyRouting() {
   )
 }
 
+/** A truthful, code-native view of the operator surface's current domains. */
+export function OperatorPanelPreview() {
+  const rows = [
+    ['Tenants', 'Account boundary', 'Console · reseller'],
+    ['Properties', 'Storefront identity', 'Console · reseller'],
+    ['Subscriptions', 'Plan enforcement', 'Operator']
+  ]
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] shadow-[var(--vendra-shadow-md)]">
+      <div className="flex items-center justify-between border-b border-[var(--vendra-line)] px-4 py-3">
+        <div>
+          <div className="text-sm font-bold">Operator</div>
+          <div className="text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+            Tenants · properties · subscriptions
+          </div>
+        </div>
+        <span className="rounded-full bg-[color-mix(in_srgb,var(--vendra-accent),transparent_88%)] px-2.5 py-1 text-[0.65rem] font-bold text-[var(--vendra-accent)]">
+          Platform
+        </span>
+      </div>
+      <div className="grid grid-cols-3 border-b border-[var(--vendra-line)] bg-[var(--vendra-muted)]">
+        {[
+          ['30', 'Packages'],
+          ['3', 'Panels'],
+          ['8', 'API modules']
+        ].map(([value, label]) => (
+          <div
+            className="border-l border-[var(--vendra-line)] px-4 py-3 first:border-l-0"
+            key={label}
+          >
+            <strong className="block text-lg tracking-tight">{value}</strong>
+            <span className="text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+              {label}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="p-3">
+        <div className="mb-2 px-2 text-[0.65rem] font-bold tracking-[0.12em] text-[var(--vendra-fg-subtle)] uppercase">
+          Domain surfaces
+        </div>
+        {rows.map(([name, detail, scope]) => (
+          <div
+            className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 border-t border-[var(--vendra-line)] px-2 py-3 text-xs first:border-t-0"
+            key={name}
+          >
+            <strong className="truncate">{name}</strong>
+            <span className="text-[var(--vendra-fg-subtle)]">{detail}</span>
+            <span className="rounded-full bg-[var(--vendra-muted)] px-2 py-0.5 font-semibold text-[var(--vendra-fg-subtle)]">
+              {scope}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** Controller output using commands and states the shipped CLI documents. */
+export function ControllerConsole() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-[var(--vendra-line)] bg-neutral-950 text-neutral-100 shadow-[var(--vendra-shadow-lg)]">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 text-[0.65rem] text-neutral-400">
+        <span className="flex gap-1.5" aria-hidden="true">
+          <i className="size-2 rounded-full bg-rose-400/70" />
+          <i className="size-2 rounded-full bg-amber-300/70" />
+          <i className="size-2 rounded-full bg-emerald-400/70" />
+        </span>
+        <span className="font-mono">vendra-controller</span>
+      </div>
+      <div className="space-y-4 p-5 font-mono text-[0.75rem] leading-6">
+        <div>
+          <span className="text-sky-400">$</span> vendra stack status
+        </div>
+        <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 text-neutral-400">
+          <span className="text-emerald-400">●</span>
+          <span>edge</span>
+          <span className="text-neutral-200">healthy</span>
+          <span className="text-emerald-400">●</span>
+          <span>platform</span>
+          <span className="text-neutral-200">healthy</span>
+          <span className="text-emerald-400">●</span>
+          <span>property/houshang-flowers</span>
+          <span className="text-neutral-200">healthy</span>
+        </div>
+        <div className="border-t border-white/10 pt-4">
+          <span className="text-sky-400">$</span> vendra stack hosts --write
+          <div className="mt-1 text-neutral-500">
+            wrote api, console and property hosts
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /** Alternating editorial rows for the architectural reasons behind Vendra. */
 export function FeatureSplit({
   eyebrow,
@@ -495,6 +604,7 @@ export function FeatureSplit({
   points = [],
   media,
   action,
+  accent = 'platform',
   flip = false
 }: {
   eyebrow?: string
@@ -511,15 +621,24 @@ export function FeatureSplit({
    */
   media?: ReactNode
   action?: { href: string; label: string }
+  accent?: 'storefront' | 'platform' | 'controller'
   flip?: boolean
 }) {
+  const accentClass = {
+    storefront: '[--feature-accent:var(--vendra-accent-2)]',
+    platform: '[--feature-accent:var(--vendra-accent)]',
+    controller: '[--feature-accent:var(--vendra-accent-3)]'
+  }[accent]
+
   return (
-    <div className="group relative grid items-start gap-10 border-t border-[var(--vendra-line)] py-14 first:border-t-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(20rem,0.95fr)] lg:gap-20">
+    <div
+      className={`group relative grid items-start gap-10 overflow-hidden border-t border-[var(--vendra-line)] py-16 before:pointer-events-none before:absolute before:top-8 before:-right-24 before:-z-1 before:size-72 before:rounded-full before:bg-[var(--feature-accent)] before:opacity-[0.055] before:blur-3xl first:border-t-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-20 ${accentClass}`}
+    >
       <div className={flip ? 'lg:order-2' : ''}>
         {eyebrow || index ? (
           <div className="flex items-center gap-3 text-xs font-semibold tracking-[0.16em] uppercase">
             {index ? (
-              <span className="font-mono tracking-normal text-[var(--vendra-accent)]">
+              <span className="font-mono tracking-normal text-[var(--feature-accent)]">
                 {index}
               </span>
             ) : null}
@@ -536,20 +655,24 @@ export function FeatureSplit({
         ) : null}
         {action ? (
           <Link
-            className="group mt-5 inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)]"
+            className="group mt-5 inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--feature-accent)]"
             href={action.href}
           >
             {action.label} <span aria-hidden="true">→</span>
           </Link>
         ) : null}
       </div>
-      <div className="flex flex-col gap-4">
-        {media}
+      <div className={`flex flex-col gap-4 ${flip ? 'lg:order-1' : ''}`}>
+        {media ? (
+          <div className="relative before:pointer-events-none before:absolute before:-inset-3 before:-z-1 before:rounded-[1.35rem] before:border before:border-[color-mix(in_srgb,var(--feature-accent),transparent_76%)]">
+            {media}
+          </div>
+        ) : null}
         {points.length ? (
-          <ul className="m-0 overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-0 shadow-[var(--vendra-shadow-md)]">
+          <ul className="m-0 overflow-hidden border-y border-[var(--vendra-line)] bg-transparent p-0">
             {points.map(point => (
               <li
-                className="relative border-t border-[var(--vendra-line)] py-4 pr-5 pl-11 text-[0.9375rem] leading-6 first:border-t-0 before:absolute before:top-[1.4rem] before:left-5 before:size-1.5 before:rounded-full before:bg-[var(--vendra-accent)] before:shadow-[0_0_0_4px_color-mix(in_srgb,var(--vendra-accent),transparent_88%)]"
+                className="relative border-t border-[var(--vendra-line)] py-4 pr-5 pl-9 text-[0.9375rem] leading-6 first:border-t-0 before:absolute before:top-[1.4rem] before:left-2 before:h-px before:w-4 before:bg-[var(--feature-accent)]"
                 key={point}
               >
                 {point}
@@ -625,14 +748,14 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
     /* Held to `max-w-4xl` inside the section's `max-w-6xl`: four logotypes
        spread across the full band sit far enough apart to read as four
        unrelated marks rather than one wall. */
-    <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-14 gap-y-6">
+    <div className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-14 gap-y-6">
       {customers.map(customer => {
         // A plain <a>, not next/link: these are other people's sites, so there
         // is no route to prefetch and nothing for `basePath` to rewrite.
         const Tag = customer.href ? 'a' : 'div'
         return (
           <Tag
-            className="group flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
+            className="group flex items-start gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
             key={customer.name}
             title={customer.name}
             {...(customer.href
@@ -643,18 +766,30 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
                 }
               : {})}
           >
-            <svg
-              className="size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              {customerMarks[customer.mark]}
-            </svg>
+            {customer.logo ? (
+              <img
+                className="h-7 w-auto max-w-24 object-contain grayscale transition group-hover:grayscale-0"
+                src={customer.logo.src}
+                alt=""
+                width={customer.logo.width}
+                height={customer.logo.height}
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <svg
+                className="mt-0.5 size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                {customerMarks[customer.mark]}
+              </svg>
+            )}
             <span className="flex flex-col leading-none">
               <span className="text-lg font-bold tracking-tight">
                 {customer.lead}
@@ -662,6 +797,11 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               {customer.sub ? (
                 <span className="mt-1 text-[0.6rem] font-semibold tracking-[0.22em] uppercase opacity-80">
                   {customer.sub}
+                </span>
+              ) : null}
+              {customer.proof ? (
+                <span className="mt-2 text-[0.65rem] leading-4 font-medium tracking-normal text-[var(--vendra-fg-subtle)] normal-case opacity-90">
+                  {customer.proof}
                 </span>
               ) : null}
             </span>
@@ -776,6 +916,113 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
         )
       })}
     </div>
+  )
+}
+
+/** One available project, given enough space to show the work rather than a card. */
+export function FeaturedProject({
+  item,
+  secondaryShot,
+  eyebrow = 'Available now'
+}: {
+  item: GalleryItem & { href: string; shot: Shot }
+  secondaryShot?: Shot
+  eyebrow?: string
+}) {
+  return (
+    <Link
+      href={item.href}
+      className="group grid items-center gap-8 border-y border-[var(--vendra-line)] py-8 lg:grid-cols-[minmax(0,1.35fr)_minmax(16rem,0.65fr)] lg:gap-12"
+    >
+      <div
+        className={`relative transition-transform duration-300 group-hover:-translate-y-1 ${secondaryShot ? 'pb-12 md:pr-16' : ''}`}
+      >
+        <Screenshot shot={item.shot} />
+        {secondaryShot ? (
+          <div className="absolute right-0 bottom-0 w-[58%] shadow-[var(--vendra-shadow-lg)]">
+            <Screenshot shot={secondaryShot} />
+          </div>
+        ) : null}
+      </div>
+      <div>
+        <div className="text-xs font-bold tracking-[0.14em] text-[var(--vendra-accent)] uppercase">
+          {eyebrow}
+        </div>
+        <h3 className="mt-3 text-subtitle font-bold">{item.title}</h3>
+        <p className="mt-3 leading-7 text-[var(--vendra-fg-muted)]">
+          {item.description}
+        </p>
+        <span className="mt-5 inline-flex items-center gap-2 text-sm font-bold group-hover:text-[var(--vendra-accent)]">
+          Explore the project <span aria-hidden="true">→</span>
+        </span>
+      </div>
+    </Link>
+  )
+}
+
+/** Available work in an editorial list, without turning every entry into a card. */
+export function EditorialList({ items }: { items: GalleryItem[] }) {
+  return (
+    <div className="border-t border-[var(--vendra-line)]">
+      {items.map((item, index) => {
+        const body = (
+          <>
+            <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <span>
+              <strong className="block text-base tracking-tight">
+                {item.title}
+              </strong>
+              <span className="mt-1 block text-sm leading-6 text-[var(--vendra-fg-muted)]">
+                {item.description}
+              </span>
+            </span>
+            <span className="text-[var(--vendra-fg-subtle)]" aria-hidden="true">
+              →
+            </span>
+          </>
+        )
+
+        return item.href ? (
+          <Link
+            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-4 border-b border-[var(--vendra-line)] py-5 transition hover:pl-2 hover:text-[var(--vendra-accent)]"
+            href={item.href}
+            key={item.title}
+          >
+            {body}
+          </Link>
+        ) : null
+      })}
+    </div>
+  )
+}
+
+/** Compact roadmap: visible intent without letting unavailable work dominate. */
+export function RoadmapList({
+  items
+}: {
+  items: { title: string; area?: string }[]
+}) {
+  return (
+    <ol className="m-0 grid list-none gap-x-8 border-t border-[var(--vendra-line)] p-0 md:grid-cols-2">
+      {items.map((item, index) => (
+        <li
+          className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--vendra-line)] py-4"
+          key={item.title}
+        >
+          <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+          <span className="text-sm font-semibold">{item.title}</span>
+          {item.area ? (
+            <span className="text-[0.65rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+              {item.area}
+            </span>
+          ) : null}
+        </li>
+      ))}
+    </ol>
   )
 }
 
@@ -1055,7 +1302,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
             ) : null}
             {member.links?.length ? (
               <div
-                className="mt-4 flex flex-wrap justify-center gap-1.5"
+                className="mt-auto flex flex-wrap justify-center gap-1.5 pt-4"
                 aria-label={`${member.name}'s profiles`}
               >
                 {member.links.map(link => (
