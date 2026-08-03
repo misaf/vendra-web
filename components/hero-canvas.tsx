@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
  * scene graph to draw three grids would make the landing page the heaviest
  * download on the site. Everything here — the projection matrix, the geometry,
  * the two shaders — is a few dozen lines, and the whole component degrades to
- * nothing (the CSS gradient on `.vw-hero` stays visible) when WebGL is
+ * nothing (the hero's Tailwind gradient stays visible) when WebGL is
  * unavailable.
  *
  * The figure is deliberately not decoration: three stacked planes, coloured and
@@ -417,7 +417,7 @@ export function HeroCanvas() {
   return (
     <canvas
       ref={ref}
-      className="vw-hero-canvas"
+      className="pointer-events-none absolute -top-[16%] -right-[6%] -z-1 block h-[118%] w-[58%] [mask-composite:intersect] [mask-image:linear-gradient(to_right,transparent_0%,black_34%),linear-gradient(to_bottom,black_72%,transparent_100%)] [-webkit-mask-composite:source-in] [-webkit-mask-image:linear-gradient(to_right,transparent_0%,black_34%),linear-gradient(to_bottom,black_72%,transparent_100%)] max-[60rem]:hidden"
       aria-hidden="true"
       role="presentation"
     />
