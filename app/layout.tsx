@@ -152,38 +152,47 @@ function NavMenu({
   )
 }
 
+/**
+ * Nextra's `<Footer>` is itself a flex row (`x:flex x:justify-center
+ * x:md:justify-start`), so any two children it is given line up side by side.
+ * Everything below therefore goes in one full-width wrapper — without it the
+ * copyright bar and its rule sit beside the link columns rather than under
+ * them, and the whole block collapses to its content width on the left.
+ */
 const footer = (
   <Footer className="mt-16">
-    <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-      <div className="max-w-xs">
-        <Wordmark />
-        <p className="mt-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
-          A modular Laravel platform, a Go infrastructure controller, and a
-          runtime-configured Next.js storefront — documented as one system.
-        </p>
+    <div className="w-full">
+      <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
+        <div className="max-w-xs">
+          <Wordmark />
+          <p className="mt-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+            A modular Laravel platform, a Go infrastructure controller, and a
+            runtime-configured Next.js storefront — documented as one system.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3">
+          {footerSections.map(section => (
+            <div key={section.title}>
+              <div className="vendra-eyebrow mb-3">{section.title}</div>
+              <ul className="space-y-2">
+                {section.links.map(link => (
+                  <li key={link.href}>
+                    <Link
+                      className="text-neutral-600 transition hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
+                      href={link.href}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-2 gap-10 text-sm sm:grid-cols-3">
-        {footerSections.map(section => (
-          <div key={section.title}>
-            <div className="vendra-eyebrow mb-3">{section.title}</div>
-            <ul className="space-y-2">
-              {section.links.map(link => (
-                <li key={link.href}>
-                  <Link
-                    className="text-neutral-600 transition hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
-                    href={link.href}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+      <div className="mt-12 border-t border-[var(--vendra-line)] pt-6 text-xs text-neutral-400 dark:text-neutral-500">
+        © {new Date().getFullYear()} Vendra. All rights reserved.
       </div>
-    </div>
-    <div className="mt-12 border-t border-[var(--vendra-line)] pt-6 text-xs text-neutral-400 dark:text-neutral-500">
-      © {new Date().getFullYear()} Vendra. All rights reserved.
     </div>
   </Footer>
 )

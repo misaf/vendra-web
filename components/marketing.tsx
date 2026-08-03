@@ -14,6 +14,8 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import type { TeamMember } from '../lib/team'
+import type { Customer, CustomerMark } from '../lib/customers'
+import { HeroCanvas } from './hero-canvas'
 
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
@@ -111,6 +113,7 @@ export function LandingHero({
 }) {
   return (
     <section className="vw-hero">
+      <HeroCanvas />
       <div className="vw-container">
         {eyebrow ? <div className="vendra-eyebrow">{eyebrow}</div> : null}
         <h1 className="vw-hero-title">{title}</h1>
@@ -209,20 +212,96 @@ export function FeatureSplit({
 }
 
 /**
+ * The inline marks a logotype can be drawn with.
+ *
+ * Hand-written SVG paths on a 24×24 box, stroked in `currentColor` so each one
+ * inherits the logotype's colour and the theme's foreground without a second
+ * set of dark-mode rules. No image files: see the note in `lib/customers.ts`.
+ */
+const customerMarks: Record<CustomerMark, ReactNode> = {
+  // A three-petal bloom on a stem — florist. Petals are plain circles rather
+  // than drawn curves: at 1.6rem anything more detailed turns to mush.
+  bloom: (
+    <>
+      <circle cx="12" cy="6.4" r="2.6" />
+      <circle cx="16.2" cy="10.2" r="2.6" />
+      <circle cx="7.8" cy="10.2" r="2.6" />
+      <path d="M12 20v-7" />
+      <path d="M12 17c-1.9 0-3.3-1.1-3.9-2.7" />
+    </>
+  ),
+  // Two arrows crossing in opposite directions — import and export.
+  trade: (
+    <>
+      <path d="M4 9h13" />
+      <path d="M13.5 5.5 17 9l-3.5 3.5" />
+      <path d="M20 15H7" />
+      <path d="M10.5 11.5 7 15l3.5 3.5" />
+    </>
+  ),
+  // A single leaf with its vein — floral art, quieter than the bloom.
+  leaf: (
+    <>
+      <path d="M19 5c0 7.2-3.9 11.4-9.4 11.4A5.6 5.6 0 0 1 4 10.8C4 6.5 9.1 5 19 5Z" />
+      <path d="M16 8c-4.4 1.6-7.6 4.9-9.5 10" />
+    </>
+  )
+}
+
+/**
  * "Used by" wall.
  *
- * Renders names as text rather than logos: a logo wall of companies that have
- * not agreed to appear would be a false endorsement, and text placeholders are
- * honest about being placeholders until real permission exists.
+ * Each business is set as a logotype in the site's own typography — a mark, the
+ * lead word, and a tracked line under it — rather than as an uploaded logo
+ * file. That keeps the wall sharp at any size, correct in both themes, and free
+ * of image weight, and it means a business can go up without anyone chasing a
+ * vector file first. The three marks differ enough that the entries do not read
+ * as one repeated shape.
+ *
+ * A wall of customer names is read as an endorsement, so only businesses that
+ * have agreed to appear belong in `lib/customers.ts`.
  */
-export function LogoWall({ names }: { names: string[] }) {
+export function LogoWall({ customers }: { customers: Customer[] }) {
   return (
     <div className="vw-logos">
-      {names.map(name => (
-        <span key={name} className="vw-logo">
-          {name}
-        </span>
-      ))}
+      {customers.map(customer => {
+        // A plain <a>, not next/link: these are other people's sites, so there
+        // is no route to prefetch and nothing for `basePath` to rewrite.
+        const Tag = customer.href ? 'a' : 'div'
+        return (
+          <Tag
+            className="vw-logo"
+            key={customer.name}
+            title={customer.name}
+            {...(customer.href
+              ? {
+                  href: customer.href,
+                  target: '_blank',
+                  rel: 'noopener noreferrer'
+                }
+              : {})}
+          >
+            <svg
+              className="vw-logo-mark"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              {customerMarks[customer.mark]}
+            </svg>
+            <span className="vw-logo-type">
+              <span className="vw-logo-lead">{customer.lead}</span>
+              {customer.sub ? (
+                <span className="vw-logo-sub">{customer.sub}</span>
+              ) : null}
+            </span>
+          </Tag>
+        )
+      })}
     </div>
   )
 }
@@ -344,9 +423,10 @@ export type Plan = {
 /**
  * Pricing tiers.
  *
- * Every number rendered here is a placeholder — see the banner on `/pro` and
- * the TODO block in `app/pro/page.tsx`. The component takes prices as opaque
- * strings so a tier can read "TBD" or "Custom" without special-casing.
+ * The component takes prices as opaque strings so a tier can read "Free" or
+ * "Let's talk" alongside "€10" without special-casing. The figures themselves
+ * live in `app/pro/page.tsx`, next to the TODO block that tracks what on that
+ * page is still unbuilt.
  */
 export function PricingTable({ plans }: { plans: Plan[] }) {
   return (

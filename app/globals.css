@@ -7,6 +7,13 @@
 @source '../mdx-components.tsx';
 @source '../components';
 
+/* Nextra switches themes by putting `.dark` on <html>, but Tailwind's default
+   `dark:` variant keys off `prefers-color-scheme`. Without this the two
+   disagree whenever the site theme differs from the OS setting — a reader on a
+   dark-mode machine who picks the light theme gets `dark:text-neutral-300`
+   footer links on a light band. Point the variant at the class instead. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ==========================================================================
    Tokens
    ========================================================================== */
@@ -1031,8 +1038,52 @@ pre {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 12% -10%, rgb(124 58 237 / 12%), transparent 32rem),
+    radial-gradient(
+      circle at 12% -10%,
+      rgb(124 58 237 / 12%),
+      transparent 32rem
+    ),
     radial-gradient(circle at 88% 0%, rgb(14 165 233 / 10%), transparent 28rem);
+}
+
+/* The WebGL lattice in `components/hero-canvas.tsx`. Sits in the same negative
+   layer as the gradient above, painting over it (children paint after ::before
+   at equal z-index) and still beneath the hero copy, which is unpositioned and
+   therefore above the whole negative layer.
+
+   The mask is what keeps this a background rather than a competing figure: the
+   lattice is at full strength on the right, where there is no text, and fades
+   out under the headline and off the bottom edge into the next section. */
+.vw-hero-canvas {
+  position: absolute;
+  top: -16%;
+  right: -6%;
+  /* Anchored to the right of the band, where the headline is not: the figure
+     reads as a thing standing beside the copy rather than a texture printed
+     underneath it. Sized explicitly rather than by opposing insets — <canvas>
+     is a replaced element, so `left`/`bottom` alone would leave it at its
+     intrinsic 300×150. */
+  width: 64%;
+  height: 118%;
+  z-index: -1;
+  display: block;
+  pointer-events: none;
+  mask-image:
+    linear-gradient(to right, transparent 0%, black 34%),
+    linear-gradient(to bottom, black 72%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0%, black 34%),
+    linear-gradient(to bottom, black 72%, transparent 100%);
+  -webkit-mask-composite: source-in;
+}
+
+/* Narrow screens have no dead space beside the headline for the lattice to
+   live in, so it drops out entirely rather than sitting behind the text. */
+@media (max-width: 60rem) {
+  .vw-hero-canvas {
+    display: none;
+  }
 }
 
 .vw-hero-title {
@@ -1198,15 +1249,63 @@ pre {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem 2.5rem;
+  align-items: center;
+  gap: 1.5rem 3.5rem;
 }
 
+/* A logotype: mark on the left, lead word and tracked subline stacked to the
+   right of it. Set in the site's own type — see `LogoWall`. Held back to the
+   subtle foreground so the wall reads as a quiet row of names rather than
+   competing with the section heading above it. */
 .vw-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--vendra-fg-subtle);
-  font-size: 1.05rem;
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  opacity: 0.75;
+  transition: color 150ms ease;
+}
+
+/* Only the entries that link somewhere get a hover state — on a wall where some
+   names are links and some are not, lifting all of them on hover would promise
+   a click the plain ones do not honour. */
+a.vw-logo:hover {
+  color: var(--vendra-fg);
+}
+
+a.vw-logo:hover .vw-logo-mark {
+  color: var(--vendra-accent);
+  opacity: 1;
+}
+
+.vw-logo-mark {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  opacity: 0.85;
+}
+
+.vw-logo-type {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.vw-logo-lead {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* The subline is the part that makes three text entries read as three separate
+   logotypes rather than one repeated style: small, wide-tracked, uppercase,
+   sitting under a tight lead word. */
+.vw-logo-sub {
+  margin-top: 0.15rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.8;
 }
 
 /* -- Quickstart ------------------------------------------------------------ */
@@ -1589,4 +1688,43 @@ pre {
   color: var(--vendra-fg-subtle);
   font-size: 0.9rem;
   line-height: 1.65;
+}
+
+/* -- Footer switcher strip -------------------------------------------------- */
+
+/* On full-layout pages (the landing page, `/pro`, the galleries) Nextra renders
+   a theme/locale switcher above the footer: a bare button on a full-bleed band,
+   left-aligned and unstyled next to the rest of the site.
+
+   There is no class to hook — the strip is the band's first child, identified
+   here by the `<hr>` and `<footer>` that follow it — so it is selected
+   structurally. A browser without `:has()` simply keeps Nextra's default, which
+   is the current appearance and not a broken one. */
+:is(div:has(> hr.nextra-border + footer)) > div:first-child {
+  justify-content: flex-end;
+  padding-block: 0.75rem;
+  padding-inline: max(env(safe-area-inset-left), 1.5rem)
+    max(env(safe-area-inset-right), 1.5rem);
+}
+
+/* The button is Headless UI's listbox trigger, so it is matched by role rather
+   than by any class of Nextra's. Restyled as a `.vendra-chip`-shaped pill to
+   match the hero chips and the navbar menus. */
+:is(div:has(> hr.nextra-border + footer)) > div:first-child button {
+  height: 1.9rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--vendra-line);
+  border-radius: 999px;
+  background: var(--vendra-surface);
+  color: var(--vendra-fg-muted);
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background 150ms ease;
+}
+
+:is(div:has(> hr.nextra-border + footer)) > div:first-child button:hover {
+  border-color: var(--vendra-accent);
+  background: var(--vendra-surface-raised);
+  color: var(--vendra-fg);
 }

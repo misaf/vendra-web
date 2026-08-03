@@ -12,6 +12,7 @@ import {
   TeamGrid
 } from '../components/marketing'
 import { PostList } from '../components/collection'
+import { customers } from '../lib/customers'
 import { blogRoot, getPosts } from '../lib/blog'
 import { siteDescription } from '../lib/site'
 import { team } from '../lib/team'
@@ -184,22 +185,11 @@ export default async function Landing() {
           <div className="vendra-eyebrow">Used by</div>
           <h2 className="vw-section-title">Companies building on Vendra</h2>
           <p className="vw-section-lede">
-            {/* TODO: replace with real customers once they have agreed to be
-                named. Rendered as text rather than logos so these read as the
-                placeholders they are. */}
-            Placeholder names — swap these for real customers, with permission,
-            before launch.
+            Florists, importers, and studios running their shops on the
+            ecosystem.
           </p>
         </div>
-        <LogoWall
-          names={[
-            'Your Company',
-            'Another Team',
-            'A Third Shop',
-            'Someone Else',
-            'One More'
-          ]}
-        />
+        <LogoWall customers={customers} />
       </Section>
 
       <Section
@@ -259,7 +249,9 @@ export default async function Landing() {
 
       <Section tone="muted">
         <div className="vw-section-head vw-align-center">
-          <h2 className="vw-section-title">Start with the getting-started guide</h2>
+          <h2 className="vw-section-title">
+            Start with the getting-started guide
+          </h2>
           <p className="vw-section-lede">
             Local source development or a production host installation — both
             paths are documented end to end.

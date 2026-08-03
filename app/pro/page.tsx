@@ -8,6 +8,7 @@ import {
   TeamGrid
 } from '../../components/marketing'
 import type { Plan } from '../../components/marketing'
+import { customers } from '../../lib/customers'
 import { team } from '../../lib/team'
 
 export const metadata: Metadata = {
@@ -205,19 +206,11 @@ export default function ProPage() {
           <div className="vendra-eyebrow">Used by</div>
           <h2 className="vw-section-title">Companies building on Vendra</h2>
           <p className="vw-section-lede">
-            Placeholder names — swap for real customers, with permission, before
-            launch.
+            Florists, importers, and studios running their shops on the
+            ecosystem.
           </p>
         </div>
-        <LogoWall
-          names={[
-            'Your Company',
-            'Another Team',
-            'A Third Shop',
-            'Someone Else',
-            'One More'
-          ]}
-        />
+        <LogoWall customers={customers} />
       </Section>
 
       <Section

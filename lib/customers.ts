@@ -1,0 +1,57 @@
+/**
+ * The businesses running on Vendra, for the "Used by" wall.
+ *
+ * Data lives here rather than in a page for the same reason `lib/team.ts` does:
+ * the wall renders on both the landing page and `/pro`, and a second copy is
+ * how the two would quietly drift apart.
+ *
+ * Each entry is a *logotype*, not a logo file. Nothing here loads an image —
+ * the wall is set in the site's own typography, with a small inline mark, so it
+ * stays sharp at any size, follows the light and dark themes, and adds nothing
+ * to the page weight. It also means a business can appear on the wall without
+ * anyone having to chase a vector file first.
+ *
+ * Only name a business here with its permission: a wall of customer names is
+ * read as an endorsement, and one that has not been given is a false one.
+ */
+
+/** Which inline mark a logotype is drawn with. See `LogoWall`. */
+export type CustomerMark = 'bloom' | 'trade' | 'leaf'
+
+export type Customer = {
+  /** Full legal-ish name, used as the accessible label and React key. */
+  name: string
+  /** The word carrying the logotype — set large. */
+  lead: string
+  /** The tracked line under it. Omit for a one-word logotype. */
+  sub?: string
+  mark: CustomerMark
+  /**
+   * The business's own site. Optional — an entry without one renders as plain
+   * text, so a customer who has agreed to be named but has no public site (or
+   * no site running on Vendra yet) still belongs on the wall.
+   */
+  href?: string
+}
+
+export const customers: Customer[] = [
+  {
+    name: 'Houshang Flowers',
+    lead: 'Houshang',
+    sub: 'Flowers',
+    mark: 'bloom',
+    href: 'https://houshang-flowers.com'
+  },
+  {
+    name: 'Faama Import & Export',
+    lead: 'Faama',
+    sub: 'Import & Export',
+    mark: 'trade'
+  },
+  {
+    name: 'Hes Flower Art',
+    lead: 'Hes',
+    sub: 'Flower Art',
+    mark: 'leaf'
+  }
+]
