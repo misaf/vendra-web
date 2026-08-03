@@ -70,9 +70,11 @@ export default function ShowcasePage() {
       </Section>
 
       <Section tone="muted">
-        <div className="vw-section-head vw-align-center">
-          <h2 className="vw-section-title">Building something on Vendra?</h2>
-          <p className="vw-section-lede">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+            Building something on Vendra?
+          </h2>
+          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
             We would like to feature it. Start a conversation and we will put
             together a short case study.
           </p>

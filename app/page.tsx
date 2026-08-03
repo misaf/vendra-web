@@ -45,7 +45,9 @@ export default async function Landing() {
         title={
           <>
             {'Build commerce systems that stay '}
-            <span className="vendra-gradient-text">understandable</span>
+            <span className="bg-[linear-gradient(110deg,hsl(var(--nextra-primary-hue),var(--nextra-primary-saturation),calc(var(--nextra-primary-lightness)+6%)),hsl(calc(var(--nextra-primary-hue)+28deg),var(--nextra-primary-saturation),calc(var(--nextra-primary-lightness)+10%)))] bg-clip-text text-transparent">
+              understandable
+            </span>
             {' at scale.'}
           </>
         }
@@ -108,9 +110,13 @@ export default async function Landing() {
       </Section>
 
       <Section tone="muted">
-        <div className="vw-section-head vw-align-center">
-          <div className="vendra-eyebrow">Quickstart</div>
-          <h2 className="vw-section-title">Running in three commands</h2>
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+            Quickstart
+          </div>
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+            Running in three commands
+          </h2>
         </div>
         <Quickstart
           steps={[
@@ -119,8 +125,11 @@ export default async function Landing() {
             { label: '3 · Start', command: 'vendra stack up' }
           ]}
         />
-        <div className="vw-actions" style={{ justifyContent: 'center' }}>
-          <Link className="vw-arrow-link" href="/docs/getting-started">
+        <div className="mt-8 flex justify-center">
+          <Link
+            className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
+            href="/docs/getting-started"
+          >
             Full installation guide <span aria-hidden="true">→</span>
           </Link>
         </div>
@@ -128,6 +137,7 @@ export default async function Landing() {
 
       <Section eyebrow="Why Vendra" title="Built to be taken apart">
         <FeatureSplit
+          index="01"
           eyebrow="Modular by construction"
           title="Thirty-eight packages that do not know about each other"
           points={[
@@ -151,6 +161,7 @@ export default async function Landing() {
 
         <FeatureSplit
           flip
+          index="02"
           eyebrow="Operations"
           title="Provisioning is a binary, not a background job"
           points={[
@@ -172,6 +183,7 @@ export default async function Landing() {
         </FeatureSplit>
 
         <FeatureSplit
+          index="03"
           eyebrow="Storefronts"
           title="One codebase, many properties"
           points={[
@@ -194,10 +206,14 @@ export default async function Landing() {
       </Section>
 
       <Section tone="muted">
-        <div className="vw-section-head vw-align-center">
-          <div className="vendra-eyebrow">Used by</div>
-          <h2 className="vw-section-title">Companies building on Vendra</h2>
-          <p className="vw-section-lede">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+            Used by
+          </div>
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+            Companies building on Vendra
+          </h2>
+          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
             Florists, importers, and studios running their shops on the
             ecosystem.
           </p>
@@ -243,8 +259,11 @@ export default async function Landing() {
           lede="Notes on the technology the ecosystem runs on, and the decisions behind it."
         >
           <PostList posts={posts} root={blogRoot} />
-          <div className="vw-actions">
-            <Link className="vw-arrow-link" href="/blog">
+          <div className="mt-8 flex">
+            <Link
+              className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
+              href="/blog"
+            >
               All posts <span aria-hidden="true">→</span>
             </Link>
           </div>
@@ -258,9 +277,9 @@ export default async function Landing() {
         align="center"
       >
         <TeamGrid members={team} />
-        <div className="vw-actions" style={{ justifyContent: 'center' }}>
+        <div className="mt-8 flex justify-center">
           <a
-            className="vw-arrow-link"
+            className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
             href="https://github.com/misaf"
             rel="noreferrer"
             target="_blank"
@@ -271,11 +290,11 @@ export default async function Landing() {
       </Section>
 
       <Section tone="muted">
-        <div className="vw-section-head vw-align-center">
-          <h2 className="vw-section-title">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
             Start with the getting-started guide
           </h2>
-          <p className="vw-section-lede">
+          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
             Local source development or a production host installation — both
             paths are documented end to end.
           </p>

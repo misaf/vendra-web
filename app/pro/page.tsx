@@ -201,10 +201,14 @@ export default function ProPage() {
       </Section>
 
       <Section tone="muted">
-        <div className="vw-section-head vw-align-center">
-          <div className="vendra-eyebrow">Used by</div>
-          <h2 className="vw-section-title">Companies building on Vendra</h2>
-          <p className="vw-section-lede">
+        <div className="mx-auto mb-10 max-w-2xl text-center">
+          <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+            Used by
+          </div>
+          <h2 className="mt-3 text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight font-bold tracking-[-0.035em]">
+            Companies building on Vendra
+          </h2>
+          <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-subtle)]">
             Florists, importers, and studios running their shops on the
             ecosystem.
           </p>
