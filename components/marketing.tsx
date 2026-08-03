@@ -748,14 +748,14 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
     /* Held to `max-w-4xl` inside the section's `max-w-6xl`: four logotypes
        spread across the full band sit far enough apart to read as four
        unrelated marks rather than one wall. */
-    <div className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-14 gap-y-6">
+    <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-center gap-x-14 gap-y-6">
       {customers.map(customer => {
         // A plain <a>, not next/link: these are other people's sites, so there
         // is no route to prefetch and nothing for `basePath` to rewrite.
         const Tag = customer.href ? 'a' : 'div'
         return (
           <Tag
-            className="group flex items-start gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
+            className="group flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
             key={customer.name}
             title={customer.name}
             {...(customer.href
@@ -778,7 +778,7 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               />
             ) : (
               <svg
-                className="mt-0.5 size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
+                className="size-6 shrink-0 opacity-85 transition group-hover:text-[var(--vendra-accent)] group-hover:opacity-100"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -797,11 +797,6 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               {customer.sub ? (
                 <span className="mt-1 text-[0.6rem] font-semibold tracking-[0.22em] uppercase opacity-80">
                   {customer.sub}
-                </span>
-              ) : null}
-              {customer.proof ? (
-                <span className="mt-2 text-[0.65rem] leading-4 font-medium tracking-normal text-[var(--vendra-fg-subtle)] normal-case opacity-90">
-                  {customer.proof}
                 </span>
               ) : null}
             </span>

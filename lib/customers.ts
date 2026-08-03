@@ -28,8 +28,6 @@ export type Customer = {
   mark: CustomerMark
   /** Approved monochrome logo asset. Falls back to the inline mark when absent. */
   logo?: { src: string; width: number; height: number }
-  /** A short, verifiable description of what the customer runs. */
-  proof?: string
   /**
    * The business's own site. Optional — an entry without one renders as plain
    * text, so a customer who has agreed to be named but has no public site (or
@@ -44,7 +42,6 @@ export const customers: Customer[] = [
     lead: 'Houshang',
     sub: 'Flowers',
     mark: 'bloom',
-    proof: 'Bilingual florist storefront',
     href: 'https://houshang-flowers.com'
   },
   {
