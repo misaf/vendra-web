@@ -283,61 +283,21 @@ export function HeroCanvas() {
     // white background of the light theme only brightens white, so light mode
     // composites normally — and, on white, the same alpha reads far heavier, so
     // it is scaled down rather than up.
-    let dark = document.documentElement.classList.contains('dark')
-    const theme = new MutationObserver(() => {
-      dark = document.documentElement.classList.contains('dark')
-    })
-    theme.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['class']
-    })
-
     let width = 0
     let height = 0
-    const resize = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2)
-      const rect = canvas.getBoundingClientRect()
-      width = Math.max(1, Math.round(rect.width * dpr))
-      height = Math.max(1, Math.round(rect.height * dpr))
-      canvas.width = width
-      canvas.height = height
-      gl.viewport(0, 0, width, height)
-    }
-    resize()
-
-    const observer = new ResizeObserver(resize)
-    observer.observe(canvas)
-
-    // Pointer parallax, eased toward the target so the camera never snaps.
+    let dark = document.documentElement.classList.contains('dark')
+    let onscreen = true
+    let frame = 0
+    let time = 0
+    let last = performance.now()
     let targetX = 0
     let targetY = 0
     let panX = 0
     let panY = 0
-    const onPointer = (event: PointerEvent) => {
-      targetX = (event.clientX / window.innerWidth - 0.5) * 2
-      targetY = (event.clientY / window.innerHeight - 0.5) * 2
-    }
-    window.addEventListener('pointermove', onPointer, { passive: true })
-
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-    // Skip the work entirely while the hero is scrolled away or the tab is
-    // hidden — this runs on the busiest page on the site.
-    let onscreen = true
-    const visibility = new IntersectionObserver(
-      entries => {
-        onscreen = entries[0]?.isIntersecting ?? true
-      },
-      { threshold: 0 }
-    )
-    visibility.observe(canvas)
-
-    let frame = 0
-    let time = 0
-    let last = performance.now()
-
     const render = (now: number) => {
-      frame = requestAnimationFrame(render)
+      frame = 0
 
       const delta = Math.min((now - last) / 1000, 0.05)
       last = now
@@ -377,8 +337,82 @@ export function HeroCanvas() {
       scene.bind(scene.buffers.points)
       gl.uniform1f(scene.uAlpha, 0.6 * gain)
       gl.drawArrays(gl.POINTS, 0, geometry.points.length / 7)
+
+      // A reduced-motion frame is intentionally drawn once. Normal animation
+      // continues only while the canvas and page are actually visible.
+      if (!reduced.matches) frame = requestAnimationFrame(render)
     }
-    frame = requestAnimationFrame(render)
+
+    const syncAnimation = () => {
+      if (!onscreen || document.hidden) {
+        if (frame) cancelAnimationFrame(frame)
+        frame = 0
+        return
+      }
+
+      if (!frame) {
+        last = performance.now()
+        frame = requestAnimationFrame(render)
+      }
+    }
+
+    const resize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      const rect = canvas.getBoundingClientRect()
+      width = Math.max(1, Math.round(rect.width * dpr))
+      height = Math.max(1, Math.round(rect.height * dpr))
+      canvas.width = width
+      canvas.height = height
+      gl.viewport(0, 0, width, height)
+      syncAnimation()
+    }
+    resize()
+
+    const observer = new ResizeObserver(resize)
+    observer.observe(canvas)
+
+    const theme = new MutationObserver(() => {
+      dark = document.documentElement.classList.contains('dark')
+      syncAnimation()
+    })
+    theme.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    })
+
+    // Pointer parallax, eased toward the target so the camera never snaps.
+    const onPointer = (event: PointerEvent) => {
+      if (reduced.matches) return
+      targetX = (event.clientX / window.innerWidth - 0.5) * 2
+      targetY = (event.clientY / window.innerHeight - 0.5) * 2
+    }
+    window.addEventListener('pointermove', onPointer, { passive: true })
+
+    // Stop scheduling frames entirely while the hero is away or the tab is
+    // hidden. Observing alone is not enough: a perpetually scheduled callback
+    // still wakes the main thread even when it returns before drawing.
+    const visibility = new IntersectionObserver(
+      entries => {
+        onscreen = entries[0]?.isIntersecting ?? true
+        syncAnimation()
+      },
+      { threshold: 0 }
+    )
+    visibility.observe(canvas)
+
+    const onVisibilityChange = () => syncAnimation()
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
+    const onMotionPreference = () => {
+      targetX = 0
+      targetY = 0
+      panX = 0
+      panY = 0
+      syncAnimation()
+    }
+    reduced.addEventListener('change', onMotionPreference)
+
+    syncAnimation()
 
     // Losing the context is normal, not exceptional. Calling preventDefault is
     // what tells the browser we intend to recover — without it `contextrestored`
@@ -400,6 +434,8 @@ export function HeroCanvas() {
       visibility.disconnect()
       theme.disconnect()
       window.removeEventListener('pointermove', onPointer)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+      reduced.removeEventListener('change', onMotionPreference)
       canvas.removeEventListener('webglcontextlost', onLost)
       canvas.removeEventListener('webglcontextrestored', onRestored)
       destroyScene(gl, scene)
