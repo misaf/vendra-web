@@ -103,6 +103,8 @@ Runs, in order:
 
 | Step | What it protects against |
 | --- | --- |
+| `format:check` | Formatting drift from the committed Prettier style |
+| `lint` | React, Next.js, accessibility, and import correctness issues |
 | `typecheck` | Type errors (`strict` is on) |
 | `check:links` | Internal links and `_meta.tsx` keys pointing at routes that do not exist |
 | `check:drift` | Docs disagreeing with the contracts they describe |
