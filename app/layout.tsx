@@ -175,7 +175,32 @@ const footer = (
       <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-xs">
           <Wordmark />
-          <p className="mt-3 text-sm leading-6 text-neutral-500 dark:text-neutral-400">
+          {/* The footer was the last block on the site still dressed in raw
+              Tailwind neutrals rather than the token layer, and the reason that
+              mattered turned out not to be tidiness.
+
+              Measured on both themes, the copyright line below was the worst
+              text on the site: `neutral-400` on white is 2.52:1 and
+              `neutral-500` on the dark page is 4.20:1, against the 4.5:1 that
+              12px text needs. It read as fine because the colours are the ones
+              every Tailwind footer uses — which is exactly how a footer becomes
+              the place contrast goes unchecked. Nobody audits the copyright.
+
+              `--vendra-fg-subtle` is the token drawn for this job, and its
+              definition in `globals.css` carries the measurements: it was
+              already darkened once, against the tinted bands it actually sits
+              on rather than against the page. Here it takes the copyright to
+              5.35:1 and 7.66:1. The description moves to the same token and
+              gains a little in the light theme.
+
+              The links take `--vendra-fg-muted`, which is a near-exact match in
+              the light theme (7.81:1 → 7.73:1) and a small step down in the
+              dark (13.42:1 → 10.75:1). That step is the one visible consequence
+              of this change: footer links are marginally less bright at night.
+              It is the right trade — 10.75:1 is far past any requirement, and
+              the alternative was keeping the one region of the site that a
+              brand or theme change would leave behind. */}
+          <p className="mt-3 text-sm leading-6 text-[var(--vendra-fg-subtle)]">
             A modular Laravel platform, a Go infrastructure controller, and a
             runtime-configured Next.js storefront — documented as one system.
           </p>
@@ -198,11 +223,32 @@ const footer = (
               <div className="mb-3 label text-[var(--vendra-fg-subtle)]">
                 {section.title}
               </div>
-              <ul className="space-y-2">
+              {/* The link is a block with its own vertical padding rather than
+                  inline text in a spaced list, which is what makes it a target
+                  rather than a phrase. As `<a>text</a>` inside `space-y-2` each
+                  of these was about 20px tall — under the 24px WCAG 2.2 asks of
+                  a discrete control, and only hittable on the glyphs themselves,
+                  so the gap between two rows was dead space that looked like
+                  part of the row above it.
+
+                  The padding replaces the list gap rather than adding to it:
+                  32px of link plus no gap is the same 30-ish pixel pitch the
+                  column had at 20px of link plus 8px of gap, so four columns of
+                  footer links occupy the height they always did and every pixel
+                  of that height now belongs to something. This is the footer, so
+                  the 44px used in the navigation menu would be the wrong figure
+                  — it would make the Explore column half as tall again to solve
+                  a problem the 24px bar already covers.
+
+                  `inline-block`, so the target is the label plus its padding
+                  rather than the whole column width — a full-width row means a
+                  click in the empty space to the right of "Blog" navigates to
+                  the blog, which is a target nobody aimed at. */}
+              <ul className="space-y-0">
                 {section.links.map(link => (
                   <li key={link.href}>
                     <Link
-                      className="text-neutral-600 transition hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white"
+                      className="inline-block py-1.5 text-[var(--vendra-fg-muted)] transition hover:text-[var(--vendra-fg)]"
                       href={link.href}
                     >
                       {link.label}
@@ -214,7 +260,8 @@ const footer = (
           ))}
         </div>
       </div>
-      <div className="mt-12 border-t border-[var(--vendra-line)] pt-6 text-xs text-neutral-400 dark:text-neutral-500">
+      {/* 2.52:1 light and 4.20:1 dark before this — see the note above. */}
+      <div className="mt-12 border-t border-[var(--vendra-line)] pt-6 text-xs text-[var(--vendra-fg-subtle)]">
         © {new Date().getFullYear()} Vendra. All rights reserved.
       </div>
     </div>
