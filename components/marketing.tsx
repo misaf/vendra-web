@@ -23,6 +23,51 @@ import { Chevron } from './icons'
 /* -------------------------------------------------------------------------- */
 
 /**
+ * The labelled boundary rule — the site's one recurring structural device.
+ *
+ * A hairline with a short lead-in, a mono label sitting on the line, and the
+ * rule running out to the full width. It is drawn after a dimension callout on
+ * an engineering plan, and it is here because the product's whole argument is
+ * about where the lines are: three systems, each with one job, and the value
+ * living in the interfaces between them. So the site's dividers stopped being
+ * neutral separators and started naming what they separate.
+ *
+ * That is also the rule for using it. The label has to be the name of a real
+ * seam — `same-origin proxy`, `controller api`, `tenant resolution` — not a
+ * caption and not an ordinal. This device replaced the `01 / 02 / 03` markers
+ * that used to run down the landing page, which asserted a sequence the
+ * content does not have: the storefront, the platform, and the controller are
+ * layers that run at the same time, not steps taken in order, and numbering
+ * them told readers to look for a progression that was never there.
+ *
+ * Deliberately uncoloured. The three tier hues mean "this belongs to that
+ * system", and a boundary belongs to neither of the systems it divides —
+ * colouring it would break the one rule that makes the palette readable.
+ */
+export function BoundaryRule({
+  label,
+  className = ''
+}: {
+  label?: ReactNode
+  className?: string
+}) {
+  return (
+    <div
+      className={`flex items-center gap-3 ${className}`}
+      aria-hidden={label ? undefined : true}
+    >
+      <i className="h-px w-6 shrink-0 bg-[var(--vendra-line-strong)]" />
+      {label ? (
+        <span className="label shrink-0 text-[var(--vendra-fg-subtle)]">
+          {label}
+        </span>
+      ) : null}
+      <i className="h-px flex-1 bg-[var(--vendra-line)]" />
+    </div>
+  )
+}
+
+/**
  * Vertical rhythm, as one ordered scale rather than a boolean.
  *
  * `lg` used to be the only step above the default, which meant a page had
@@ -95,7 +140,8 @@ export function Section({
   actions,
   tone = 'plain',
   align = 'left',
-  size = 'default'
+  size = 'default',
+  titleAs: Heading = 'h2'
 }: {
   children?: ReactNode
   eyebrow?: string
@@ -108,6 +154,22 @@ export function Section({
   align?: 'left' | 'center'
   /** See `sectionPadding`. */
   size?: keyof typeof sectionPadding
+  /**
+   * Heading level for the title. `h2` everywhere except the band that opens a
+   * page, which passes `h1`.
+   *
+   * A page built only out of `Section`s had no `h1` at all — five of the six
+   * marketing pages were in that state, because the landing page is the only
+   * one whose opening band is a `LandingHero` and that component brings its
+   * own. The level is a prop rather than "the first section is an h1" inferred
+   * from position: `/pro` opens with a band whose real job is the draft
+   * notice, and a component that guesses would have to guess wrong somewhere.
+   *
+   * Level only. The size stays `text-title` either way — the opening band is
+   * not visually louder for being the document title, and on these pages the
+   * loud element is the figure or the table below it.
+   */
+  titleAs?: 'h1' | 'h2'
 }) {
   return (
     <section
@@ -118,17 +180,25 @@ export function Section({
           <header
             className={`${sectionHeaderGap[size]} max-w-2xl ${align === 'center' ? 'mx-auto text-center' : ''}`}
           >
+            {/* Left-aligned sections get the boundary rule, centred ones get
+                the bare label: the rule is a margin device — it starts at the
+                text edge and runs out to the page — and centring it puts a
+                dimension callout in the middle of nothing. */}
             {eyebrow ? (
-              <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
-                {eyebrow}
-              </div>
+              align === 'center' ? (
+                <div className="label text-[var(--vendra-fg-subtle)]">
+                  {eyebrow}
+                </div>
+              ) : (
+                <BoundaryRule label={eyebrow} />
+              )
             ) : null}
             {title ? (
-              <h2
-                className={`font-display text-title font-bold ${eyebrow ? 'mt-3' : ''}`}
+              <Heading
+                className={`font-display text-title font-bold ${eyebrow ? 'mt-5' : ''}`}
               >
                 {title}
-              </h2>
+              </Heading>
             ) : null}
             {lede ? (
               <p className="mt-4 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)]">
@@ -231,17 +301,32 @@ export function LandingHero({
   actions: { href: string; label: string; primary?: boolean }[]
   chips?: string[]
 }) {
+  // No ambient wash behind the hero any more. Two radial blooms, violet at the
+  // top left and sky at the top right, used to bleed across the whole band.
+  // They were the last of the glossy treatment the rest of this surface has
+  // dropped, and they broke the one rule that makes the palette readable: a
+  // tier hue means "this belongs to that system", and these belonged to
+  // nothing — the storefront's violet was simply the colour of the top-left
+  // corner. The `HeroCanvas` lattice behind this still carries all three hues,
+  // and it is entitled to: its three planes *are* the three tiers.
   return (
-    <section className="relative overflow-hidden py-16 min-[36rem]:pt-20 before:absolute before:inset-0 before:-z-1 before:bg-[radial-gradient(circle_at_12%_-10%,color-mix(in_srgb,var(--vendra-accent-2),transparent_88%),transparent_32rem),radial-gradient(circle_at_88%_0%,color-mix(in_srgb,var(--vendra-accent-3),transparent_90%),transparent_28rem)] max-[36rem]:py-12">
+    <section className="relative overflow-hidden py-16 min-[36rem]:pt-20 max-[36rem]:py-12">
       <HeroCanvas />
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1.08fr)_minmax(23rem,0.92fr)] items-center gap-[clamp(2.5rem,6vw,6.5rem)] px-6 max-[64rem]:grid-cols-1">
+      {/* 1.25/0.75, up from 1.08/0.92, and a tighter gap cap. The figure is a
+          list of three short rows and does not grow to fill what it is given,
+          so the columns were near enough equal while their contents were not —
+          and the headline, which does use every pixel it is handed, was paying
+          for the surplus in line breaks. */}
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-[minmax(0,1.25fr)_minmax(21rem,0.75fr)] items-center gap-[clamp(2.5rem,5vw,5rem)] px-6 max-[64rem]:grid-cols-1">
         <div className="max-[64rem]:max-w-3xl">
-          {eyebrow ? (
-            <div className="text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
-              {eyebrow}
-            </div>
-          ) : null}
-          <h1 className="mt-4 max-w-[17ch] font-display text-hero font-[750]">
+          {eyebrow ? <BoundaryRule label={eyebrow} /> : null}
+          {/* 22ch, not the 17ch this was set to for the previous display face.
+              A measure is counted in characters but set for a width, and the
+              headline face is now drawn past semi-expanded — so the same count
+              bought a much narrower column, broke the headline to five lines,
+              and left `stay` alone on one of them. The wider face has to be
+              paid for in measure or it is not worth having. */}
+          <h1 className="mt-6 max-w-[22ch] font-display text-hero font-[750] text-balance">
             {title}
           </h1>
           {children ? (
@@ -250,16 +335,30 @@ export function LandingHero({
             </div>
           ) : null}
           <Actions items={actions} />
+          {/* Set as one mono line under a rule rather than as a row of pills.
+              Four rounded chips are the standard way to list a stack, and they
+              read as badges — things claimed about the product. This is a
+              manifest: the things the product is actually assembled from, in
+              the face the rest of the page uses for anything the system says
+              about itself. It also stops competing with the figure alongside,
+              which is where the hero's weight is supposed to go. */}
           {chips.length ? (
-            <div className="mt-9 flex flex-wrap gap-2">
-              {chips.map(chip => (
-                <span
-                  key={chip}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface-raised)] px-3 py-1.5 text-[0.8125rem] leading-5 font-medium text-[var(--vendra-fg-muted)]"
-                >
-                  {chip}
-                </span>
-              ))}
+            <div className="mt-10 border-t border-[var(--vendra-line)] pt-4">
+              <ul className="label m-0 flex list-none flex-wrap gap-x-3 gap-y-2 p-0 text-[var(--vendra-fg-muted)]">
+                {chips.map((chip, i) => (
+                  <li className="flex gap-3" key={chip}>
+                    {i > 0 ? (
+                      <span
+                        aria-hidden="true"
+                        className="text-[var(--vendra-line-strong)]"
+                      >
+                        /
+                      </span>
+                    ) : null}
+                    {chip}
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : null}
         </div>
@@ -269,67 +368,104 @@ export function LandingHero({
   )
 }
 
+/**
+ * The three tiers of the hero figure, top to bottom, each with the boundary
+ * that separates it from the one below.
+ *
+ * `boundary` is the load-bearing field and the reason this figure exists. Both
+ * values are real interfaces the reference documents, not labels invented for
+ * the diagram: the storefront reaches the platform only through a same-origin
+ * proxy (`/docs/storefront/configuration`), and the platform reaches the
+ * controller only through its narrow desired-state API (`/docs/controller`).
+ * The last tier has no boundary below it — nothing is underneath the
+ * controller, which is the point of it owning host mutation alone.
+ */
 const heroSystems = [
   {
     href: '/docs/storefront',
-    index: '01',
+    code: 'S',
     label: 'Storefront',
     tech: 'Next.js',
     role: 'Presentation',
     signal: '2 locales',
+    boundary: 'same-origin proxy',
     accent:
       '[--hero-accent:var(--vendra-accent-2)] [--hero-accent-text:var(--vendra-accent-2-text)]'
   },
   {
     href: '/docs/platform',
-    index: '02',
+    code: 'P',
     label: 'Platform',
     tech: 'Laravel',
     role: 'Business state',
     signal: '30 packages',
+    boundary: 'controller api',
     accent:
       '[--hero-accent:var(--vendra-accent)] [--hero-accent-text:var(--vendra-accent-text)]'
   },
   {
     href: '/docs/controller',
-    index: '03',
+    code: 'C',
     label: 'Controller',
     tech: 'Go',
     role: 'Runtime state',
     signal: 'Healthy',
+    boundary: null,
     accent:
       '[--hero-accent:var(--vendra-accent-3)] [--hero-accent-text:var(--vendra-accent-3-text)]'
   }
 ]
 
+/**
+ * The hero figure: the three tiers as a plan sheet, with the interfaces
+ * between them drawn and named.
+ *
+ * This used to be a floating glass panel — a large radius, a backdrop blur, an
+ * accent bloom behind it, a gradient border, and three rounded cards each
+ * badged `01`, `02`, `03` with an animated arrow between them. Every one of
+ * those is the house style of the current generation of developer-tool landing
+ * pages, and together they said nothing about Vendra that they would not have
+ * said about any other product. The arrows were the worst of it: they drew
+ * flow between the tiers without ever naming what flows or how, which is
+ * exactly the question the architecture exists to answer.
+ *
+ * So the panel is now a drawing. Square corners, one hairline border, no blur
+ * and no glow, and the space between two tiers is not an arrow but a
+ * `BoundaryRule` carrying the name of the real interface that crosses it. The
+ * figure and the page are then making the same claim in the same words.
+ */
 function HeroArchitecture() {
   return (
-    <div
-      className="relative w-full max-w-xl rounded-[1.25rem] border border-[var(--vendra-line-strong)] bg-[linear-gradient(var(--vendra-surface-raised),var(--vendra-surface-raised))_padding-box,linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-2),transparent_65%),color-mix(in_srgb,var(--vendra-accent),transparent_85%))_border-box] p-3 shadow-[var(--vendra-shadow-lg)] backdrop-blur-2xl before:absolute before:inset-[2rem_12%_1rem] before:-z-1 before:bg-[var(--vendra-accent)] before:opacity-10 before:blur-[5rem]"
-      aria-label="Vendra system architecture"
+    <figure
+      className="relative m-0 w-full max-w-xl border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface)] p-5 backdrop-blur-xl"
+      aria-label="The three Vendra systems and the interfaces between them"
     >
-      <div className="flex items-center justify-between gap-4 px-1 pt-1.5 pb-3.5 text-[0.6875rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase max-[36rem]:flex-col max-[36rem]:items-start max-[36rem]:gap-1.5">
+      {/* The title block, after the one on a drawing sheet: what the figure is,
+          and the sheet's own reference in the corner. */}
+      <figcaption className="label flex items-baseline justify-between gap-4 pb-5 text-[var(--vendra-fg-subtle)]">
+        {/* "2 interfaces", not the "three clear boundaries" this said before.
+            The old figure could make an uncountable claim because it drew no
+            boundaries — only arrows. This one draws them, and there are two,
+            so a reader who counts has to find what the caption promised. */}
         <span>One system</span>
-        <span className="inline-flex items-center gap-1.5">
-          <i
-            className="size-[0.45rem] rounded-full bg-[var(--vendra-accent)] shadow-[0_0_0.75rem_var(--vendra-accent)] [animation:vw-status-pulse_2.4s_ease-in-out_infinite]"
-            aria-hidden="true"
-          />{' '}
-          Three clear boundaries
-        </span>
-      </div>
+        <span className="text-[var(--vendra-fg-subtle)]/70">2 interfaces</span>
+      </figcaption>
+
       <div className="flex flex-col">
-        {heroSystems.map((system, index) => (
+        {heroSystems.map(system => (
           <div className={system.accent} key={system.href}>
             <Link
-              className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[0.85rem] border border-[var(--vendra-line)] bg-[color-mix(in_srgb,var(--vendra-surface-raised),transparent_8%)] p-4 transition hover:translate-x-1 hover:border-[color-mix(in_srgb,var(--hero-accent),transparent_25%)] hover:shadow-[0_10px_26px_-16px_var(--hero-accent)]"
+              className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 border-l-2 border-[var(--hero-accent)] py-3.5 pl-4 transition-[background-color,padding] hover:bg-[color-mix(in_srgb,var(--hero-accent),transparent_94%)] hover:pl-5"
               href={system.href}
             >
-              <span className="grid size-8 place-items-center rounded-[0.55rem] bg-[color-mix(in_srgb,var(--hero-accent),transparent_90%)] font-mono text-[0.7rem] font-[750] text-[var(--hero-accent-text)]">
-                {system.index}
+              {/* The tier's initial, not its position in a list. It is the same
+                  letter used for this tier everywhere else on the site, so the
+                  figure is legible against the footer key and the docs. */}
+              <span className="label text-[1rem] leading-none font-bold tracking-normal text-[var(--hero-accent-text)]">
+                {system.code}
               </span>
-              <span className="flex min-w-0 flex-col gap-0.5">
-                <strong className="text-[0.925rem] tracking-[-0.015em]">
+              <span className="flex min-w-0 flex-col gap-1">
+                <strong className="text-[0.9375rem] tracking-[-0.01em]">
                   {system.label}
                 </strong>
                 <small className="text-xs text-[var(--vendra-fg-subtle)]">
@@ -337,40 +473,34 @@ function HeroArchitecture() {
                 </small>
               </span>
               <span className="flex flex-col items-end gap-1 max-[36rem]:hidden">
-                <span className="font-mono text-[0.6875rem] text-[var(--vendra-fg-muted)]">
+                <span className="label text-[var(--vendra-fg-muted)]">
                   {system.tech}
                 </span>
-                <span className="inline-flex items-center gap-1.5 text-[0.625rem] font-semibold text-[var(--hero-accent-text)]">
-                  <i className="size-1.5 rounded-full bg-current" />
+                <span className="label text-[var(--hero-accent-text)]">
                   {system.signal}
                 </span>
               </span>
             </Link>
-            {index < heroSystems.length - 1 ? (
-              <div
-                className="relative ml-4 grid h-7 w-8 place-items-center text-[var(--vendra-accent-text)]"
-                aria-hidden="true"
-              >
-                <span className="absolute h-full w-px bg-[var(--vendra-line-strong)]" />
-                <b
-                  className={`z-1 rotate-90 bg-[var(--vendra-surface-raised)] p-0.5 text-xs [animation:vw-flow-step_2.4s_ease-in-out_infinite] ${index === 1 ? '[animation-delay:0.8s]' : ''}`}
-                >
-                  →
-                </b>
-              </div>
+            {system.boundary ? (
+              <BoundaryRule className="py-1" label={system.boundary} />
             ) : null}
           </div>
         ))}
       </div>
+
+      {/* The axis the whole stack is read along. Kept from the previous figure
+          because it is the one piece of it that carried an idea: the tiers are
+          not a hierarchy, they are the span between what a merchant decides
+          and what a customer sees. */}
       <div
-        className="flex items-center justify-between gap-4 px-1 pt-3.5 pb-1 text-[0.6875rem] font-bold tracking-[0.04em] text-[var(--vendra-fg-subtle)]"
+        className="label mt-5 flex items-center gap-3 border-t border-[var(--vendra-line)] pt-4 text-[var(--vendra-fg-subtle)]"
         aria-hidden="true"
       >
         <span>merchant intent</span>
-        <i className="h-px flex-1 bg-linear-to-r from-transparent via-[var(--vendra-line-strong)] to-transparent" />
+        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
         <span>customer experience</span>
       </div>
-    </div>
+    </figure>
   )
 }
 
@@ -431,7 +561,7 @@ export function StackDiagram({
                 {tier.tech}
               </span>
             </div>
-            <div className="mt-1.5 text-[0.8125rem] font-semibold tracking-[0.04em] text-[var(--vendra-fg-subtle)] uppercase">
+            <div className="mt-1.5 label text-[var(--vendra-fg-subtle)]">
               {tier.role}
             </div>
             <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[var(--vendra-fg-muted)]">
@@ -577,7 +707,7 @@ export function PropertyRouting() {
         <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
           api.vendra.test
         </span>
-        <span className="ml-auto text-[0.65rem] font-semibold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+        <span className="ml-auto label text-[var(--vendra-fg-subtle)]">
           shared
         </span>
       </div>
@@ -624,7 +754,7 @@ export function OperatorPanelPreview() {
         ))}
       </div>
       <div className="p-3">
-        <div className="mb-2 px-2 text-[0.65rem] font-bold tracking-[0.12em] text-[var(--vendra-fg-subtle)] uppercase">
+        <div className="mb-2 px-2 label text-[var(--vendra-fg-subtle)]">
           Domain surfaces
         </div>
         {rows.map(([name, detail, scope]) => (
@@ -685,7 +815,7 @@ export function ControllerConsole() {
 /** Alternating editorial rows for the architectural reasons behind Vendra. */
 export function FeatureSplit({
   eyebrow,
-  index,
+  code,
   title,
   children,
   points = [],
@@ -695,7 +825,14 @@ export function FeatureSplit({
   flip = false
 }: {
   eyebrow?: string
-  index?: string
+  /**
+   * The tier's initial — `S`, `P`, `C`. Was `index`, taking `01`/`02`/`03`,
+   * which numbered three things that do not happen in an order: the storefront,
+   * the platform, and the controller all run at once. The initial says which
+   * system the row is about, which is the only thing the marker was ever
+   * needed for.
+   */
+  code?: string
   title: ReactNode
   children?: ReactNode
   points?: string[]
@@ -720,33 +857,39 @@ export function FeatureSplit({
       '[--feature-accent:var(--vendra-accent-3)] [--feature-accent-text:var(--vendra-accent-3-text)]'
   }[accent]
 
-  // The accent bloom (`before:`) is a 288px circle under a 64px blur, and the
-  // row clips it — `overflow-hidden`, which the row needs so the bloom cannot
-  // widen the page. It used to sit at `-right-24`, 96px *outside* the row, so
-  // the clip cut through the circle's solid middle instead of through its
-  // faded tail and left a hard vertical edge down the row's right side: a
-  // rectangle of tinted background, which is the opposite of what a blurred
-  // blob is for. At `right-16` the circle's edge is 64px inside the row, which
-  // is exactly the blur radius, so the falloff reaches zero by the time it
-  // meets the clip and there is no seam to see.
+  // No accent bloom behind the row any more. It was a 288px circle under a
+  // 64px blur, tinted to 5.5% opacity — a soft coloured haze that had to be
+  // clipped by `overflow-hidden` so it could not widen the page, and that
+  // clipping was itself delicate enough to need a paragraph explaining where
+  // the circle had to sit for the seam not to show. All of that upkeep bought
+  // an effect most readers would not notice and none could name. The row now
+  // says which tier it belongs to the same way every other element does: with
+  // the tier's colour on the boundary rule at its head.
   return (
     <div
-      className={`group relative grid items-start gap-10 overflow-hidden border-t border-[var(--vendra-line)] py-16 before:pointer-events-none before:absolute before:top-8 before:right-16 before:-z-1 before:size-72 before:rounded-full before:bg-[var(--feature-accent)] before:opacity-[0.055] before:blur-3xl first:border-t-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-20 ${accentClass}`}
+      className={`group relative grid items-start gap-10 border-t border-[var(--vendra-line)] py-16 first:border-t-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-20 ${accentClass}`}
     >
       <div className={flip ? 'lg:order-2' : ''}>
-        {eyebrow || index ? (
-          <div className="flex items-center gap-3 text-xs font-semibold tracking-[0.16em] uppercase">
-            {index ? (
-              <span className="font-mono tracking-normal text-[var(--feature-accent-text)]">
-                {index}
+        {/* The boundary rule again, with the lead-in taking the tier's colour:
+            this row does belong to one system, unlike a rule drawn between
+            two. */}
+        {eyebrow || code ? (
+          <div className="flex items-center gap-3">
+            <i className="h-px w-6 shrink-0 bg-[var(--feature-accent)]" />
+            {code ? (
+              <span className="label shrink-0 font-bold text-[var(--feature-accent-text)]">
+                {code}
               </span>
             ) : null}
             {eyebrow ? (
-              <span className="text-[var(--vendra-fg-subtle)]">{eyebrow}</span>
+              <span className="label shrink-0 text-[var(--vendra-fg-subtle)]">
+                {eyebrow}
+              </span>
             ) : null}
+            <i className="h-px flex-1 bg-[var(--vendra-line)]" />
           </div>
         ) : null}
-        <h3 className="mt-3 max-w-xl font-display text-subtitle font-bold">
+        <h3 className="mt-5 max-w-xl font-display text-subtitle font-bold">
           {title}
         </h3>
         {children ? (
@@ -935,7 +1078,7 @@ export function Quickstart({
     <div className="grid gap-4 md:grid-cols-3">
       {steps.map(step => (
         <div key={step.command}>
-          <div className="mb-2 text-xs font-bold tracking-[0.12em] text-[var(--vendra-fg-subtle)] uppercase">
+          <div className="mb-2 label text-[var(--vendra-fg-subtle)]">
             {step.label}
           </div>
           <pre className="m-0 overflow-x-auto rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-muted)] px-4 py-3.5 font-mono text-[0.8125rem] leading-6">
@@ -1058,9 +1201,7 @@ export function FeaturedProject({
         ) : null}
       </div>
       <div>
-        <div className="text-xs font-bold tracking-[0.14em] text-[var(--vendra-accent-text)] uppercase">
-          {eyebrow}
-        </div>
+        <div className="label text-[var(--vendra-accent-text)]">{eyebrow}</div>
         <h3 className="mt-3 font-display text-subtitle font-bold">
           {item.title}
         </h3>
@@ -1075,16 +1216,20 @@ export function FeaturedProject({
   )
 }
 
-/** Available work in an editorial list, without turning every entry into a card. */
+/**
+ * Available work in an editorial list, without turning every entry into a card.
+ *
+ * Unnumbered, on the same argument as `RoadmapList`: these are guides grouped
+ * by area, and a reader can start at whichever one matches the task in front
+ * of them. An ordinal in the first column made them look like chapters, which
+ * is a reading order the set does not have and the copy never claims.
+ */
 export function EditorialList({ items }: { items: GalleryItem[] }) {
   return (
     <div className="border-t border-[var(--vendra-line)]">
-      {items.map((item, index) => {
+      {items.map(item => {
         const body = (
           <>
-            <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
-              {String(index + 1).padStart(2, '0')}
-            </span>
             <span>
               <strong className="block text-base tracking-tight">
                 {item.title}
@@ -1101,7 +1246,7 @@ export function EditorialList({ items }: { items: GalleryItem[] }) {
 
         return item.href ? (
           <Link
-            className="grid grid-cols-[2rem_minmax(0,1fr)_auto] gap-4 border-b border-[var(--vendra-line)] py-5 transition hover:pl-2 hover:text-[var(--vendra-accent-text)]"
+            className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 border-b border-[var(--vendra-line)] py-5 transition hover:pl-2 hover:text-[var(--vendra-accent-text)]"
             href={item.href}
             key={item.title}
           >
@@ -1113,31 +1258,38 @@ export function EditorialList({ items }: { items: GalleryItem[] }) {
   )
 }
 
-/** Compact roadmap: visible intent without letting unavailable work dominate. */
+/**
+ * Compact roadmap: visible intent without letting unavailable work dominate.
+ *
+ * `ul`, and no ordinals. Both used to be `ol` with an `01 / 02 / 03` marker in
+ * the first column, which is the same claim `BoundaryRule` was built to stop
+ * the landing page making — see the note there. A roadmap is the clearest case
+ * of it: nothing here has been scheduled, so a number beside "Account blocks"
+ * announced a delivery position that no one had decided, and the reader who
+ * trusted it would have been reading a commitment out of an alphabetised list.
+ * The area label already carries the only grouping these items really have.
+ */
 export function RoadmapList({
   items
 }: {
   items: { title: string; area?: string }[]
 }) {
   return (
-    <ol className="m-0 grid list-none gap-x-8 border-t border-[var(--vendra-line)] p-0 md:grid-cols-2">
-      {items.map((item, index) => (
+    <ul className="m-0 grid list-none gap-x-8 border-t border-[var(--vendra-line)] p-0 md:grid-cols-2">
+      {items.map(item => (
         <li
-          className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--vendra-line)] py-4"
+          className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b border-[var(--vendra-line)] py-4"
           key={item.title}
         >
-          <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
-            {String(index + 1).padStart(2, '0')}
-          </span>
           <span className="text-sm font-semibold">{item.title}</span>
           {item.area ? (
-            <span className="text-[0.65rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+            <span className="label text-[var(--vendra-fg-subtle)]">
               {item.area}
             </span>
           ) : null}
         </li>
       ))}
-    </ol>
+    </ul>
   )
 }
 
@@ -1173,9 +1325,98 @@ export type Plan = {
   price: string
   cadence?: string
   summary: string
+  /**
+   * Concurrent websites the plan allows — `max_units` in the vendra-
+   * subscription plans table, which is the number actually enforced.
+   *
+   * `'open'` is the tier whose count is agreed rather than fixed. It is not
+   * "unlimited": the limit is still a number in the subscription, it is just
+   * one nobody has picked yet, and drawing it as infinity would promise
+   * something the schema cannot express.
+   */
+  websites: number | 'open'
+  /** Set on a tier whose allowance stops being served after `trialDays`. */
+  trialDays?: number
+  /** The tier this one builds on, rendered as an inheritance line. */
+  inherits?: string
+  /** Only what this tier adds. Anything inherited belongs in `inherits`. */
   features: string[]
   cta: { href: string; label: string }
   featured?: boolean
+}
+
+/** How many slots to draw before the open-ended tier trails off. */
+const openSlotCount = 3
+
+/**
+ * The website allowance, drawn as the units it is counted in.
+ *
+ * This is the one figure that separates the tiers — the page's own lede says
+ * the limit is the only thing that changes — and as a feature bullet reading
+ * "3 websites" it sat in the list at the same weight as "Email support", which
+ * is the template's way of hiding the only real variable. Drawing it puts the
+ * axis back: four cards in a row, and the thing that ascends across them is
+ * visible before any of the prose is read.
+ *
+ * Deliberately not coloured by tier. The three brand hues mean "this belongs
+ * to that system" — storefront, platform, controller — and a subscription tier
+ * is not one of the three systems, so giving Pro the sky blue would say
+ * something false in the one palette rule the site keeps everywhere else. The
+ * slots are accent-on-line like every other quantity on the marketing surface.
+ *
+ * The trial's slot is dashed rather than solid because that allowance expires;
+ * `trialDays` is the same 7 the copy quotes and the `trial_days` column
+ * enforces. The open tier draws three solid slots and then stops at a rule
+ * that runs to the card edge, which reads as "and onward from here" without
+ * claiming a number the plan has not agreed.
+ */
+function SlotMeter({
+  websites,
+  trialDays
+}: {
+  websites: number | 'open'
+  trialDays?: number
+}) {
+  const open = websites === 'open'
+  const count = open ? openSlotCount : websites
+  // Kept to one line each. The caption sits between the meter and the price,
+  // so a caption that wraps pushes its own price a line below the other three
+  // and breaks the row a reader is scanning across — which is the single thing
+  // four columns exist to make possible. "at once" is not repeated here: the
+  // page title and lede both already say it, and spending eight characters
+  // restating them is what pushed this caption onto a second line.
+  const caption = open
+    ? 'websites, as agreed'
+    : `${count === 1 ? 'website' : 'websites'}${trialDays ? ` · ${trialDays} days` : ''}`
+
+  return (
+    <div className="mt-4">
+      <div className="flex items-center gap-1.5" aria-hidden="true">
+        {Array.from({ length: count }, (_, i) => (
+          <i
+            key={i}
+            // The trial slot is dashed because the allowance expires, but it
+            // still has to read as one website granted rather than one
+            // withheld: at a light enough fill it looked like the empty slot
+            // in a "1 of 3 used" meter, which is the opposite of what the
+            // trial offers. Dashed edge, fill kept present.
+            className={`h-6 w-4 rounded-[0.1875rem] border ${
+              trialDays
+                ? 'border-dashed border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_55%)]'
+                : 'border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)]'
+            }`}
+          />
+        ))}
+        {open ? (
+          <i className="ml-0.5 h-px flex-1 bg-[linear-gradient(90deg,var(--vendra-line-strong),transparent)]" />
+        ) : null}
+      </div>
+      <div className="label mt-2.5 text-[var(--vendra-fg-subtle)]">
+        <span className="text-[var(--vendra-fg)]">{open ? 'n' : count}</span>{' '}
+        {caption}
+      </div>
+    </div>
+  )
 }
 
 /**
@@ -1185,47 +1426,79 @@ export type Plan = {
  * "Let's talk" alongside "€10" without special-casing. The figures themselves
  * live in `app/pro/page.tsx`, next to the TODO block that tracks what on that
  * page is still unbuilt.
+ *
+ * Four columns, not three. There are four tiers, and `lg:grid-cols-3` orphaned
+ * the fourth onto a row of its own with two thirds of the row empty — which
+ * put "more than three websites", the tier for the largest resellers on the
+ * page, in the position that reads as an afterthought. One row also lets the
+ * meters line up, and once they do the ascending allowance is legible straight
+ * across the band.
+ *
+ * No "Most popular" flag. Sign-up is not open, so no tier has been bought once
+ * and the badge asserted a popularity that could not exist; on a page whose
+ * own notice says it is a draft, that was the one element making a claim the
+ * rest of the page was careful not to make. The accent border and glow already
+ * mark the recommended tier without saying anything untrue.
  */
 export function PricingTable({ plans }: { plans: Plan[] }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {plans.map(plan => (
         <div
           key={plan.name}
           className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[var(--vendra-glow-lg)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
         >
-          {plan.featured ? (
-            // The accent-fill pair, not `bg-accent` + `text-white`: the plain
-            // accent is a fill colour, and white on it is 3.27:1 — the same
-            // miss the primary button had, in the same place, for the same
-            // reason. Anything that puts a label *on* the accent needs the
-            // strong step and `--vendra-on-accent`.
-            <div className="absolute -top-3 left-5 rounded-full bg-[var(--vendra-accent-strong)] px-3 py-1 text-xs font-bold text-[var(--vendra-on-accent)]">
-              Most popular
-            </div>
-          ) : null}
           <h3 className="text-lg font-bold tracking-tight">{plan.name}</h3>
-          <div className="mt-4 text-3xl font-bold tracking-tight">
+
+          {/* Above the price, because the allowance is what the tier sells and
+              the figure is what it costs — and on this page the allowance is
+              the only thing that moves. */}
+          <SlotMeter websites={plan.websites} trialDays={plan.trialDays} />
+
+          {/* `font-display` here and nowhere else in the card: the price is the
+              one number on the page a reader is comparing across four columns,
+              and Archivo's width axis is what makes it scannable at a glance
+              rather than another bold sans figure. */}
+          <div className="font-display mt-5 text-3xl font-bold">
             {plan.price}
             {plan.cadence ? (
-              <span className="ml-1 text-sm font-normal text-[var(--vendra-fg-subtle)]">
+              <span className="ml-1 align-middle text-sm font-normal text-[var(--vendra-fg-subtle)]">
                 {plan.cadence}
               </span>
             ) : null}
           </div>
+
           <p className="mt-3 text-sm leading-6 text-[var(--vendra-fg-muted)]">
             {plan.summary}
           </p>
-          <ul className="my-5 flex flex-1 list-none flex-col gap-2 p-0 text-sm">
+
+          {/* Hairline rules rather than a column of ✓ glyphs. The checkmark is
+              the pricing table's most reproduced element, and it was doing no
+              work here: nothing in these lists is ever absent, so every row
+              carried a tick confirming the row existed. */}
+          <ul className="mt-5 mb-6 flex flex-1 list-none flex-col gap-0 p-0 text-sm">
+            {plan.inherits ? (
+              // Inheritance is a different kind of statement from a feature —
+              // it is the whole of another column restated in three words — so
+              // it is set apart rather than made bullet one of four.
+              <li className="mb-3 border-y border-[var(--vendra-line)] py-2.5 text-[0.8125rem] text-[var(--vendra-fg-subtle)]">
+                Everything in{' '}
+                <span className="font-semibold text-[var(--vendra-fg-muted)]">
+                  {plan.inherits}
+                </span>
+                , plus:
+              </li>
+            ) : null}
             {plan.features.map(feature => (
               <li
-                className="flex gap-2 before:text-[var(--vendra-accent-text)] before:content-['✓']"
+                className="border-b border-[var(--vendra-line)] py-2.5 leading-6 last:border-b-0"
                 key={feature}
               >
                 {feature}
               </li>
             ))}
           </ul>
+
           <Link
             href={plan.cta.href}
             className={actionButtonClass(plan.featured)}
@@ -1412,7 +1685,7 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
             <div className="mt-4 text-[1.05rem] font-semibold tracking-tight">
               {member.name}
             </div>
-            <div className="mt-1 text-xs font-bold tracking-[0.1em] text-[var(--vendra-accent-text)] uppercase">
+            <div className="mt-1 label text-[var(--vendra-accent-text)]">
               {member.role}
             </div>
             {member.bio ? (
