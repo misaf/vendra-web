@@ -35,7 +35,7 @@ const eyebrowClass = 'label text-[var(--vendra-fg-subtle)]'
  */
 export function Lede({ children }: { children: ReactNode }) {
   return (
-    <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit [&>p]:text-inherit">
+    <div className="mt-4 max-w-184 text-[1.0625rem] leading-7 text-[var(--vendra-fg-muted)] [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit">
       {children}
     </div>
   )
@@ -166,15 +166,23 @@ export function Hero({
     <div className="relative isolate mt-6 overflow-hidden rounded-3xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-8 before:absolute before:inset-0 before:-z-2 before:bg-[linear-gradient(to_right,var(--vendra-line)_1px,transparent_1px),linear-gradient(to_bottom,var(--vendra-line)_1px,transparent_1px)] before:bg-size-[56px_56px] before:[mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_30%,transparent_75%)] after:absolute after:inset-[-40%_40%_40%_-20%] after:-z-1 after:bg-[radial-gradient(circle,hsla(var(--nextra-primary-hue),var(--nextra-primary-saturation),var(--nextra-primary-lightness),0.16),transparent_65%)] md:p-12">
       {eyebrow ? <div className={eyebrowClass}>{eyebrow}</div> : null}
       {/* `data-display` opts this heading out of the `main h1` size in
-          `globals.css`, which would otherwise win — see the note there. */}
+          `globals.css`, which would otherwise win — see the note there.
+
+          `--vendra-fg` rather than the `text-neutral-950 dark:text-neutral-50`
+          pair this carried. The two resolve to the same colours, so nothing
+          moves; what changes is that the largest heading in the docs vocabulary
+          is no longer the one element in it that a theme or brand change would
+          leave behind. `StatRow` at the foot of this file was moved off the
+          identical pair for the identical reason and its note claimed to be the
+          only one — it was not, and this was the other. */}
       <h1
         data-display=""
-        className="mt-5 max-w-3xl font-display text-4xl font-semibold tracking-tight text-neutral-950 md:text-display dark:text-neutral-50"
+        className="mt-5 max-w-3xl font-display text-4xl font-semibold tracking-tight text-[var(--vendra-fg)] md:text-display"
       >
         {title}
       </h1>
       {/* <div>, not <p>: MDX wraps block children in their own paragraph. */}
-      <div className="mt-6 max-w-168 text-base leading-7 text-[var(--vendra-fg-muted)] md:text-lg [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit [&>p]:text-inherit">
+      <div className="mt-6 max-w-168 text-base leading-7 text-[var(--vendra-fg-muted)] md:text-lg [&>p]:m-0 [&>p]:text-inherit [&>p]:leading-inherit">
         {children}
       </div>
       {actions?.length ? (
@@ -233,9 +241,15 @@ export function FeatureGrid({
           className="group block rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] px-5 py-4 text-inherit no-underline transition hover:-translate-y-0.75 hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-surface-raised)] hover:shadow-[var(--vendra-glow-sm)]"
         >
           <div className="flex items-center gap-3">
+            {/* `text-xs`, not `text-[0.65rem]` — 10.4px, the smallest step
+                anywhere on the site and an ad-hoc value outside the scale. This
+                was the third and last copy of it: `OperatorPanelPreview` in
+                `components/marketing.tsx` and the menu badge in
+                `components/top-navigation.tsx` carry the same note. The 32px box
+                takes 12px with room to spare. */}
             {item.icon ? (
               <span
-                className="grid size-8 shrink-0 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_70%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_91%)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent-text)]"
+                className="grid size-8 shrink-0 place-items-center rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_70%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_91%)] font-mono text-xs font-bold text-[var(--vendra-accent-text)]"
                 aria-hidden="true"
               >
                 {item.icon}
@@ -458,8 +472,11 @@ export function StatRow({ items }: { items: StatItem[] }) {
     <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-line)] sm:grid-cols-2 lg:grid-cols-4">
       {/* `--vendra-bg` rather than the `bg-white dark:bg-neutral-950` pair the
           cell carried: the token already resolves to both of those, and the
-          hardcoded copy was the one surface in this file sitting outside the
-          layer that a brand or theme change moves. */}
+          hardcoded copy sat outside the layer that a brand or theme change
+          moves. This note used to say it was the only such surface in the file.
+          It was not — `Hero`'s h1 was still on `text-neutral-950
+          dark:text-neutral-50`, and a comment asserting a cleanup is complete is
+          how the next one survives being looked for. Both are on tokens now. */}
       {items.map(item => (
         <div key={item.label} className="bg-[var(--vendra-bg)] p-5">
           <div className="text-2xl font-semibold tracking-[-0.02em] text-[var(--vendra-fg)]">
