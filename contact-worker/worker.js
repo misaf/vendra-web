@@ -115,6 +115,60 @@ const oneLine = value =>
     .replace(/[\r\n]+/g, ' ')
     .trim()
 
+/**
+ * Renders a display name safely into a `Name <addr>` mailbox.
+ *
+ * `oneLine` already removes the CR/LF that would let a value break out into a
+ * header of its own, which is the dangerous case. This handles the merely
+ * malformed one: `reply_to` is a mailbox list, so a name containing `<`, `>` or
+ * a comma restructures the field rather than sitting inside it. A name of
+ * `Ann <ann@evil.example>` produced two apparent mailboxes and left which one a
+ * reply reached up to whatever parsed it.
+ *
+ * RFC 5322 quoted-string, with `\` and `"` escaped, so the whole name is one
+ * atom whatever it contains. Empty names return the bare address rather than an
+ * empty pair of quotes, which some parsers reject.
+ */
+const mailbox = (name, address) => {
+  const display = oneLine(name)
+  if (!display) return address
+  return `"${display.replace(/[\\"]/g, character => `\\${character}`)}" <${address}>`
+}
+
+/**
+ * Per-IP rate limit, when one is bound.
+ *
+ * The controls already here stop the wrong *shape* of request — the honeypot,
+ * the field rules, the length caps — and none of them stop the same valid
+ * request arriving ten thousand times. CORS does not either: it is a browser
+ * policy, and the preflight this Worker answers is something `curl` never asks
+ * for. So the endpoint's real exposure is volume, and the cost of it is not
+ * abstract: every accepted POST is an outbound Resend call against a paid quota
+ * and a message in an inbox two people read by hand.
+ *
+ * Cloudflare's rate-limiting binding does the counting at the edge, so a
+ * rejected request never reaches the Resend call. It is configured in
+ * `wrangler.toml` rather than in code — see the README — and this stays optional
+ * because the Worker must remain deployable by someone who has not set one up
+ * yet. When it is absent the behaviour is exactly what it was before, and the
+ * console line is there so "unlimited" is a state somebody chose rather than one
+ * they inherited without noticing.
+ *
+ * Keyed on `CF-Connecting-IP`, which Cloudflare sets and a client cannot forge.
+ * A missing value keys everything under one bucket, which is the safe direction
+ * to fail: shared limit rather than no limit.
+ */
+async function withinRateLimit(request, env) {
+  if (!env.RATE_LIMITER) {
+    console.warn('rate limiting is not configured — see contact-worker/README')
+    return true
+  }
+
+  const key = request.headers.get('CF-Connecting-IP') ?? 'unknown'
+  const { success } = await env.RATE_LIMITER.limit({ key })
+  return success
+}
+
 const escapeHtml = value =>
   String(value).replace(
     /[&<>"']/g,
@@ -142,6 +196,26 @@ const handler = {
       return json({ error: 'Use POST.' }, 405, origin)
     }
 
+    /* Before the body is read, so a flood costs this Worker a header lookup
+       rather than a JSON parse. 429 with `Retry-After`: the site shows its
+       generic failure message for any non-2xx, which already tells the reader
+       to try again or use another route, and that is the right thing to say
+       here — the sender of the one legitimate message caught behind somebody
+       else's flood should not be told they did something wrong. */
+    if (!(await withinRateLimit(request, env))) {
+      return new Response(
+        JSON.stringify({ error: 'Too many messages. Try again shortly.' }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': '60',
+            ...cors(origin)
+          }
+        }
+      )
+    }
+
     let payload
     try {
       payload = await request.json()
@@ -162,9 +236,24 @@ const handler = {
       return json({ error: errors.join('; ') }, 400, origin)
     }
 
-    if (!env.RESEND_API_KEY) {
+    /* All three, not just the key. `MAIL_FROM` and `MAIL_TO` are passed
+       straight to Resend, so an unset one sent `"from": undefined` and bought a
+       502 and a log line about a rejected send — which reads as an upstream
+       fault rather than as the missing variable it is. Same class of mistake as
+       a missing key and it deserves the same distinct answer. */
+    if (!env.RESEND_API_KEY || !env.MAIL_FROM || !env.MAIL_TO) {
       // Configuration fault, not the sender's fault — say so distinctly so it
       // is not mistaken for a validation failure while setting the Worker up.
+      console.error(
+        'relay misconfigured; missing:',
+        [
+          !env.RESEND_API_KEY && 'RESEND_API_KEY',
+          !env.MAIL_FROM && 'MAIL_FROM',
+          !env.MAIL_TO && 'MAIL_TO'
+        ]
+          .filter(Boolean)
+          .join(', ')
+      )
       return json({ error: 'The relay is not configured.' }, 500, origin)
     }
 
@@ -198,7 +287,9 @@ const handler = {
         from: env.MAIL_FROM,
         to: env.MAIL_TO,
         // So hitting Reply in the mail client answers the person who wrote in.
-        reply_to: `${name} <${email}>`,
+        // Quoted through `mailbox` — an unquoted display name containing a
+        // comma or angle brackets turns this one address into an address list.
+        reply_to: mailbox(name, email),
         subject,
         text: `From: ${name || '(no name given)'} <${email}>\n\n${message}`,
         html:

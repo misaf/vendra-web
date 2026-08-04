@@ -55,6 +55,21 @@ MAIL_FROM = "Vendra site <contact@vendra.dev>"
 
 # Where the enquiries land.
 MAIL_TO = "you@example.com"
+
+# Per-IP rate limit, checked before the body is parsed and before Resend is
+# called. Optional: without this binding the Worker still deploys and still
+# works, but it logs a warning on every request and nothing caps the volume.
+# Every accepted POST is a billed Resend call and a message two people read by
+# hand, so deploy this before the endpoint is public.
+#
+# 5 submissions per minute per IP is generous for a human and useless for a
+# loop. `simple` is Cloudflare's built-in limiter — no KV or Durable Object to
+# provision.
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 5, period = 60 }
 ```
 
 `RESEND_API_KEY` is set with `wrangler secret put`, not in `[vars]` — values in
@@ -92,15 +107,31 @@ Expect `200` and `{"ok":true}`. Common failures:
 
 | Response | Cause |
 |---|---|
-| `500 The relay is not configured.` | `RESEND_API_KEY` secret not set |
+| `500 The relay is not configured.` | One of `RESEND_API_KEY`, `MAIL_FROM`, `MAIL_TO` is unset — `wrangler tail` names which |
 | `502 The message could not be sent.` | Resend rejected it — check `wrangler tail`; usually `MAIL_FROM` is not on a verified domain |
+| `429 Too many messages.` | The per-IP limit. Expected while running the checks above more than five times in a minute |
 | CORS error in the browser, `curl` fine | The site's origin is not in `ALLOWED_ORIGIN` |
 
-## Worth adding before this sees real traffic
+Run either `curl` six times in a row to confirm the limiter is bound: the sixth
+should be a `429`. If all six return `200`, the binding is missing — check
+`wrangler tail` for the `rate limiting is not configured` warning.
 
-There is no rate limiting. The honeypot stops naive bots and the CORS allowlist
-stops casual cross-origin use, but neither stops someone posting directly in a
-loop, and Resend bills per message. Cloudflare's Rate Limiting rules can cap it
-per IP without touching this code, or add
-[Turnstile](https://developers.cloudflare.com/turnstile/) and verify the token
-here before the Resend call.
+## What stops abuse, and what does not
+
+Worth being explicit, because the three controls here defend against different
+things and it is easy to assume one covers another:
+
+- **The honeypot** catches bots that fill every field they find. It is checked
+  server-side as well as in the browser, so skipping the form does not skip it.
+- **Validation and the length caps** reject the wrong *shape* of request.
+- **The rate limit** is the only thing that bounds *volume*, which is the actual
+  exposure: a valid, well-formed, honeypot-clean message repeated in a loop
+  passes every other control here.
+- **CORS stops none of it.** It is a browser policy. `curl` never sends the
+  preflight and never reads the allowlist, so treat the allowlist as tidiness
+  rather than as a control.
+
+If the endpoint starts attracting real abuse, the next step is
+[Turnstile](https://developers.cloudflare.com/turnstile/) — verify the token
+here before the Resend call. That is a bigger change than the limiter because
+the form has to render and submit the widget too.
