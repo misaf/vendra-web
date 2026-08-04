@@ -39,24 +39,32 @@ export default function SignupPage() {
       >
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.75fr)] lg:gap-16">
           <div>
-            {contactEndpoint ? (
-              <SignupForm />
-            ) : (
-              <div className="rounded-xl border border-dashed border-[var(--vendra-line-strong)] p-6">
-                <p className="text-base font-bold text-[var(--vendra-fg)]">
-                  The list is not switched on yet
-                </p>
-                <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
-                  <Link href="/contact">Get in touch</Link> instead — the same
-                  two people read it, and it works now.
-                </p>
-                <p className="mt-3 text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
-                  Deploying this site? Set{' '}
-                  <code>NEXT_PUBLIC_CONTACT_ENDPOINT</code> and the form
-                  replaces this notice.
-                </p>
-              </div>
-            )}
+            {/* The aside beside this one has always been headed; the form had
+                nothing, so the outline ran h1 → "What this is" and the form
+                itself sat under no heading. See the same note on `/contact`. */}
+            <h2 className="label text-[var(--vendra-fg-subtle)]">
+              Join the list
+            </h2>
+            <div className="mt-5">
+              {contactEndpoint ? (
+                <SignupForm />
+              ) : (
+                <div className="rounded-xl border border-dashed border-[var(--vendra-line-strong)] p-6">
+                  <p className="text-base font-bold text-[var(--vendra-fg)]">
+                    The list is not switched on yet
+                  </p>
+                  <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
+                    <Link href="/contact">Get in touch</Link> instead — the same
+                    two people read it, and it works now.
+                  </p>
+                  <p className="mt-3 text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
+                    Deploying this site? Set{' '}
+                    <code>NEXT_PUBLIC_CONTACT_ENDPOINT</code> and the form
+                    replaces this notice.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <aside>
