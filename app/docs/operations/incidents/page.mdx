@@ -1,0 +1,78 @@
+---
+description: "Symptom, confirmation, recovery, and escalation procedures for common Vendra production incidents."
+---
+
+# Incident runbooks
+
+<Lede>
+  Stabilize first, preserve evidence, and change one layer at a time. Capture the
+  active compatibility set and affected property before running a recovery step.
+</Lede>
+
+## Provisioning queue backlog
+
+**Confirm:** inspect Horizon, scheduler health, failed jobs, and
+`vendra stack logs provisioner`. Determine whether every property or one
+deployment is affected.
+
+**Recover:** restore the failed dependency, retry one deployment, and confirm it
+reaches healthy before releasing the backlog. Do not indiscriminately replay
+jobs while the provisioner remains unhealthy.
+
+## Certificate renewal failure
+
+**Confirm:** check DNS, ports 80/443, Traefik logs, ACME storage permissions, and
+the certificate expiry for the affected hostname.
+
+**Recover:** correct reachability or permissions and let Traefik retry. Preserve
+the ACME state; deleting it can trigger rate limits and loses account continuity.
+
+## Database or Redis outage
+
+**Confirm:** distinguish connection failure from migration or cache symptoms in
+the platform, queue, and scheduler logs.
+
+**Recover:** restore the dependency first, then the platform workers. Verify
+tenant data before replaying jobs. Never expose either service publicly as a
+shortcut around Docker networking.
+
+## Storefront rollback
+
+**Confirm:** reproduce on one property and compare its digest with the last
+known-good compatibility set.
+
+**Recover:** select the previous immutable storefront digest for that property,
+re-provision it, and verify both locales plus tenant-specific API data. Roll the
+fleet only after the canary is healthy.
+
+## Controller upgrade rollback
+
+**Confirm:** preserve the controller version, rendered state, and logs. Determine
+whether failure occurs during rendering, image pull, Compose convergence, or
+health waiting.
+
+**Recover:** reinstall the previous binary and compatibility-set images, run
+`vendra stack up`, then reconcile only after the platform is healthy. Do not
+combine rollback with a schema migration.
+
+## Lost host recovery drill
+
+Follow [Backup and recovery](/docs/operations/recovery) on an isolated host.
+Record the achieved recovery point and recovery time, then verify real domains,
+certificates, tenant data, and both locales before declaring the drill complete.
+
+## Escalation packet
+
+<CommandList
+  items={[
+    { cmd: 'vendra version', description: 'Controller member of the compatibility set.' },
+    { cmd: 'vendra stack status', description: 'Overall stack state.' },
+    { cmd: 'vendra stack ps', description: 'Container-level state.' },
+    { cmd: 'vendra property ls', description: 'Property inventory and drift.' },
+    { cmd: 'vendra stack logs <service>', description: 'Relevant logs with secrets removed.' }
+  ]}
+/>
+
+Include the affected property, expected result, first observed time, scope, last
+change, reproduction status, and sanitized command output.
+

@@ -1,0 +1,66 @@
+---
+description: "How to record and verify the controller, platform, storefront, schema, and provisioner API versions tested together."
+---
+
+# Compatibility sets
+
+<Lede>
+  Vendra has no synthetic ecosystem version. The deployable unit is the exact
+  set of independently released artifacts and contracts tested together.
+</Lede>
+
+<SourceStatus sources={['controller', 'platform', 'storefront', 'web']} />
+
+## Required record
+
+Record this table before every production rollout and attach it to the change
+or release record:
+
+| Member | Record | Example format |
+| --- | --- | --- |
+| Controller CLI | release or commit | `v1.4.0` |
+| Platform image | immutable digest | `ghcr.io/org/platform@sha256:…` |
+| Provisioner image | immutable digest | `ghcr.io/org/controller@sha256:…` |
+| Storefront image | immutable digest | `ghcr.io/org/storefront@sha256:…` |
+| Provisioner contract | OpenAPI version | `1.0.0` |
+| Property schema | schema `$id` plus source revision | `https://vendra.dev/property.schema.json @ <commit>` |
+
+The source snapshot above identifies what this documentation build inspected.
+It does not claim those working-tree revisions are a tested production set.
+
+## Compatibility rule
+
+<Flow
+  label="Safe contract evolution"
+  nodes={['Consumer accepts old + new', 'Producer sends new', 'Remove old handling']}
+/>
+
+Never describe four moving `latest` tags as a compatibility set. Record image
+digests before rollout, deploy one property first, and keep the previous set
+available for rollback.
+
+## Verification
+
+```bash
+vendra version
+docker compose images
+docker image inspect <image> --format '{{index .RepoDigests 0}}'
+curl -fsS http://127.0.0.1:8080/v1/capabilities \
+  -H "Authorization: Bearer $VENDRA_PROVISIONER_TOKEN"
+```
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/operations/upgrades',
+      title: 'Upgrades and releases',
+      description: 'Roll a compatibility set through the host safely.'
+    },
+    {
+      href: '/docs/operations/incidents',
+      title: 'Incident runbooks',
+      description: 'Capture the active set before diagnosing a failure.'
+    }
+  ]}
+/>
+
