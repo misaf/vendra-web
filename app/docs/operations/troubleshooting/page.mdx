@@ -23,8 +23,8 @@ import { Callout } from 'nextra/components'
       body: 'Server-side and browser-side reads take different paths and fail differently.'
     },
     {
-      title: 'In self-signed mode, trust both certificates',
-      body: 'Accept both the API and the storefront certificate.'
+      title: 'In self-signed mode, accept the storefront certificate',
+      body: 'Browser reads use the same-origin proxy; the container trusts the API authority through NODE_EXTRA_CA_CERTS.'
     },
     {
       title: 'Verify VENDRA_API_URL and the encoded configuration domain',
@@ -47,8 +47,8 @@ import { Callout } from 'nextra/components'
       body: 'The authoritative record of what was requested.'
     },
     {
-      title: 'Inspect platform-provisioner-1 logs',
-      body: 'Look for Docker and registry errors.'
+      title: 'Run vendra stack logs provisioner',
+      body: 'Look for Docker and registry errors without relying on a generated container name.'
     },
     {
       title: 'Confirm the bearer token matches on both sides',
