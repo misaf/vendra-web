@@ -1,10 +1,10 @@
 ---
-description: "The Docker socket boundary, exposed ports, TLS and HSTS behavior, what to back up, and how to recover a Vendra host."
+description: "The controller's Docker socket boundary, exposed ports, dashboard access, TLS, and security-header behavior."
 ---
 
 import { Callout } from 'nextra/components'
 
-# Security and recovery
+# Security
 
 <Lede>
   The Docker socket is the most sensitive thing on the host. Only one container
@@ -148,68 +148,12 @@ the per-tenant `<slug>.admin.<base>` panels.
   ]}
 />
 
-## Backups
-
-<DefList
-  items={[
-    {
-      term: 'Laravel database and media',
-      tag: { tone: 'red', label: 'Required' },
-      description: 'The authoritative business state.'
-    },
-    {
-      term: '/etc/vendra',
-      tag: { tone: 'red', label: 'Required' },
-      description: 'Configuration and secrets.'
-    },
-    {
-      term: '<state_dir>/acme',
-      tag: { tone: 'amber', label: 'Recommended' },
-      description: 'Public certificate and account continuity.'
-    },
-    {
-      term: 'properties.yml',
-      tag: { tone: 'neutral', label: 'Optional' },
-      description: 'The non-secret property inventory.'
-    }
-  ]}
-/>
-
-Generated runtime property directories are disposable.
-
-## Recovery
-
-<Steps
-  items={[
-    {
-      title: 'Restore authoritative data and configuration',
-      body: 'Database, media, /etc/vendra, and ACME state.'
-    },
-    {
-      title: 'Install the matching controller binary',
-      body: 'Version skew between binary and rendered state causes avoidable failures.'
-    },
-    { title: 'Run vendra stack up', body: 'Converge the host to desired state.' },
-    {
-      title: 'Reconcile storefronts from Laravel',
-      body: 'Replay the fleet from the authoritative deployment records.'
-    }
-  ]}
-/>
-
-Run the reconcile step inside the platform container — it replays the
-authoritative database fleet through provisioner API v1:
-
-```bash
-php artisan storefront:reconcile --sync
-```
-
 <NextSteps
   items={[
     {
-      href: '/docs/operations',
-      title: 'Operations runbook',
-      description: 'Daily checks and the full recovery outline.'
+      href: '/docs/operations/recovery',
+      title: 'Backup and recovery',
+      description: 'Authoritative state, backup scope, and host restoration.'
     },
     {
       href: '/docs/controller/configuration',
