@@ -10,8 +10,11 @@ import { useEffect, useRef } from 'react'
  * scene graph to draw three grids would make the landing page the heaviest
  * download on the site. Everything here — the projection matrix, the geometry,
  * the two shaders — is a few dozen lines, and the whole component degrades to
- * nothing (the hero's Tailwind gradient stays visible) when WebGL is
- * unavailable.
+ * nothing when WebGL is unavailable. It degrades to *nothing* now, rather than
+ * to the hero's Tailwind gradient, which was removed with the rest of the
+ * ambient wash — so a browser without WebGL gets a plain band. That is the
+ * intended floor: the hero's figure is the architecture panel beside the
+ * headline, and this is atmosphere layered under it, not the thing being read.
  *
  * The figure is deliberately not decoration: three stacked planes, coloured and
  * ordered exactly like the `StackDiagram` below it — storefront on top,
