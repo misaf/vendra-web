@@ -456,8 +456,12 @@ export type StatItem = {
 export function StatRow({ items }: { items: StatItem[] }) {
   return (
     <div className="mt-5 grid gap-px overflow-hidden rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-line)] sm:grid-cols-2 lg:grid-cols-4">
+      {/* `--vendra-bg` rather than the `bg-white dark:bg-neutral-950` pair the
+          cell carried: the token already resolves to both of those, and the
+          hardcoded copy was the one surface in this file sitting outside the
+          layer that a brand or theme change moves. */}
       {items.map(item => (
-        <div key={item.label} className="bg-white p-5 dark:bg-neutral-950">
+        <div key={item.label} className="bg-[var(--vendra-bg)] p-5">
           <div className="text-2xl font-semibold tracking-[-0.02em] text-[var(--vendra-fg)]">
             {item.value}
           </div>
