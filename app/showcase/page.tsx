@@ -106,12 +106,14 @@ export default function ShowcasePage() {
         title="Building something on Vendra?"
         lede="We would like to feature it — with your permission, a real image, and a short account of what you built."
         tone="accent"
+        // Was the GitHub profile, opening in a new tab. "Start a conversation"
+        // that leaves the site for a code host is a different promise from the
+        // one the label makes; /contact is where that sentence now goes.
         actions={[
           {
-            href: 'https://github.com/misaf',
+            href: '/contact',
             label: 'Start a conversation',
-            primary: true,
-            external: true
+            primary: true
           }
         ]}
       />
