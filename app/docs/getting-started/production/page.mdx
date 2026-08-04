@@ -57,6 +57,10 @@ docker login ghcr.io
       description: 'Platform subdomains that must also resolve to the server.'
     },
     {
+      term: '*.admin.<base-domain>',
+      description: 'Wildcard or explicit records for per-property Admin panel hosts.'
+    },
+    {
       term: 'Customer domains',
       description: 'Every storefront domain must resolve to the same server.'
     }
@@ -84,12 +88,21 @@ images:
 
 ## 3. Secrets
 
-Place `APP_KEY`, database credentials, mail settings, and
-`VENDRA_PROVISIONER_TOKEN` in `/etc/vendra/controller.env`, owned by root with
-mode `0600`:
+Place `APP_KEY`, database credentials, mail settings,
+`VENDRA_PROVISIONER_TOKEN`, and explicit Console operator credentials in
+`/etc/vendra/controller.env`, owned by root with mode `0600`:
+
+```dotenv filename="/etc/vendra/controller.env"
+CONSOLE_OPERATOR_USERNAME=platform-owner
+CONSOLE_OPERATOR_EMAIL=owner@example.com
+CONSOLE_OPERATOR_PASSWORD=<long-random-password>
+```
+
+No Console operator is seeded when any of these three values is absent.
 
 ```bash
 sudo mkdir -p /etc/vendra
+sudo touch /etc/vendra/controller.env
 sudo chown root:root /etc/vendra/controller.env
 sudo chmod 0600 /etc/vendra/controller.env
 ```
