@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { SkipNavContent } from 'nextra/components'
 import { useMDXComponents } from '../mdx-components'
 
 /**
@@ -57,6 +58,16 @@ export function ContentWrapper({
  * than a wrapper div so the exclusion cannot be separated from the landmark
  * that made it necessary.
  *
+ * `SkipNavContent` is the other half of point 1 above, and adding the landmark
+ * without it left that half undone. Nextra's layout always renders the skip
+ * link — a `<a href="#nextra-skip-nav">` that is the first thing a keyboard
+ * reader reaches on every page — but the element it jumps to is emitted by the
+ * MDX wrapper, which these pages deliberately do not use. So on all six of them
+ * the anchor pointed at an id that was not in the document: the first control
+ * on the selling surface did nothing at all, and the reader who used it stayed
+ * in the navigation. `ContentWrapper` gets the target from the wrapper it
+ * renders; this is the same target, placed by hand.
+ *
  * Unlike the blog and FAQ listings, these pages are deliberately searchable:
  * they are the only description of the product that is not reference material,
  * and each is the sole page carrying its own subject.
@@ -64,6 +75,7 @@ export function ContentWrapper({
 export function MarketingPage({ children }: { children: ReactNode }) {
   return (
     <main data-pagefind-body data-surface="marketing">
+      <SkipNavContent />
       {children}
     </main>
   )
