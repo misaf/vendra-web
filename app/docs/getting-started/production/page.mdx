@@ -11,6 +11,8 @@ import { Callout } from 'nextra/components'
   and treats `stack up` as a convergent operation you can re-run safely.
 </Lede>
 
+<SourceStatus sources={['controller', 'platform', 'storefront']} />
+
 ## 1. Prepare infrastructure
 
 Install Docker Engine, Docker Compose v2, and a versioned `vendra` CLI binary.
@@ -131,9 +133,9 @@ image changes — it is not a repair command.
       description: 'Create the first property on this host.'
     },
     {
-      href: '/docs/controller/security',
-      title: 'Security',
-      description: 'Docker boundary, exposed services, and TLS behavior.'
+      href: '/docs/getting-started/readiness',
+      title: 'Production readiness',
+      description: 'Complete the pre-traffic security and recovery checklist.'
     }
   ]}
 />
