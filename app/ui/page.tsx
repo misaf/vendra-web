@@ -6,6 +6,7 @@ import {
   Section
 } from '../../components/marketing'
 import { basePath } from '../../lib/site'
+import { MarketingPage } from '../../components/page-wrapper'
 
 export const metadata: Metadata = {
   title: 'UI',
@@ -102,8 +103,9 @@ export default function UiPage() {
     .map(item => ({ title: item.title, area: item.area }))
 
   return (
-    <>
+    <MarketingPage>
       <Section
+        titleAs="h1"
         eyebrow="UI"
         title="A real theme before a catalogue of promises"
         lede="The florist storefront and operator panel are available today. Future themes and composable blocks follow as a compact roadmap."
@@ -131,12 +133,33 @@ export default function UiPage() {
       </Section>
 
       <Section
+        size="compact"
         eyebrow="Roadmap"
         title="Themes, panels, and blocks still to come"
         lede="Visible enough to show direction, compact enough not to outnumber the work you can use."
       >
         <RoadmapList items={roadmap} />
       </Section>
-    </>
+
+      {/* Closes on the theme that exists rather than on the roadmap, for the
+          same reason the roadmap is kept short: the page's argument is that
+          the available work outweighs the promised work, and ending on the
+          promises contradicted it. */}
+      <Section
+        align="center"
+        size="lg"
+        tone="accent"
+        title="Use the theme that ships today"
+        lede="The florist storefront runs in English and Persian, and it is configured rather than forked."
+        actions={[
+          {
+            href: '/docs/storefront',
+            label: 'Explore the storefront',
+            primary: true
+          },
+          { href: '/showcase', label: 'See it in production' }
+        ]}
+      />
+    </MarketingPage>
   )
 }
