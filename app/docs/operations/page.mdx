@@ -15,6 +15,11 @@ import { Callout } from 'nextra/components'
 
 <CommandList
   items={[
+    {
+      href: '/docs/operations/compatibility',
+      title: 'Compatibility sets',
+      description: 'Record the exact artifacts and contracts tested together.'
+    },
     { cmd: 'vendra stack status', description: 'Overall stack health.' },
     { cmd: 'vendra stack ps', description: 'Container-level state.' },
     {
@@ -42,6 +47,11 @@ import { Callout } from 'nextra/components'
       href: '/docs/operations/recovery',
       title: 'Backup and recovery',
       description: 'Protect authoritative state and restore a lost host.'
+    },
+    {
+      href: '/docs/operations/incidents',
+      title: 'Incident runbooks',
+      description: 'Confirm, recover, and escalate common production failures.'
     },
     {
       href: '/docs/operations/upgrades',
