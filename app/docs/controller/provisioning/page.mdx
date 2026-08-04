@@ -1,37 +1,38 @@
 ---
-description: "The internal bearer-authenticated provisioner API: its three endpoints and the storefront request lifecycle."
+description: "How the controller validates, renders, starts, and reports storefront deployments requested by Laravel."
 ---
 
-import { Callout } from 'nextra/components'
-
-# Provisioner API
+# Provisioning lifecycle
 
 <Lede>
-  An internal, bearer-authenticated HTTP API with three endpoints. It is not a
-  public API and must stay on an internal Docker network.
+  The controller turns Laravel's desired storefront state into a running,
+  healthy Compose project. This page explains that lifecycle and who owns each
+  step; the API Reference owns the wire contract.
 </Lede>
 
-<Tag tone="emerald">Internal only</Tag> <Tag>Bearer authenticated</Tag>
+<Tag tone="emerald">Controller behavior</Tag> <Tag>Serialized mutations</Tag>
 
-## Endpoints
+## Ownership boundary
 
 <DefList
   items={[
-    { term: 'GET /health', description: 'Process health.' },
     {
-      term: 'GET /v1/capabilities',
-      description: 'Supported templates and controller capabilities.'
+      term: 'Laravel',
+      description:
+        'Owns desired deployment records, queue retries, and fleet reconciliation.'
     },
     {
-      term: 'POST /v1/storefronts',
-      description: 'Validate, render, start, and report a storefront.'
+      term: 'Controller',
+      description:
+        'Validates controller-owned invariants, renders files, runs Compose, and reports the observed result.'
+    },
+    {
+      term: 'Storefront',
+      description:
+        'Validates the complete runtime property schema through its readiness check.'
     }
   ]}
 />
-
-Requests are limited to 1 MiB, and property and certificate mutations are
-serialized. Bearer comparison is constant-time. Logs exclude tokens, request
-payloads, and generated environment values.
 
 ## Storefront request lifecycle
 
@@ -58,25 +59,17 @@ payloads, and generated environment values.
   ]}
 />
 
-The currently accepted template family is `vendra-storefront-florist`. The
-request can still select a different compatible image digest per property.
-
-## Authentication
-
-The token used by Laravel must match `VENDRA_PROVISIONER_TOKEN` in the
-controller environment.
-
-<Callout type="error">
-  Keep this API on an internal Docker network. It exposes container creation and
-  is not designed to face the public internet.
-</Callout>
+The currently accepted template family is `vendra-storefront-florist`. A
+request can select a different compatible image digest per property. Property
+and certificate mutations are serialized so concurrent requests cannot rewrite
+the same controller state.
 
 <NextSteps
   items={[
     {
       href: '/docs/api/provisioner',
-      title: 'Provisioner contract',
-      description: 'Contract rules, limits, and token handling in detail.'
+      title: 'Provisioner API',
+      description: 'Endpoints, contract rules, limits, and authentication.'
     },
     {
       href: '/docs/overview/architecture',
