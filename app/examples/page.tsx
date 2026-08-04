@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { EditorialList, RoadmapList, Section } from '../../components/marketing'
+import { MarketingPage } from '../../components/page-wrapper'
 
 export const metadata: Metadata = {
   title: 'Examples',
@@ -134,8 +135,9 @@ export default function ExamplesPage() {
   )
 
   return (
-    <>
+    <MarketingPage>
       <Section
+        titleAs="h1"
         eyebrow="Examples"
         title="Complete paths through real tasks"
         lede="Available guides come first. Each one follows a task to a working result instead of stopping at an isolated snippet."
@@ -165,13 +167,33 @@ export default function ExamplesPage() {
       </Section>
 
       <Section
+        size="compact"
         eyebrow="Roadmap"
         title="Planned examples"
-        lede="These are the next complete guides—not disabled cards pretending to be usable today."
+        lede="These are the next complete guides — not disabled cards pretending to be usable today."
         tone="muted"
       >
         <RoadmapList items={planned} />
       </Section>
-    </>
+
+      {/* The page used to end on the roadmap, which left the last thing a
+          reader saw as a list of guides that do not exist yet — and then the
+          footer. The close sends them to the one guide that does. */}
+      <Section
+        align="center"
+        size="lg"
+        tone="accent"
+        title="Start with a guide that ships today"
+        lede="The getting-started path runs from an empty machine to a working storefront, without stopping at a snippet."
+        actions={[
+          {
+            href: '/docs/getting-started',
+            label: 'Get started',
+            primary: true
+          },
+          { href: '/docs', label: 'Browse the documentation' }
+        ]}
+      />
+    </MarketingPage>
   )
 }
