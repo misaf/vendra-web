@@ -1,10 +1,10 @@
 ---
-description: "The provisioner contract rules, request limits, identity matching, and bearer token handling between Laravel and the controller."
+description: "The internal provisioner API endpoints, contract rules, request limits, identity matching, and bearer authentication."
 ---
 
 import { Callout } from 'nextra/components'
 
-# Provisioner contract
+# Provisioner API
 
 <Lede>
   Laravel calls the provisioner through a queued job using a bearer token. The
@@ -23,6 +23,22 @@ import { Callout } from 'nextra/components'
 />
 
 ## Contract rules
+
+<DefList
+  items={[
+    { term: 'GET /health', description: 'Report controller process health.' },
+    {
+      term: 'GET /v1/capabilities',
+      description: 'Report supported templates and controller capabilities.'
+    },
+    {
+      term: 'POST /v1/storefronts',
+      description: 'Validate, render, start, and report a storefront deployment.'
+    }
+  ]}
+/>
+
+Requests and responses follow `api/openapi.yaml` in the controller repository.
 
 <DefList
   items={[
@@ -90,12 +106,12 @@ its bearer token.
   items={[
     {
       href: '/docs/controller/provisioning',
-      title: 'Provisioner API',
-      description: 'Endpoints and the storefront request lifecycle.'
+      title: 'Provisioning lifecycle',
+      description: 'Controller behavior and the storefront deployment lifecycle.'
     },
     {
       href: '/docs/controller/security',
-      title: 'Security and recovery',
+      title: 'Controller security',
       description: 'Why only this service holds the Docker socket.'
     }
   ]}
