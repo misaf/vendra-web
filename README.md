@@ -368,3 +368,14 @@ it does not publish. The `deploy` job supplies the real origin.
 These pages describe how the repositories cooperate and where each
 responsibility belongs. Package-level implementation detail stays in each
 repository's own README.
+## Documentation feedback and telemetry
+
+Documentation search gaps and page corrections can be reported through the
+GitHub issue links built into search and page feedback. No search query is sent
+automatically.
+
+Set `NEXT_PUBLIC_DOCS_TELEMETRY_ENDPOINT` at build time to enable aggregate
+documentation `page_view` and `page_exit` beacons. The payload contains only
+the event name, documentation path, and visit duration. It contains no user ID,
+referrer, search text, or fingerprint, respects browser Do Not Track, and sends
+nothing when the variable is unset.
