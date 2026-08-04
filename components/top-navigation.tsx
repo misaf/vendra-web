@@ -177,8 +177,23 @@ export function TopNavigation({
         </div>
       </nav>
 
+      {/* `md`, not `lg`, and the difference was a viewport band with no
+          navigation in it at all.
+
+          Three controls divide this axis and they have to tile it without a
+          gap: the full nav above `xl` (80rem), this menu below it, and Nextra's
+          own hamburger, which is `md:hidden` — visible only *below* 48rem.
+          Starting this one at `lg` (64rem) left 48–64rem covered by none of
+          them: the hamburger had already switched off and this had not switched
+          on, so a tablet in portrait got a header with a wordmark, a search
+          box, and a theme toggle. No menu button, no links, nothing to open.
+
+          Anchoring to `md` is what makes the tiling exact rather than
+          approximate — this menu now begins on the same breakpoint the
+          hamburger ends on, so the three ranges meet edge to edge and there is
+          no width at which the site has no way to navigate. */}
       <details
-        className="group relative hidden lg:block xl:hidden"
+        className="group relative hidden md:block xl:hidden"
         ref={compactRef}
       >
         <summary className="inline-flex min-h-9 cursor-pointer list-none items-center gap-2 rounded-lg border border-[var(--vendra-line)] px-3 text-sm font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)] [&::-webkit-details-marker]:hidden">
