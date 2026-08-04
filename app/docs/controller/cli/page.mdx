@@ -26,7 +26,10 @@ import { Callout } from 'nextra/components'
       description: 'Report stack health. Add --json for machine output.'
     },
     { cmd: 'vendra stack ps', description: 'List running containers.' },
-    { cmd: 'vendra stack urls', description: 'Print the routed URLs.' },
+    {
+      cmd: 'vendra stack urls',
+      description: 'Print platform URLs and the loopback-only dashboard URL.'
+    },
     {
       cmd: 'vendra stack logs [target]',
       description: 'Tail service logs. Defaults to the php service.'
