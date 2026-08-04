@@ -1,0 +1,54 @@
+{
+  "provisioner": {
+    "version": "1.0.0",
+    "endpoints": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "responses": [
+          "200"
+        ]
+      },
+      {
+        "method": "GET",
+        "path": "/v1/capabilities",
+        "responses": [
+          "200"
+        ]
+      },
+      {
+        "method": "POST",
+        "path": "/v1/storefronts",
+        "responses": [
+          "200",
+          "401",
+          "422"
+        ]
+      }
+    ]
+  },
+  "property": {
+    "id": "https://vendra.dev/property.schema.json",
+    "required": [
+      "slug",
+      "theme",
+      "domain",
+      "siteUrl",
+      "name",
+      "businessType",
+      "priceCurrency",
+      "address",
+      "contact",
+      "social"
+    ],
+    "optional": [
+      "ogImage",
+      "heroImage",
+      "aboutImage",
+      "messages",
+      "checkout",
+      "currency",
+      "trustSeal"
+    ]
+  }
+}
