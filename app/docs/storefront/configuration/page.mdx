@@ -8,7 +8,7 @@ import { Callout } from 'nextra/components'
 
 <Lede>
   Production injects a base64-encoded JSON object as `STOREFRONT_CONFIG_BASE64`.
-  A production container refuses to run without it.
+  The readiness endpoint rejects a production container without a valid one.
 </Lede>
 
 <Callout type="error">
@@ -81,6 +81,12 @@ npm run property:config <slug> -- --json
       description: 'Media origin override.'
     },
     {
+      term: 'STOREFRONT_SITE_URL → SITE_URL',
+      meta: 'Controller input → server runtime, optional',
+      description:
+        'Canonical-site override for staging. Unset, the configuration siteUrl applies.'
+    },
+    {
       term: 'CONTACT_*',
       meta: 'Server runtime, optional',
       description: 'Deployment-specific contact overrides.'
@@ -109,6 +115,13 @@ npm run property:config <slug> -- --json
     }
   ]}
 />
+
+The platform Console and Reseller forms currently produce the required fields
+and optional `ogImage`. The storefront schema also accepts the optional fields
+listed above, but `heroImage`, `aboutImage`, `checkout`, `currency`, and
+`trustSeal` currently require a manual or programmatic configuration producer.
+`storefront_messages` is accepted by the platform deployment action, but no
+panel field edits it yet.
 
 <Callout type="error">
   Never place secrets in `NEXT_PUBLIC_*`. Next.js inlines those values into
