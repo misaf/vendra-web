@@ -198,7 +198,15 @@ export function ContactForm() {
           messages above are the only ones, rather than two validation systems
           disagreeing in two visual languages. The `type` and `autocomplete`
           attributes stay: they are what give a phone the right keyboard and
-          the address book, and they do that whether or not validation runs. */}
+          the address book, and they do that whether or not validation runs.
+
+          `required` stays too, and for the same reason: with `noValidate` it
+          blocks nothing, but it is what puts "required" in the accessible name
+          of each field. Without it, three of the four fields were mandatory and
+          nothing said so until the form was submitted and rejected — which is
+          error recovery standing in for error prevention. Name, email, and
+          message are all of them; the subject select is not marked, because it
+          opens on a valid choice and can never be empty. */}
 
       <div>
         <label className={labelClass} htmlFor={fieldId('name')}>
@@ -212,6 +220,7 @@ export function ContactForm() {
           id={fieldId('name')}
           name="name"
           onBlur={revalidate}
+          required
           type="text"
         />
         <FieldError id={errorId('name')}>{errors.name}</FieldError>
@@ -237,6 +246,7 @@ export function ContactForm() {
           inputMode="email"
           name="email"
           onBlur={revalidate}
+          required
           type="email"
         />
         <FieldError id={errorId('email')}>{errors.email}</FieldError>
@@ -279,6 +289,7 @@ export function ContactForm() {
           id={fieldId('message')}
           name="message"
           onBlur={revalidate}
+          required
           rows={6}
         />
         <FieldError id={errorId('message')}>{errors.message}</FieldError>
