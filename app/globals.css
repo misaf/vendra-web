@@ -37,12 +37,22 @@
  * is roughly a hundredth of an em looser than the body face wanted, because
  * Bricolage Grotesque is already narrower and tighter-fitting at display
  * sizes and Inter's tracking closed the counters shut.
- */
+ *
+ * These values move with the face and cannot be left behind when it changes.
+ * While the display face was briefly Archivo — a wide design set on its width
+ * axis — every step here was about a hundredth of an em looser, because that
+ * tracking on a wide face collides its own sidebearings. Bricolage wants the
+ * opposite, so the tighter numbers come back with it: Archivo's tracking on
+ * Bricolage leaves a headline looking sprung rather than set. */
 @theme {
   --text-display: 3.25rem;
   --text-display--line-height: 1.05;
   --text-display--letter-spacing: -0.025em;
 
+  /* Back to 4rem. The cap came down to 3.375rem for Archivo, where an expanded
+     face fitted about eight characters to a line and broke the hero five ways.
+     Bricolage is narrow enough that the full step reads as one headline again,
+     so the size no longer has to pay for the width. */
   --text-hero: clamp(2.25rem, 6vw, 4rem);
   --text-hero--line-height: 1.03;
   --text-hero--letter-spacing: -0.035em;
@@ -73,21 +83,43 @@
   font-optical-sizing: auto;
 }
 
+/* The utility face: every eyebrow, index, column header, and status label on
+ * the site.
+ *
+ * These used to be tracked-out uppercase Inter — the default label treatment
+ * on every developer-tool site there is, and the same one whether the label
+ * read "Customers" or `vendra stack up`. Vendra's own interface is a CLI and a
+ * set of Compose projects, so its labels are set in the mono instead: the
+ * chrome around the content now sounds like the thing being documented.
+ *
+ * One utility rather than the nine near-identical inline copies this replaced,
+ * which had drifted to four different tracking values and three sizes. The
+ * colour stays on the element, because a tier label carries its tier's hue and
+ * a section eyebrow does not. */
+@utility label {
+  font-family: var(--x-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-variant-ligatures: none;
+}
+
 /* `--nextra-primary-*` and `--nextra-bg` are set by `<Head>` in
    `app/layout.tsx`, not here — see the comment there. */
 :root {
   --x-font-sans:
-    var(--font-inter), var(--font-vazirmatn), ui-sans-serif, system-ui,
-    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-    'Noto Color Emoji';
+    var(--font-inter), ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --x-font-mono:
     var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, 'Liberation Mono', 'Courier New', monospace;
 
   /* Display only — never inherited by body copy or UI. Falls back through the
      body stack so a failed font load degrades to the previous appearance
-     rather than to Times. Bricolage covers Latin only, so the `:lang(fa)`
-     reset at the end of the base section has to take it back off again. */
+     rather than to Times. Bricolage covers Latin only, which is all this site
+     is: see the note on the Persian rules removed below. */
   --x-font-display:
     var(--font-bricolage), var(--font-inter), ui-sans-serif, system-ui,
     sans-serif;
@@ -245,32 +277,33 @@ body {
   :is(h1, h2, h3, h4, h5, h6) {
     letter-spacing: -0.02em;
   }
-
-  /* Same reasoning: this has to lose to a heading's own tracking utility, and
-     the `:lang(fa)` reset below has to win over both. */
-  :lang(fa),
-  [lang='fa'] {
-    font-family:
-      var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
-      sans-serif;
-  }
 }
 
-/* Persian sets flat: the tracking above is drawn for Latin display type and
-   pinches Arabic-script joins. Unlayered so it beats the utilities.
-
-   The family is repeated here, and not only in the `@layer base` rule above,
-   for the same reason: `font-display` is a utility, so it is layered, so it
-   would otherwise win over the layered `:lang(fa)` default and hand a Persian
-   heading a Latin-only face. Bricolage has no Arabic coverage at all, so the
-   result is not a styling regression but a fallback-rendered heading in
-   whatever the system happens to substitute. */
-:is(:lang(fa), [lang='fa']) {
-  letter-spacing: 0;
-  font-family:
-    var(--font-vazirmatn), var(--font-inter), ui-sans-serif, system-ui,
-    sans-serif;
-}
+/* There is no Persian rule here any more, and no Vazirmatn in the font stack.
+ *
+ * There used to be three: a `:lang(fa)` family default in the layer above, an
+ * unlayered `:is(:lang(fa), [lang='fa'])` copy that reset the heading tracking
+ * and beat `font-display`, and Vazirmatn sitting second in `--x-font-sans`.
+ * None of them ever matched. This site renders one document language — the
+ * root element is `lang="en"` and nothing below it sets `lang` at all — so the
+ * selectors had nothing to select and the fallback had nothing to fall back
+ * for. The one piece of Persian in the whole corpus is `"fa": "آکمه"`, a value
+ * inside a JSON example on the storefront configuration page, and a code block
+ * takes the mono stack, which never listed Vazirmatn: that string renders in
+ * JetBrains Mono's own fallback and did so with Vazirmatn loaded too.
+ *
+ * The cost was not theoretical. `next/font` preloads every family bound to
+ * `<html>`, so all 45KB of Vazirmatn was fetched on every page of the site to
+ * render nothing.
+ *
+ * This is about vendra-web only. The product it documents is genuinely
+ * bilingual — `vendra-storefront-florist` serves `fa` as its default locale
+ * with right-to-left presentation — but that is a different application. If
+ * this site ever grows a Persian route, restore the font binding in
+ * `app/layout.tsx` and both rules together: the layered one loses to a
+ * heading's own tracking utility, and the unlayered one is what beats
+ * `font-display` and stops a Latin-only display face swallowing a Persian
+ * heading. */
 
 ::selection {
   background: hsla(
@@ -309,6 +342,19 @@ body {
   opacity: 0.92;
 }
 
+/* Both rules below are prose-surface rules: they dress the headings a docs,
+   blog, or FAQ page writes in MDX, where the author gives a level and the
+   stylesheet decides everything else.
+ *
+ * `:not([data-surface='marketing'])` keeps them off the marketing pages, which
+ * are the opposite case — every heading there is composed by a component that
+ * has already chosen its own step off the type scale. Those pages had no
+ * `<main>` at all until the landmark was added (see `MarketingPage` in
+ * `components/page-wrapper.tsx`), so these selectors never reached them and
+ * the exclusion is what keeps that true: without it, adding the landmark would
+ * have bracketed every `Section` title with a hairline it already has a
+ * `BoundaryRule` for, and overridden `text-title` on the lead heading. */
+
 /* Page title: larger and tighter than the theme default.
 
    Unlayered, because it has to beat Nextra's own `x:text-4xl` on the same
@@ -319,7 +365,7 @@ body {
    is that component, and it is registered for MDX authors but not yet used by
    any page, so the conflict would have surfaced as "the size prop does
    nothing" on somebody's first attempt to use it. */
-main h1:not([data-display]) {
+main:not([data-surface='marketing']) h1:not([data-display]) {
   font-size: 2.5rem;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -327,7 +373,7 @@ main h1:not([data-display]) {
 
 /* One rule per section: a hairline above the heading. Nextra's own underline
    would otherwise bracket every h2 with two lines. */
-main h2 {
+main:not([data-surface='marketing']) h2 {
   margin-top: 3.5rem;
   padding-top: 1.75rem;
   border-top: 1px solid var(--vendra-line);
@@ -425,26 +471,17 @@ pre {
 .nextra-search .x\:cursor-pointer {
   border-radius: 0.5rem;
 }
-/* Component styling lives beside its markup as Tailwind utilities. These two
-   animation definitions remain global because Tailwind references their names. */
-@keyframes vw-flow-step {
-  0%,
-  100% {
-    opacity: 0.35;
-    translate: 0 -0.2rem;
-  }
-  50% {
-    opacity: 1;
-    translate: 0 0.2rem;
-  }
-}
-
-@keyframes vw-status-pulse {
-  50% {
-    opacity: 0.55;
-    scale: 0.8;
-  }
-}
+/* Component styling lives beside its markup as Tailwind utilities, and there
+   are no global keyframes left to be an exception to that.
+ *
+ * There were two — `vw-flow-step`, which floated the arrows between the tiers
+ * of the old hero figure, and `vw-status-pulse`, which throbbed the status dot
+ * in its caption. Both belonged to that figure, and both went with it. The
+ * ambient motion is not missed: nothing on the page was actually changing, so
+ * a pulsing dot reported liveness that did not exist, and the arrows animated
+ * a flow whose direction the diagram now states in words. Motion on this site
+ * is for things that respond to the reader — the tier rows under the cursor,
+ * the card lift above — not for atmosphere. */
 
 /* -- Footer switcher strip -------------------------------------------------- */
 
