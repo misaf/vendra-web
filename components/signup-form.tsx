@@ -174,9 +174,17 @@ export function SignupForm({ compact = false }: { compact?: boolean }) {
             name="email"
             onBlur={revalidate}
             placeholder={compact ? 'you@example.com' : undefined}
+            required
             type="email"
           />
-          {compact ? <FieldError id={errorId}>{error}</FieldError> : null}
+          {/* Rendered here in both shapes. In the full form this used to sit
+              below the whole email row instead — a sibling of the field group,
+              separated from the input by the form's own `gap-5` and sitting
+              directly above the next field's label. At that distance an error
+              reads as a note about the field under it rather than the one above
+              it, which is the field it is not about. The two optional fields
+              carry no error of their own, so nothing else moves. */}
+          <FieldError id={errorId}>{error}</FieldError>
         </div>
 
         {compact ? (
@@ -192,8 +200,6 @@ export function SignupForm({ compact = false }: { compact?: boolean }) {
 
       {compact ? null : (
         <>
-          <FieldError id={errorId}>{error}</FieldError>
-
           <div>
             <label className={labelClass} htmlFor={`${id}-name`}>
               Your name{' '}
