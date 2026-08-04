@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 
 /**
  * The parts `ContactForm` and `SignupForm` share.
@@ -125,6 +126,54 @@ export function FieldError({
     >
       {children}
     </p>
+  )
+}
+
+/**
+ * What stands in for the form when scripting is off.
+ *
+ * Both forms are `'use client'`, but a static export still prerenders their
+ * markup into the HTML — so with JavaScript disabled, blocked, or merely still
+ * loading, the fields are all there and completely dead. `onSubmit` is what
+ * sends them, and no handler is bound; the `<form>` has no `action` either, so
+ * pressing the button navigates to the same page with the answers in the query
+ * string and drops them. Nothing reports it. The reader watches their message
+ * disappear and gets an empty form back.
+ *
+ * That is the same failure the endpoint guard was written to prevent — a
+ * control that promises a conversation and delivers nothing — one layer further
+ * down, and it matters here more than it would elsewhere: the entire argument
+ * for this page is that it is reachable, and `/contact` renders its direct
+ * channels unconditionally for exactly that reason.
+ *
+ * `action` is deliberately not the fix. Pointing the form at the relay would
+ * make the button work without scripting, but the reply is the Worker's JSON
+ * body, so the reader would land on a bare `{"ok":true}` in place of the page —
+ * a worse answer than being told to use a link that works.
+ *
+ * The `<style>` hides the form rather than leaving it above the notice. A
+ * visible form beside a note saying the form does not work is an invitation to
+ * try it anyway. Inside `<noscript>` the rule only ever parses when scripting is
+ * off; with scripting on, the element is inert and the UA stylesheet keeps it
+ * out of the layout regardless.
+ */
+export function NoScriptNotice({ children }: { children: ReactNode }) {
+  return (
+    <noscript>
+      <style>{`[data-js-form]{display:none!important}`}</style>
+      <div className="rounded-xl border border-dashed border-[var(--vendra-line-strong)] p-6">
+        <p className="text-base font-bold text-[var(--vendra-fg)]">
+          This form needs JavaScript
+        </p>
+        {/* A <p>, not a <div>: the marketing surface styles inline links with
+            `main[data-surface='marketing'] p a` and nothing else, so a link in
+            here would otherwise render as body-coloured, unemphasised text —
+            which is the exact gap that rule was added to close. */}
+        <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
+          {children}
+        </p>
+      </div>
+    </noscript>
   )
 }
 
