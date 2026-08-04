@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useMDXComponents as getThemeComponents } from 'nextra-theme-docs'
 import { PostHeader } from './components/collection'
 import { SourceStatus } from './components/source-status'
+import { GeneratedContractReference } from './components/generated-contract-reference'
 import {
   Boundary,
   ChipRow,
@@ -68,6 +69,7 @@ export function useMDXComponents(
     DefList,
     FeatureGrid,
     Flow,
+    GeneratedContractReference,
     Hero,
     Lede,
     NextSteps,
