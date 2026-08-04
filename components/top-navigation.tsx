@@ -77,8 +77,14 @@ function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
               aria-current={current ? 'page' : undefined}
             >
               <span className="inline-flex items-center gap-2">
+                {/* `text-xs`, not the `text-[0.65rem]` this carried. That step
+                    is 10.4px — the smallest type anywhere on the site, and an
+                    ad-hoc value outside the scale besides. `OperatorPanelPreview`
+                    was moved off the identical value for the identical reason;
+                    this was the last copy of it left. A 12px glyph still sits
+                    comfortably inside the 24px box. */}
                 <i
-                  className="grid size-6 place-items-center rounded-md border border-[var(--vendra-line)] bg-[var(--vendra-surface)] font-mono text-[0.65rem] font-bold text-[var(--vendra-accent-text)] not-italic"
+                  className="grid size-6 place-items-center rounded-md border border-[var(--vendra-line)] bg-[var(--vendra-surface)] font-mono text-xs font-bold text-[var(--vendra-accent-text)] not-italic"
                   aria-hidden="true"
                 >
                   {item.label.slice(0, 1)}
