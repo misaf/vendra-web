@@ -1,12 +1,7 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import {
-  Bricolage_Grotesque,
-  Inter,
-  JetBrains_Mono,
-  Vazirmatn
-} from 'next/font/google'
+import { Bricolage_Grotesque, Inter, JetBrains_Mono } from 'next/font/google'
 import { Layout, Navbar, Footer, ThemeSwitch } from 'nextra-theme-docs'
 import { getPageMap } from 'nextra/page-map'
 import { Head } from 'nextra/components'
@@ -22,11 +17,10 @@ const inter = Inter({
   display: 'swap'
 })
 
-const vazirmatn = Vazirmatn({
-  subsets: ['arabic'],
-  variable: '--font-vazirmatn',
-  display: 'swap'
-})
+/* No Persian face is loaded. This site is `lang="en"` throughout and never
+   sets `lang` below the root, so the Arabic subset was fetched on every page
+   and used on none — see the note where the `:lang(fa)` rules were in
+   `globals.css`, which is also where to start if that changes. */
 
 /**
  * The display face, used by the `font-display` utility in `globals.css` and by
@@ -40,6 +34,14 @@ const vazirmatn = Vazirmatn({
  * subtitle differently — open and wide-apertured at the top of the scale,
  * sturdier and more compact at the bottom — which is the part Inter at two
  * sizes cannot do.
+ *
+ * This was briefly Archivo on its width axis, drawn past semi-expanded to read
+ * like the title block on a plan sheet. That is a defensible register, but it
+ * is a different one, and it cost the headline: an expanded face fitted about
+ * eight characters to a line and broke the hero five ways, which is why the
+ * hero step had to come down from 4rem to 3.375rem to stay readable. Bricolage
+ * is narrow enough to hold the full 4rem, so the display step and the face
+ * agree again rather than trading against each other.
  */
 const bricolage = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -175,7 +177,7 @@ const footer = (
             A modular Laravel platform, a Go infrastructure controller, and a
             runtime-configured Next.js storefront — documented as one system.
           </p>
-          <div className="mt-4 flex items-center gap-3 text-[0.625rem] font-bold tracking-[0.08em] text-[var(--vendra-fg-subtle)] uppercase">
+          <div className="mt-4 flex items-center gap-3 label text-[var(--vendra-fg-subtle)]">
             {[
               ['Storefront', 'bg-[var(--vendra-accent-2)]'],
               ['Platform', 'bg-[var(--vendra-accent)]'],
@@ -191,7 +193,7 @@ const footer = (
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 text-sm sm:grid-cols-4 lg:min-w-xl">
           {footerSections.map(section => (
             <div key={section.title}>
-              <div className="mb-3 text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase">
+              <div className="mb-3 label text-[var(--vendra-fg-subtle)]">
                 {section.title}
               </div>
               <ul className="space-y-2">
@@ -254,7 +256,7 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${vazirmatn.variable} ${jetbrainsMono.variable} ${bricolage.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${bricolage.variable}`}
     >
       {/* Nextra's theme reads `--nextra-bg` for every opaque surface it paints
           — most visibly the search results popover (`bg-nextra-bg/70`) — and
