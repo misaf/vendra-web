@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import {
   FaqList,
   LogoWall,
@@ -9,7 +10,9 @@ import {
 } from '../../components/marketing'
 import type { Plan } from '../../components/marketing'
 import { MarketingPage } from '../../components/page-wrapper'
+import { SignupForm } from '../../components/signup-form'
 import { customers } from '../../lib/customers'
+import { contactEndpoint } from '../../lib/site'
 import { team } from '../../lib/team'
 
 export const metadata: Metadata = {
@@ -25,8 +28,18 @@ export const metadata: Metadata = {
 /*                                                                            */
 /* TODO before this page goes public:                                          */
 /*                                                                            */
-/*   1. `cta.href` on the paid tiers — they point at /faq as a placeholder and */
-/*      need a real contact route, quote form, or mailto:                      */
+/*   1. DONE — the paid tiers now point at /contact, which is a real contact   */
+/*      page with a form and the team's direct channels. They used to point    */
+/*      at /faq, which contained no contact method of any kind: no mailto, no  */
+/*      form, and not even the word "contact". Every paid tier's button        */
+/*      promised a conversation and delivered a list of general questions.     */
+/*                                                                            */
+/*      Still owed: the form on /contact posts to whatever                     */
+/*      NEXT_PUBLIC_CONTACT_ENDPOINT names, and that has to be set at build    */
+/*      time or the page falls back to the direct channels alone. Set it       */
+/*      before this page goes public — a pricing page whose contact form is    */
+/*      absent is better than one whose form drops messages, but it is not     */
+/*      the finished state.                                                    */
 /*                                                                            */
 /* Now that the page quotes a figure it reads as a commercial offer, which     */
 /* raises the cost of the two things it PROMISES that the platform does not    */
@@ -81,7 +94,7 @@ const plans: Plan[] = [
       'Email support',
       'Upgrade without rebuilding anything'
     ],
-    cta: { href: '/faq', label: 'Talk to us' }
+    cta: { href: '/contact', label: 'Talk to us' }
   },
   {
     name: 'Pro',
@@ -95,7 +108,7 @@ const plans: Plan[] = [
       'Priority on issues you report',
       'Architecture review of your deployment'
     ],
-    cta: { href: '/faq', label: 'Talk to us' },
+    cta: { href: '/contact', label: 'Talk to us' },
     featured: true
   },
   {
@@ -109,7 +122,7 @@ const plans: Plan[] = [
       'Custom invoicing and terms',
       'A direct line rather than a queue'
     ],
-    cta: { href: '/faq', label: 'Get in touch' }
+    cta: { href: '/contact', label: 'Get in touch' }
   }
 ]
 
@@ -208,13 +221,20 @@ export default function ProPage() {
         title="Plans are counted in websites"
         lede="Build client shops on Vendra and pay for how many you run at once. Start free for seven days, and move up when a client signs — the limit is the only thing that changes."
       >
+        {/* The last sentence used to read "See the TODO block in
+            app/pro/page.tsx" — an instruction to the person maintaining this
+            file, rendered to the reseller reading it. It pointed at a path they
+            cannot open, on the one page that is asking them for money, and it
+            replaced the sentence they actually needed: how to start the
+            conversation the paragraph above says every plan starts with. */}
         <Notice title="Draft — sign-up is not open yet">
           <p>
             Prices are set: <strong>€10 a month</strong> for Basic and{' '}
             <strong>€20 a month</strong> for Pro, both per month and counted in
             concurrent websites. There is no self-serve checkout yet, so every
-            plan below starts as a conversation. See the TODO block in{' '}
-            <code>app/pro/page.tsx</code>.
+            plan below starts as a conversation —{' '}
+            <Link href="/contact">get in touch</Link> and we will set it up with
+            you.
           </p>
         </Notice>
       </Section>
@@ -225,6 +245,34 @@ export default function ProPage() {
           each other, so the warning read as the table's first row. */}
       <Section size="loose">
         <PricingTable plans={plans} />
+
+        {/* The email capture sits *under* the tiers rather than above them.
+            A reader arrives here to compare four columns, and a form placed
+            before them asks for an address before there is a reason to give
+            one; placed after, it catches the reader who has just found the
+            tier they want and hit the fact that they cannot buy it yet. That
+            moment is the whole argument for the list existing.
+
+            One field, not the full form: this is the widget, and `/signup` is
+            the page. Anything longer here competes with the table it is meant
+            to follow. */}
+        {contactEndpoint ? (
+          <div className="mt-12 rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-6 md:p-8">
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(20rem,0.8fr)] lg:items-center lg:gap-12">
+              <div>
+                <h2 className="font-display text-subtitle font-bold">
+                  Tell me when I can sign up
+                </h2>
+                <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
+                  One message when self-serve sign-up opens — no newsletter, no
+                  card, and no account created now.{' '}
+                  <Link href="/signup">More about the list</Link>.
+                </p>
+              </div>
+              <SignupForm compact />
+            </div>
+          </div>
+        ) : null}
       </Section>
 
       {/* `compact`: a row of logos is already one tight object. */}
@@ -277,7 +325,7 @@ export default function ProPage() {
             label: 'Start building',
             primary: true
           },
-          { href: '/faq', label: 'Talk to us' }
+          { href: '/contact', label: 'Talk to us' }
         ]}
       />
     </MarketingPage>
