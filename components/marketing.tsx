@@ -916,15 +916,25 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
         // is no route to prefetch and nothing for `basePath` to rewrite.
         const Tag = customer.href ? 'a' : 'div'
         return (
+          /* No `title` any more. It carried `customer.name`, which the logotype
+             beside it already spells out in full — `lead` and `sub` concatenate
+             to exactly `name` for every entry — so it was a tooltip repeating
+             the words underneath it. That is the worst version of a tooltip:
+             it never appears on touch, it never appears for a keyboard reader,
+             and where it does appear it says nothing new. On the linked entries
+             it was also a second string competing to describe the link.
+
+             `rel="noreferrer"` rather than the `noopener noreferrer` this had,
+             matching every other external link on the site. `noreferrer`
+             implies `noopener`, so nothing changes but the drift. */
           <Tag
             className="group relative flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
             key={customer.name}
-            title={customer.name}
             {...(customer.href
               ? {
                   href: customer.href,
                   target: '_blank',
-                  rel: 'noopener noreferrer'
+                  rel: 'noreferrer'
                 }
               : {})}
           >
