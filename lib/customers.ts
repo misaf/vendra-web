@@ -19,7 +19,16 @@
 export type CustomerMark = 'bloom' | 'trade' | 'leaf' | 'sport'
 
 export type Customer = {
-  /** Full legal-ish name, used as the accessible label and React key. */
+  /**
+   * Full legal-ish name, and the React key.
+   *
+   * Not rendered. `lead` and `sub` are what the wall draws, and between them
+   * they spell this out — which is why the `title` attribute that used to carry
+   * it was removed rather than replaced with an `aria-label`. Keep that true
+   * when adding an entry: if the logotype would not read as the business's
+   * name, the entry needs a `sub` rather than a hidden label to make up the
+   * difference.
+   */
   name: string
   /** The word carrying the logotype — set large. */
   lead: string
