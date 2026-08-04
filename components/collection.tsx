@@ -96,7 +96,16 @@ function EntryMeta({
             <Link
               key={tag}
               href={`${root}/tags/${tagSlug(tag)}`}
-              className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent-text)]"
+              /* `min-h-6` — 24px, the floor WCAG 2.2 sets for a discrete
+                 target. At `py-0.5` on `text-xs` these pills were 20px tall,
+                 which is the smallest tap target on the site and sits on every
+                 post row of `/blog` and `/faq` as well as under every entry
+                 title. The sibling pills in `TagCloud` were already 32px, so
+                 this also stops the same control being two sizes depending on
+                 which of the two lists it is in. Height only: the padding and
+                 the type stay, so the pill still reads as metadata beside the
+                 date rather than as a button. */
+              className="inline-flex min-h-6 items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)] no-underline transition-colors hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-accent-text)]"
             >
               {tag}
             </Link>
