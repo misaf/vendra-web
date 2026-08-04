@@ -678,14 +678,27 @@ export function ControllerConsole() {
         <div>
           <span className="text-sky-400">$</span> vendra stack status
         </div>
+        {/* The dots are `aria-hidden`. Each one is a U+25CF announced as "black
+            circle", and the word beside it already says `healthy` — so a screen
+            reader read this block as "black circle edge healthy black circle
+            platform healthy…", three pieces of punctuation noise in a nine-word
+            figure. The colour is the redundant cue here, not the text, which is
+            the right way round: hiding the glyph costs a sighted reader nothing
+            and costs everyone else three false words. */}
         <div className="grid grid-cols-[auto_1fr_auto] gap-x-4 text-neutral-400">
-          <span className="text-emerald-400">●</span>
+          <span aria-hidden="true" className="text-emerald-400">
+            ●
+          </span>
           <span>edge</span>
           <span className="text-neutral-200">healthy</span>
-          <span className="text-emerald-400">●</span>
+          <span aria-hidden="true" className="text-emerald-400">
+            ●
+          </span>
           <span>platform</span>
           <span className="text-neutral-200">healthy</span>
-          <span className="text-emerald-400">●</span>
+          <span aria-hidden="true" className="text-emerald-400">
+            ●
+          </span>
           <span>property/houshang-flowers</span>
           <span className="text-neutral-200">healthy</span>
         </div>
@@ -1528,9 +1541,17 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
               </p>
             ) : null}
             {member.links?.length ? (
+              /* `role="group"` is what makes the label below say anything. On
+                 a bare <div> an `aria-label` is discarded — a generic element
+                 with no role has no accessible name to set — so the row read as
+                 four unattributed "GitHub, LinkedIn…" links with nothing tying
+                 them to the person whose card they are on. On a grid of four
+                 team members that is sixteen identical links and no way to tell
+                 whose is whose. */
               <div
                 className="mt-auto flex flex-wrap justify-center gap-1.5 pt-4"
                 aria-label={`${member.name}'s profiles`}
+                role="group"
               >
                 {member.links.map(link => (
                   <a
