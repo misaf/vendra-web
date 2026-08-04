@@ -12,6 +12,8 @@ description: "How the controller validates, renders, starts, and reports storefr
 
 <Tag tone="emerald">Controller behavior</Tag> <Tag>Serialized mutations</Tag>
 
+<SourceStatus sources={['controller', 'platform', 'storefront']} />
+
 ## Ownership boundary
 
 <DefList
@@ -63,6 +65,39 @@ The currently accepted template family is `vendra-storefront-florist`. A
 request can select a different compatible image digest per property. Property
 and certificate mutations are serialized so concurrent requests cannot rewrite
 the same controller state.
+
+## Deployment states
+
+<Flow
+  label="Successful path"
+  nodes={['requested', 'queued', 'provisioning', 'healthy']}
+/>
+
+Laravel owns `requested`, `queued`, retry, and terminal deployment records. The
+controller observes one request at a time and returns only after Compose reports
+the storefront healthy. A failed request returns to Laravel as an error; Laravel
+decides whether and when it becomes `retrying`.
+
+<DefList
+  items={[
+    {
+      term: 'Validation failure',
+      description: 'Identity, required boot fields, request size, or template selection is invalid. Correct the desired deployment; retrying unchanged input cannot succeed.'
+    },
+    {
+      term: 'Image pull failure',
+      description: 'The digest is unavailable or registry authentication failed. Verify the compatibility set and registry access.'
+    },
+    {
+      term: 'Compose failure',
+      description: 'Rendering completed but Docker could not converge the property project. Inspect the property and provisioner logs.'
+    },
+    {
+      term: 'Readiness timeout',
+      description: 'The container did not pass the complete storefront schema and API readiness checks before health_timeout.'
+    }
+  ]}
+/>
 
 <NextSteps
   items={[
