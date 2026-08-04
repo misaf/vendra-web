@@ -4,7 +4,7 @@ description: "Run locally built Vendra images behind the production Traefik topo
 
 import { Callout } from 'nextra/components'
 
-# Local ecosystem
+# Local development
 
 <Lede>
   Run locally built images behind the same Traefik topology used in production.
@@ -90,12 +90,11 @@ Accepting the storefront warning needs no administrator rights — the exception
 is stored in your browser profile. Chrome sometimes needs a hard reload before
 retrying requests that already failed.
 
-The exception survives. Certificates are re-signed from a persistent authority
-(`certificates/ca.pem`), so it holds across `vendra property render`, and
-the browser exception for a property survives re-renders. Only deleting
+Certificates are re-signed from a persistent authority (`certificates/ca.pem`),
+so the browser exception for a property survives re-renders. Only deleting
 `ca.pem` or `state_dir` invalidates it. Exceptions are per browser profile and
-per hostname, so a new property, profile, or teammate must accept its own
-storefront hostname.
+hostname, so a new property, profile, or teammate must accept its own storefront
+hostname.
 
 ### Optional: trust the authority outright
 

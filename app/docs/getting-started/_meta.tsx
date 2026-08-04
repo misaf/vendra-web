@@ -1,6 +1,6 @@
 export default {
   index: 'Choose a workflow',
-  local: 'Local ecosystem',
-  production: 'Production host',
-  'first-storefront': 'First storefront'
+  local: 'Local development',
+  'first-storefront': 'First storefront',
+  production: 'Production deployment'
 }
