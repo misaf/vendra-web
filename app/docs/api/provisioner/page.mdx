@@ -12,6 +12,8 @@ import { Callout } from 'nextra/components'
   runtime configuration.
 </Lede>
 
+<SourceStatus sources={['controller']} />
+
 <Flow
   label="Round trip"
   nodes={[
@@ -24,19 +26,7 @@ import { Callout } from 'nextra/components'
 
 ## Contract rules
 
-<DefList
-  items={[
-    { term: 'GET /health', description: 'Report controller process health.' },
-    {
-      term: 'GET /v1/capabilities',
-      description: 'Report supported templates and controller capabilities.'
-    },
-    {
-      term: 'POST /v1/storefronts',
-      description: 'Validate, render, start, and report a storefront deployment.'
-    }
-  ]}
-/>
+<GeneratedContractReference kind="provisioner" />
 
 Requests and responses follow `api/openapi.yaml` in the controller repository.
 
@@ -95,6 +85,21 @@ its bearer token.
   Keep the service internal to the platform network. This credential is unrelated
   to the proposed per-storefront API credential — do not reuse one for the other.
 </Callout>
+
+## Responses and errors
+
+<DefList
+  items={[
+    { term: '200', description: 'The request succeeded; a storefront response reports ready, reference, and resolved image digest.' },
+    { term: '401', description: 'The bearer token is absent or does not match the provisioner token.' },
+    { term: '422', description: 'The request is well-formed HTTP but violates the provisioner contract or deployment invariants.' },
+    { term: 'Transport or 5xx failure', description: 'Treat as infrastructure failure. Capture provisioner logs and let Laravel own bounded retry policy.' }
+  ]}
+/>
+
+Validation failures require corrected input. Do not retry the same invalid
+payload indefinitely. Infrastructure failures may be retried only after
+confirming the dependency is recovering and the queue will not amplify load.
 
 <Callout type="info">
   Consult `api/openapi.yaml` in the controller repository whenever request or
