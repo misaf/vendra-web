@@ -210,7 +210,8 @@ export default async function Landing() {
           title="From the blog"
           lede="Notes on the technology the ecosystem runs on, and the decisions behind it."
         >
-          <PostList posts={posts} root={blogRoot} />
+          {/* `h3`: this list is inside a Section whose title is the h2. */}
+          <PostList posts={posts} root={blogRoot} headingLevel="h3" />
           <div className="mt-8 flex">
             <Link
               className="group inline-flex gap-1.5 text-[0.9375rem] font-semibold hover:text-[var(--vendra-accent-text)] [&>span]:transition-transform hover:[&>span]:translate-x-0.5"
