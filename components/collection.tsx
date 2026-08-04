@@ -13,6 +13,7 @@ import Link from 'next/link'
 import type { CollectionRoot, Entry, EntryFrontMatter } from '../lib/collection'
 import { formatDate, rootFromFilePath, tagSlug } from '../lib/collection'
 import { getAuthor } from '../lib/authors'
+import { ExternalMark } from './icons'
 
 /**
  * Author name with avatar, when the author is a known one.
@@ -46,12 +47,13 @@ function AuthorBadge({ name }: { name: string }) {
 
   return author.href ? (
     <a
-      className="group inline-flex items-center gap-1.5 text-inherit no-underline transition-colors hover:text-[var(--vendra-fg)]"
+      className="group relative inline-flex items-center gap-1.5 text-inherit no-underline transition-colors hover:text-[var(--vendra-fg)]"
       href={author.href}
       rel="author noreferrer"
       target="_blank"
     >
       {content}
+      <ExternalMark />
     </a>
   ) : (
     <span className="inline-flex items-center gap-1.5">{content}</span>
@@ -135,15 +137,27 @@ export function PostHeader({
   )
 }
 
-/** Section indexes and tag listings, for both `/blog` and `/faq`. */
+/**
+ * Section indexes and tag listings, for both `/blog` and `/faq`.
+ *
+ * `headingLevel` exists because this list is rendered at two different depths
+ * and the entry title has to follow. On `/blog` and `/faq` it sits directly
+ * under the page's `h1`, so `h2` is right. On the landing page it sits inside a
+ * `Section` whose own title is already an `h2` — so a hardcoded `h2` made the
+ * three post titles *siblings* of the "From the blog" heading that introduces
+ * them, and anyone navigating by heading got an outline claiming the posts were
+ * peers of the section rather than its contents.
+ */
 export function PostList({
   posts,
   root,
-  empty = 'No posts yet.'
+  empty = 'No posts yet.',
+  headingLevel: Heading = 'h2'
 }: {
   posts: Entry[]
   root: CollectionRoot
   empty?: string
+  headingLevel?: 'h2' | 'h3'
 }) {
   if (posts.length === 0) {
     return <p className="mt-8 text-[var(--vendra-fg-muted)]">{empty}</p>
@@ -157,9 +171,11 @@ export function PostList({
           className="border-b border-[var(--vendra-line)] py-7"
         >
           <Link href={post.route} className="group no-underline">
-            <h2 className="m-0 mb-2 border-0 p-0 text-[1.375rem] font-semibold tracking-[-0.02em] text-[var(--vendra-fg)] transition-colors group-hover:text-[var(--vendra-accent-text)]">
+            {/* Level varies, size does not — an entry title looks the same
+                wherever the list is used. */}
+            <Heading className="m-0 mb-2 border-0 p-0 text-[1.375rem] font-semibold tracking-[-0.02em] text-[var(--vendra-fg)] transition-colors group-hover:text-[var(--vendra-accent-text)]">
               {post.title}
-            </h2>
+            </Heading>
           </Link>
           <EntryMeta
             root={root}
