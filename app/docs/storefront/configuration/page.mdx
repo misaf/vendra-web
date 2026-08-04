@@ -11,6 +11,8 @@ import { Callout } from 'nextra/components'
   The readiness endpoint rejects a production container without a valid one.
 </Lede>
 
+<SourceStatus sources={['storefront', 'platform', 'controller']} />
+
 <Callout type="error">
   The refusal is deliberate. Falling back to the bundled example configuration
   could serve another tenant’s branding on a live domain.
@@ -52,6 +54,8 @@ import { Callout } from 'nextra/components'
 Optional fields include `ogImage`, `heroImage`, `aboutImage`, `messages`,
 `checkout`, `currency`, and `trustSeal`. Runtime messages are deep-merged over
 the brand-neutral base catalog, per locale.
+
+<GeneratedContractReference kind="property" />
 
 Generate a configuration with:
 
