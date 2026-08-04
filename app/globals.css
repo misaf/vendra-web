@@ -421,6 +421,35 @@ main[data-surface='marketing'] p a:hover {
   color: var(--vendra-fg);
 }
 
+/* Inline code in marketing prose, for the same reason as the link rule above.
+ *
+ * `code.nextra-code` is the site's inline-code treatment, and the class is
+ * added by the MDX pipeline — so a `<code>` written by hand in a `page.tsx`
+ * never gets it. On the marketing surface that is every `<code>` there is:
+ * `NEXT_PUBLIC_CONTACT_ENDPOINT` on the `/contact` and `/signup` fallback
+ * notices rendered as bare browser-default monospace, at the shrunken size a
+ * default `monospace` font-family gives, with no tint and no padding — the one
+ * string on those notices that is a literal to be copied was the one styled
+ * like nothing at all.
+ *
+ * The declarations are the `code.nextra-code` ones rather than a second look
+ * for the same element, so an inline literal reads identically whether the page
+ * around it was written in MDX or in TSX. `:not(pre) > code` above already
+ * handles the wrapping for both. */
+main[data-surface='marketing'] :not(pre) > code {
+  font-family: var(--x-font-mono);
+  font-variant-ligatures: none;
+  border-radius: 0.375rem;
+  background: hsla(
+    var(--nextra-primary-hue),
+    var(--nextra-primary-saturation),
+    var(--nextra-primary-lightness),
+    0.08
+  );
+  padding: 0.15em 0.4em;
+  font-size: 0.86em;
+}
+
 /* One rule per section: a hairline above the heading. Nextra's own underline
    would otherwise bracket every h2 with two lines. */
 main:not([data-surface='marketing']) h2 {
