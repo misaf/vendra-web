@@ -122,18 +122,65 @@ const hooks = [
   }
 ]
 
+/**
+ * Invariants that must hold on *every* page, not merely somewhere.
+ *
+ * The hooks above are surface-specific — a table container only exists where a
+ * page has a table — so "at least one page" is the right assertion for them. It
+ * is the wrong one here, and the difference is what let the following ship:
+ *
+ * Nextra's layout renders a skip-to-content link on every page. Its target is
+ * emitted by the MDX wrapper, which the six full-bleed marketing pages
+ * deliberately do not use. `MarketingPage` supplied the `<main>` those pages
+ * were missing but not the id the link jumps to, so on the landing page, `/pro`,
+ * `/about`, `/showcase`, `/examples`, `/ui`, `/contact`, and `/signup` the first
+ * control a keyboard reader reaches did nothing at all. An "at least one page"
+ * check would have been green throughout: `/docs` and `/blog` had the target the
+ * whole time.
+ *
+ * That is the shape of bug this section is for — a landmark or hook that some
+ * pages get from the framework and others have to supply by hand.
+ */
+const everyPage = [
+  {
+    hook: 'id="nextra-skip-nav"',
+    rule: 'the target of Nextra’s skip-to-content link',
+    pattern: /\bid="nextra-skip-nav"/,
+    fix:
+      'MDX pages get this from Nextra’s wrapper. Hand-written full-bleed\n' +
+      '    pages get it from <SkipNavContent /> inside MarketingPage\n' +
+      '    (components/page-wrapper.tsx). A page with neither has a skip link\n' +
+      '    that points at nothing.'
+  },
+  {
+    hook: '<main>',
+    rule: 'the document landmark, and Pagefind’s indexing root',
+    pattern: /<main\b/,
+    fix:
+      'Every page needs a <main>: it is the skip target’s container, the\n' +
+      '    landmark screen readers navigate by, and — with data-pagefind-body —\n' +
+      '    the only thing site search indexes. Use ContentWrapper or\n' +
+      '    MarketingPage from components/page-wrapper.tsx.'
+  }
+]
+
 const unmatched = new Set(hooks)
+const missingEverywhere = new Map(everyPage.map(entry => [entry, []]))
 let pages = 0
 
 for await (const file of glob('**/*.html', { cwd: buildDir })) {
   if (file.startsWith('_')) continue // _not-found, _global-error
   if (file.startsWith('404')) continue // static-export error page
   pages++
-  if (unmatched.size === 0) continue
 
   const html = readFileSync(resolve(buildDir, file), 'utf8')
+
   for (const entry of unmatched) {
     if (entry.pattern.test(html)) unmatched.delete(entry)
+  }
+
+  for (const entry of everyPage) {
+    if (!entry.pattern.test(html)) missingEverywhere.get(entry).push(file)
   }
 }
 
@@ -163,8 +210,35 @@ if (missing.length > 0) {
   process.exit(1)
 }
 
+const incomplete = [...missingEverywhere].filter(
+  ([, files]) => files.length > 0
+)
+
+if (incomplete.length > 0) {
+  console.error(
+    `\n✗ ${incomplete.length} per-page invariant(s) missing from some pages:\n`
+  )
+  for (const [entry, files] of incomplete) {
+    // Cap the list: a wholesale regression misses every page, and printing 65
+    // paths buries the one line that says what to do about it.
+    const shown = files.slice(0, 8)
+    console.error(
+      `  ${entry.hook} — ${entry.rule}` +
+        `\n    missing from ${files.length}/${pages} pages: ${shown.join(', ')}` +
+        (files.length > shown.length
+          ? `, and ${files.length - shown.length} more`
+          : '') +
+        `\n    ${entry.fix}\n`
+    )
+  }
+  process.exit(1)
+}
+
 console.log(
   `✓ selectors: ${hooks.length - unmatched.size}/${hooks.length} styling hooks present across ${pages} pages`
+)
+console.log(
+  `  · ${everyPage.length} per-page invariants hold on all ${pages}: ${everyPage.map(entry => entry.hook).join(', ')}`
 )
 
 for (const entry of dormant) {
