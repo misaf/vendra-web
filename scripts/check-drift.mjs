@@ -67,10 +67,10 @@ if (existsSync(openapiPath)) {
     problems.push('Could not parse any endpoints from openapi.yaml')
   }
 
-  const docPath = 'app/docs/controller/provisioning/page.mdx'
+  const docPath = 'app/docs/api/provisioner/page.mdx'
   const doc = read(docPath)
 
-  // The endpoint list on that page is a <DefList> whose terms read
+  // The canonical API reference has a <DefList> whose terms read
   // `GET /v1/capabilities`. Matching the method prefix keeps prose mentions of
   // a path from counting as documentation of the endpoint itself.
   const documented = new Set(
