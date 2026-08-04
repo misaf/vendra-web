@@ -133,6 +133,8 @@ const footerSections = [
     links: [
       { href: '/showcase', label: 'Showcase' },
       { href: '/about', label: 'About' },
+      { href: '/contact', label: 'Contact' },
+      { href: '/signup', label: 'Early access' },
       { href: '/examples', label: 'Examples' },
       { href: '/ui', label: 'UI library' },
       { href: '/blog', label: 'Blog' },
