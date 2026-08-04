@@ -57,10 +57,19 @@ export default function ContactPage() {
                 all. A reader navigating by heading was taken straight past it
                 to the alternative, and a reader skimming the two columns had
                 one labelled and one not. Same treatment as its neighbour, so
-                the columns now read as a pair. */}
-            <h2 className="label text-[var(--vendra-fg-subtle)]">
-              Send a message
-            </h2>
+                the columns now read as a pair.
+
+                `text-lg font-bold tracking-tight` and not the `label` utility
+                both of these carried. `label` is 12px uppercase mono — the
+                site's eyebrow, and everywhere else on the marketing surface it
+                sits *above* a real heading rather than being one. Used as the
+                heading itself it put the column titles two steps below the
+                15px prose they introduce, so the page's second level was the
+                smallest text in the column and the eye had nothing to land on
+                between the h1 and the body. This is the same step
+                `PricingTable` sets its plan names at, which is the same job:
+                an h2 inside a section band. */}
+            <h2 className="text-lg font-bold tracking-tight">Send a message</h2>
             <div className="mt-5">
               {contactEndpoint ? (
                 <ContactForm />
@@ -88,7 +97,7 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <h2 className="label text-[var(--vendra-fg-subtle)]">
+            <h2 className="text-lg font-bold tracking-tight">
               Direct channels
             </h2>
             <p className="mt-3 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
