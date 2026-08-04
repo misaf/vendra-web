@@ -1,25 +1,25 @@
 ---
-title: "“Can it start with defaults instead of crashing?”"
+title: "“Can it become healthy with defaults?”"
 date: "2026-07-07"
 author: "Misaf"
-description: "A support request after a botched migration: the storefront container exits at boot. The requested fix would have been much worse than the outage."
+description: "A support request after a botched migration: the storefront never becomes ready. The requested fallback would have served the wrong tenant."
 tags: ["storefront", "operations"]
+canonical: "/docs/storefront/configuration"
 ---
 
-# “Can it start with defaults instead of crashing?”
+# “Can it become healthy with defaults?”
 
 <Panel title="The request">
   Filed after a property was moved to a new host and its environment file did
   not come with it:
 
-  > The container exits immediately because `STOREFRONT_CONFIG_BASE64` is
-  > missing. There's an example config in the image already — can it fall back
-  > to that so the site stays up while we fix the env? Some page is better than
-  > no page.
+  > The container never becomes healthy because `STOREFRONT_CONFIG_BASE64` is
+  > missing. There's an example config in the image already—can readiness fall
+  > back to that while we fix the environment?
 </Panel>
 
 We understand the instinct. The answer is no, and it is one of the few places
-where we would rather take the outage.
+where we would rather fail readiness.
 
 ## What "some page" would have been
 
@@ -35,14 +35,14 @@ phone number, and address.
 <Panel title="Two ways to fail">
   <ChipRow
     items={[
-      'Exit at boot: loud, contained, fixed by restoring one variable',
+      'Fail readiness: loud, contained, fixed by restoring one variable',
       'Boot with the example: silent, public, and wrong about a real business'
     ]}
     dot
   />
 </Panel>
 
-An outage is recoverable in minutes and everyone knows it happened. Publishing
+An unhealthy deployment is recoverable in minutes and everyone knows it happened. Publishing
 another tenant's identity on a customer domain is not something you retract —
 it is something screenshots outlive.
 
@@ -60,7 +60,7 @@ to be supplied, so it gets verified at every point where it is supplied.
 ## What we did instead
 
 For this case: restore the variable, which took under a minute once the cause
-was obvious — and the crash is what made it obvious. A fallback would have
+was obvious—and the failed readiness check is what made it obvious. A fallback would have
 turned a one-minute fix into a defect nobody was looking for.
 
 For the general case, the useful improvement is not a fallback, it is making the

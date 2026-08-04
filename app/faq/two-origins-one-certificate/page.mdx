@@ -1,80 +1,76 @@
 ---
-title: "Two origins, one certificate, and a page that looks fine"
+title: "One browser origin and a server-side certificate chain"
 date: "2026-07-28"
 author: "Misaf"
-description: "Why a local storefront returns 200 with every section empty, and logs nothing at all."
+description: "Why the browser trusts only the storefront origin while the container separately trusts the local API authority."
 tags: ["operations", "controller", "tls"]
+canonical: "/docs/getting-started/local"
 ---
 
-# Two origins, one certificate, and a page that looks fine
+# One browser origin and a server-side certificate chain
 
-A storefront running locally spans two origins: the storefront host itself, and
-the API host it fetches from. In self-signed mode both are served by a generated
-local authority, and the browser will warn about both.
+A local storefront has two network relationships, but only one browser origin.
+The browser loads the storefront host and sends client reads to its same-origin
+`/api/proxy/*` route. The storefront container—not the browser—connects to the
+canonical API host.
 
-Accepting the warning on the page you are looking at does not cover the other
-one. That is the whole bug.
+That distinction determines which trust store matters.
 
-## The failure looks like success
+## The two trust decisions
 
 <Flow
-  label="What the browser actually does"
-  nodes={['Server render', '200 OK', 'Browser fetch', 'TLS refused']}
+  label="Request path"
+  nodes={['Browser', 'Storefront origin', '/api/proxy/*', 'API origin']}
 />
 
-The page renders on the server, which already trusts the authority through
-`NODE_EXTRA_CA_CERTS`. So the response is a genuine 200 with correct markup —
-and every data section empty. The server logs nothing, because from its point of
-view nothing failed. The requests that failed are the browser's own, visible
-only in the network panel.
+The browser must accept or trust the storefront certificate. The container must
+trust the API certificate authority through `NODE_EXTRA_CA_CERTS`. The
+controller mounts the generated CA into the container for that server-side
+relationship.
 
-An empty product grid reads like a data problem. It is almost never a data
-problem.
+Opening `https://api.<base_domain>` in the browser is not part of normal setup
+and does not repair a server-side trust failure.
 
 ## The fix, in order
 
 <Steps
   items={[
     {
-      title: 'Accept https://api.<base_domain> first',
-      body: 'This is the one people skip, and the one that causes the empty sections.'
+      title: 'Accept the storefront certificate',
+      body: 'Open https://<slug>.<base_domain> and accept the local certificate, or trust certificates/ca.pem once at the operating-system level.'
     },
     {
-      title: 'Accept https://<slug>.<base_domain>',
-      body: 'The storefront origin itself.'
+      title: 'Verify the container CA mount',
+      body: 'If server reads fail, inspect NODE_EXTRA_CA_CERTS and the mounted ca.pem path inside the storefront container.'
     },
     {
-      title: 'Hard reload',
-      body: 'Chrome does not automatically retry requests that already failed.'
+      title: 'Verify through the storefront origin',
+      body: 'Check /api/health and /api/proxy routes without sending the browser directly to the API host.'
     }
   ]}
 />
 
-The exception persists. Certificates are re-signed from a persistent authority
-at `certificates/ca.pem`, so it survives `vendra property render`, and accepting
-the API origin once covers every property added later. Only deleting `ca.pem` or
-the state directory invalidates it.
+The generated authority persists at `certificates/ca.pem`, so operating-system
+trust survives property rendering. A per-host browser exception still applies
+only to the storefront hostname accepted in that browser profile.
 
 ## Why HSTS stays off here
 
-Under `certificate_mode: self-signed`, `TRAEFIK_HSTS_SECONDS` is `0`.
-
-An HSTS header served with a certificate the browser does not trust pins the
-host to HTTPS *and* removes the "proceed anyway" bypass. A local `.test` host
-becomes unreachable until someone clears HSTS state by hand. Enabling HSTS
-before real certificates exist is a self-inflicted outage.
+Under `certificate_mode: self-signed`, `TRAEFIK_HSTS_SECONDS` is `0`. Enabling
+HSTS with an untrusted certificate removes the browser's bypass and can make a
+local host unreachable until its HSTS state is cleared manually.
 
 <NextSteps
   items={[
     {
       href: '/docs/getting-started/local',
-      title: 'Local ecosystem',
-      description: 'The full local setup, including the trust step.'
+      title: 'Local development',
+      description: 'The canonical local setup and trust procedure.'
     },
     {
       href: '/docs/controller/security',
-      title: 'Security and recovery',
-      description: 'How HSTS and the header middlewares are configured.'
+      title: 'Security',
+      description: 'How HSTS and security-header middleware are configured.'
     }
   ]}
 />

@@ -31,7 +31,8 @@ export default async function FaqIndex() {
           Notes on the technology behind the ecosystem live in the{' '}
           <Link href="/blog">blog</Link>. The{' '}
           <Link href="/docs/overview">documentation</Link> is the reference for
-          how any of it works.
+          how any of it works. Every FAQ answer links to its maintained
+          canonical page; when the two differ, follow the documentation.
         </p>
       </div>
 

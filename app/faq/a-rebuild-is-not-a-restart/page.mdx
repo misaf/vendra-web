@@ -4,6 +4,7 @@ date: "2026-07-30"
 author: "Arefeh"
 description: "The most common ticket we get, by a wide margin. The value really did change; the container just cannot see it."
 tags: ["storefront", "operations"]
+canonical: "/docs/storefront/deployment"
 ---
 
 # “I changed the variable and restarted — why is it still wrong?”
@@ -39,9 +40,9 @@ all — they have been compiled into the JavaScript that ships to the browser.
     },
     {
       term: 'Property configuration',
-      tag: { tone: 'amber', label: 'Re-run' },
+      tag: { tone: 'amber', label: 'Re-provision' },
       description:
-        'Run `npm run property` after changing property or schema data, then restart or rebuild.'
+        'Runtime property JSON is injected by the controller. Re-provision so Compose recreates the container with the new value.'
     }
   ]}
 />
@@ -62,9 +63,8 @@ at runtime instead. It could — for server-side values, it already does. But a
 your container's environment. Something has to put the value into the JavaScript
 before it is served, and that something is the build.
 
-The alternative is shipping a second request on every page load so the browser
-can ask what the values are. That trades a rebuild you do occasionally for
-latency every visitor pays forever.
+Runtime property identity and branding do not use this mechanism: they stay
+server-side and reach the container through `STOREFRONT_CONFIG_BASE64`.
 
 ## What to do
 
