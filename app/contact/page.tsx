@@ -51,28 +51,40 @@ export default function ContactPage() {
       >
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)] lg:gap-16">
           <div>
-            {contactEndpoint ? (
-              <ContactForm />
-            ) : (
-              /* Not an error state and not styled as one — for a reader this
-                 is simply a page that offers direct channels. The build is
-                 what is unfinished, and the note that says so is addressed to
-                 whoever is deploying it. */
-              <div className="rounded-xl border border-dashed border-[var(--vendra-line-strong)] p-6">
-                <p className="text-base font-bold text-[var(--vendra-fg)]">
-                  The form is not switched on yet
-                </p>
-                <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
-                  Use one of the direct channels instead — they reach the same
-                  two people, and they reach them now.
-                </p>
-                <p className="mt-3 text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
-                  Deploying this site? Set{' '}
-                  <code>NEXT_PUBLIC_CONTACT_ENDPOINT</code> to a form endpoint
-                  and the form replaces this notice.
-                </p>
-              </div>
-            )}
+            {/* The right-hand column has always had its heading; this one did
+                not, so the page's outline ran h1 → "Direct channels" and the
+                form — the thing the page is for — appeared under no heading at
+                all. A reader navigating by heading was taken straight past it
+                to the alternative, and a reader skimming the two columns had
+                one labelled and one not. Same treatment as its neighbour, so
+                the columns now read as a pair. */}
+            <h2 className="label text-[var(--vendra-fg-subtle)]">
+              Send a message
+            </h2>
+            <div className="mt-5">
+              {contactEndpoint ? (
+                <ContactForm />
+              ) : (
+                /* Not an error state and not styled as one — for a reader this
+                   is simply a page that offers direct channels. The build is
+                   what is unfinished, and the note that says so is addressed to
+                   whoever is deploying it. */
+                <div className="rounded-xl border border-dashed border-[var(--vendra-line-strong)] p-6">
+                  <p className="text-base font-bold text-[var(--vendra-fg)]">
+                    The form is not switched on yet
+                  </p>
+                  <p className="mt-2 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
+                    Use one of the direct channels instead — they reach the same
+                    two people, and they reach them now.
+                  </p>
+                  <p className="mt-3 text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
+                    Deploying this site? Set{' '}
+                    <code>NEXT_PUBLIC_CONTACT_ENDPOINT</code> to a form endpoint
+                    and the form replaces this notice.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
