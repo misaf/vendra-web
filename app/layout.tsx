@@ -8,6 +8,8 @@ import { Head } from 'nextra/components'
 import { basePath, siteDescription, siteName, siteUrl } from '../lib/site'
 import { navGroups, navSections, sectionLabel } from '../lib/navigation'
 import { TopNavigation } from '../components/top-navigation'
+import { DocsSearch } from '../components/docs-feedback'
+import { DocsTelemetry } from '../components/docs-telemetry'
 import 'nextra-theme-docs/style.css'
 import './globals.css'
 
@@ -326,12 +328,18 @@ export default async function RootLayout({
         }}
       />
       <body>
+        <DocsTelemetry />
         <Layout
           navbar={navbar}
           pageMap={await getPageMap()}
           footer={footer}
+          docsRepositoryBase="https://github.com/misaf/vendra-web/tree/main"
           editLink={null}
-          feedback={{ content: null }}
+          feedback={{
+            content: 'Report a documentation issue',
+            labels: 'documentation,docs-gap'
+          }}
+          search={<DocsSearch />}
           navigation={{ next: true, prev: true }}
           toc={{ title: 'On this page' }}
           sidebar={{
