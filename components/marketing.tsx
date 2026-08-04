@@ -16,7 +16,7 @@ import Link from 'next/link'
 import type { TeamMember } from '../lib/team'
 import type { Customer, CustomerMark } from '../lib/customers'
 import { HeroCanvas } from './hero-canvas'
-import { Chevron } from './icons'
+import { Chevron, ExternalMark } from './icons'
 
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
@@ -260,14 +260,18 @@ export function Actions({
     >
       {items.map(item =>
         item.external ? (
+          // `relative` so the visually-hidden span inside `ExternalMark` has
+          // this button as its containing block rather than escaping to the
+          // page and dragging the layout with it.
           <a
             key={item.href}
             href={item.href}
-            className={buttonClass(item.primary)}
+            className={`relative ${buttonClass(item.primary)}`}
             rel="noreferrer"
             target="_blank"
           >
             {item.label}
+            <ExternalMark />
           </a>
         ) : (
           <Link
@@ -434,12 +438,15 @@ const heroSystems = [
  * `BoundaryRule` carrying the name of the real interface that crosses it. The
  * figure and the page are then making the same claim in the same words.
  */
+/* No `aria-label` on the <figure> any more. It read "The three Vendra systems
+   and the interfaces between them", which is a good description — and as an
+   `aria-label` on an element that also has a `figcaption`, it *replaced* that
+   caption as the accessible name. The visible words were the ones being
+   suppressed. The caption now names the figure, and the sentence the label
+   carried is folded into it as a visually-hidden description. */
 function HeroArchitecture() {
   return (
-    <figure
-      className="relative m-0 w-full max-w-xl border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface)] p-5 backdrop-blur-xl"
-      aria-label="The three Vendra systems and the interfaces between them"
-    >
+    <figure className="relative m-0 w-full max-w-xl border border-[var(--vendra-line-strong)] bg-[var(--vendra-surface)] p-5 backdrop-blur-xl">
       {/* The title block, after the one on a drawing sheet: what the figure is,
           and the sheet's own reference in the corner. */}
       <figcaption className="label flex items-baseline justify-between gap-4 pb-5 text-[var(--vendra-fg-subtle)]">
@@ -447,7 +454,15 @@ function HeroArchitecture() {
             The old figure could make an uncountable claim because it drew no
             boundaries — only arrows. This one draws them, and there are two,
             so a reader who counts has to find what the caption promised. */}
-        <span>One system</span>
+        <span>
+          One system
+          {/* The description the old aria-label carried, available to a screen
+              reader without adding a second visible line to a title block whose
+              whole point is that it is two short words in the corners. */}
+          <span className="absolute size-px overflow-hidden [clip:rect(0,0,0,0)] whitespace-nowrap">
+            : the three Vendra systems and the interfaces between them
+          </span>
+        </span>
         <span className="text-[var(--vendra-fg-subtle)]/70">2 interfaces</span>
       </figcaption>
 
@@ -492,104 +507,21 @@ function HeroArchitecture() {
           because it is the one piece of it that carried an idea: the tiers are
           not a hierarchy, they are the span between what a merchant decides
           and what a customer sees. */}
-      <div
-        className="label mt-5 flex items-center gap-3 border-t border-[var(--vendra-line)] pt-4 text-[var(--vendra-fg-subtle)]"
-        aria-hidden="true"
-      >
+      {/* `aria-hidden` moved off this row and onto the rule inside it. The
+          comment above says this was kept because it is the one piece of the
+          old figure that carried an idea — and hiding the whole row withheld
+          exactly that idea from the readers least able to infer it from the
+          layout. The decorative part is the line between the two words, not
+          the two words. */}
+      <div className="label mt-5 flex items-center gap-3 border-t border-[var(--vendra-line)] pt-4 text-[var(--vendra-fg-subtle)]">
         <span>merchant intent</span>
-        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
+        <i
+          className="h-px flex-1 bg-[var(--vendra-line-strong)]"
+          aria-hidden="true"
+        />
         <span>customer experience</span>
       </div>
     </figure>
-  )
-}
-
-/**
- * Per-tier accents, in the order the tiers are passed on the landing page:
- * storefront, platform, controller. The same three hues, in the same order,
- * colour the planes of the hero lattice — so the diagram and the figure above
- * it agree about which system is which rather than each picking its own
- * palette. Written out as whole class strings because Tailwind scans source
- * text: an interpolated `--vendra-accent-${n}` would never be generated.
- */
-const tierHover = [
-  'hover:border-[var(--vendra-accent-2)]',
-  'hover:border-[var(--vendra-accent)]',
-  'hover:border-[var(--vendra-accent-3)]'
-]
-
-const tierWash = [
-  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-2),transparent_66%),color-mix(in_srgb,var(--vendra-accent-2),transparent_88%))]',
-  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent),transparent_66%),color-mix(in_srgb,var(--vendra-accent),transparent_88%))]',
-  '!bg-[linear-gradient(145deg,color-mix(in_srgb,var(--vendra-accent-3),transparent_66%),color-mix(in_srgb,var(--vendra-accent-3),transparent_88%))]'
-]
-
-/**
- * The stack diagram that stands in for React Flow's live editor.
- *
- * Static rather than interactive on purpose: the thing being sold here is an
- * architecture, and an animated widget that does not represent a real system
- * would be decoration. Each tier links to the reference that describes it.
- */
-export function StackDiagram({
-  tiers
-}: {
-  tiers: {
-    href: string
-    label: string
-    role: string
-    detail: string
-    tech: string
-  }[]
-}) {
-  return (
-    <div
-      className="flex flex-col items-stretch min-[60rem]:grid min-[60rem]:grid-cols-3 min-[60rem]:gap-4"
-      role="list"
-    >
-      {tiers.map((tier, i) => (
-        <div className="min-[60rem]:contents" key={tier.href} role="listitem">
-          <Link
-            href={tier.href}
-            className={`block rounded-[0.9rem] border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-6 py-5 transition hover:-translate-y-0.75 hover:shadow-[var(--vendra-shadow-sm)] ${tierHover[i] ?? tierHover[1]}`}
-          >
-            <div className="flex items-center justify-between gap-4">
-              <span className="text-[1.05rem] font-[650] tracking-[-0.02em]">
-                {tier.label}
-              </span>
-              <span className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)]">
-                {tier.tech}
-              </span>
-            </div>
-            <div className="mt-1.5 label text-[var(--vendra-fg-subtle)]">
-              {tier.role}
-            </div>
-            <p className="mt-2.5 text-[0.9375rem] leading-[1.7] text-[var(--vendra-fg-muted)]">
-              {tier.detail}
-            </p>
-            <div
-              className={`mt-4 grid h-18 gap-1.5 overflow-hidden rounded-[0.6rem] border border-[var(--vendra-line)] bg-[var(--vendra-muted)] p-2.5 [&>span]:block [&>span]:min-h-1.5 [&>span]:rounded-full [&>span]:bg-[var(--vendra-line-strong)] ${i === 1 ? 'grid-cols-3' : i === 2 ? 'grid-cols-[0.55fr_1.45fr]' : 'grid-cols-[1.3fr_0.8fr]'}`}
-              aria-hidden="true"
-            >
-              <span
-                className={`${i === 1 ? '!col-span-3' : '!row-span-3'} !rounded-md ${tierWash[i] ?? tierWash[1]}`}
-              />
-              <span />
-              <span />
-              <span />
-            </div>
-          </Link>
-          {i < tiers.length - 1 ? (
-            <div
-              className="py-2 text-center text-[var(--vendra-fg-subtle)] min-[60rem]:hidden"
-              aria-hidden="true"
-            >
-              ↓
-            </div>
-          ) : null}
-        </div>
-      ))}
-    </div>
   )
 }
 
@@ -606,6 +538,19 @@ export type Shot = {
   height: number
   /** Host shown in the frame's address bar. Omit for a chrome-less plate. */
   host?: string
+  /**
+   * Set on a shot that renders above the fold, which switches it from lazy to
+   * eager with a high fetch priority.
+   *
+   * `Screenshot` hardcoded `loading="lazy"`, which is right for the gallery
+   * grids and the feature splits it was written for and wrong for the one
+   * place it is the first thing on the page: `FeaturedProject` puts a
+   * 1600×1000 capture at the top of `/ui` and `/showcase`, where it is the LCP
+   * element. Lazy-loading the largest element in the initial viewport defers
+   * the very request the browser should be racing, so the page opens on an
+   * empty frame that fills in late.
+   */
+  priority?: boolean
 }
 
 /**
@@ -634,7 +579,7 @@ export function Screenshot({ shot }: { shot: Shot }) {
             <i className="size-2 rounded-full bg-[var(--vendra-line-strong)]" />
             <i className="size-2 rounded-full bg-[var(--vendra-line-strong)]" />
           </span>
-          <span className="min-w-0 flex-1 truncate rounded-md bg-[var(--vendra-muted)] px-2 py-0.5 text-center font-mono text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+          <span className="min-w-0 flex-1 truncate rounded-md bg-[var(--vendra-muted)] px-2 py-0.5 text-center font-mono text-xs text-[var(--vendra-fg-subtle)]">
             {shot.host}
           </span>
         </div>
@@ -645,73 +590,11 @@ export function Screenshot({ shot }: { shot: Shot }) {
         alt={shot.alt}
         width={shot.width}
         height={shot.height}
-        loading="lazy"
-        decoding="async"
+        loading={shot.priority ? 'eager' : 'lazy'}
+        fetchPriority={shot.priority ? 'high' : undefined}
+        decoding={shot.priority ? 'sync' : 'async'}
       />
     </figure>
-  )
-}
-
-/**
- * The routing model behind "one codebase, many properties", drawn.
- *
- * Every string in it is one the documentation already commits to — the
- * `<slug>.vendra.test` property hosts and the shared `api.vendra.test` from
- * `getting-started/local`, and the florist reference storefront that ships as
- * `vendra-storefront-florist`. Nothing here is a mock of a page that has not
- * been built; it is the architecture in the shape a reader recognises, which is
- * the same standard `HeroArchitecture` and the hero lattice are held to.
- */
-export function PropertyRouting() {
-  const hosts = ['florist.vendra.test', '<slug>.vendra.test']
-
-  return (
-    <div className="rounded-2xl border border-[var(--vendra-line)] bg-[var(--vendra-surface)] p-5 shadow-[var(--vendra-shadow-md)]">
-      <div className="flex flex-col gap-2">
-        {hosts.map(host => (
-          <div
-            className="flex items-center gap-2 rounded-lg border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] px-3 py-2"
-            key={host}
-          >
-            <span className="flex gap-1" aria-hidden="true">
-              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
-              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
-              <i className="size-1.5 rounded-full bg-[var(--vendra-line-strong)]" />
-            </span>
-            <span className="min-w-0 flex-1 truncate font-mono text-xs text-[var(--vendra-fg-muted)]">
-              {host}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      <div
-        className="my-3 flex items-center gap-2 text-[var(--vendra-accent-text)]"
-        aria-hidden="true"
-      >
-        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
-        <b className="text-xs">↓</b>
-        <i className="h-px flex-1 bg-[var(--vendra-line-strong)]" />
-      </div>
-
-      <div className="rounded-lg border border-[color-mix(in_srgb,var(--vendra-accent),transparent_60%)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_92%)] px-3 py-2.5">
-        <div className="font-mono text-xs font-semibold text-[var(--vendra-fg)]">
-          vendra-storefront:latest
-        </div>
-        <div className="mt-1 text-xs text-[var(--vendra-fg-muted)]">
-          One image. Identity arrives at container start, never at build time.
-        </div>
-      </div>
-
-      <div className="mt-3 flex items-center gap-2 rounded-lg border border-dashed border-[var(--vendra-line)] px-3 py-2">
-        <span className="font-mono text-xs text-[var(--vendra-fg-subtle)]">
-          api.vendra.test
-        </span>
-        <span className="ml-auto label text-[var(--vendra-fg-subtle)]">
-          shared
-        </span>
-      </div>
-    </div>
   )
 }
 
@@ -726,13 +609,18 @@ export function OperatorPanelPreview() {
   return (
     <div className="overflow-hidden rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] shadow-[var(--vendra-shadow-md)]">
       <div className="flex items-center justify-between border-b border-[var(--vendra-line)] px-4 py-3">
+        {/* `text-xs` throughout rather than the `text-[0.65rem]` these carried.
+            That step is 10.4px, which is below anything else on the site and
+            below the point where a label is comfortably readable — and it was
+            an ad-hoc value besides, sitting outside the type scale the rest of
+            the surface is held to. */}
         <div>
           <div className="text-sm font-bold">Operator</div>
-          <div className="text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+          <div className="text-xs text-[var(--vendra-fg-subtle)]">
             Tenants · properties · subscriptions
           </div>
         </div>
-        <span className="rounded-full bg-[color-mix(in_srgb,var(--vendra-accent),transparent_88%)] px-2.5 py-1 text-[0.65rem] font-bold text-[var(--vendra-accent-text)]">
+        <span className="rounded-full bg-[color-mix(in_srgb,var(--vendra-accent),transparent_88%)] px-2.5 py-1 text-xs font-bold text-[var(--vendra-accent-text)]">
           Platform
         </span>
       </div>
@@ -747,7 +635,7 @@ export function OperatorPanelPreview() {
             key={label}
           >
             <strong className="block text-lg tracking-tight">{value}</strong>
-            <span className="text-[0.65rem] text-[var(--vendra-fg-subtle)]">
+            <span className="text-xs text-[var(--vendra-fg-subtle)]">
               {label}
             </span>
           </div>
@@ -778,7 +666,7 @@ export function OperatorPanelPreview() {
 export function ControllerConsole() {
   return (
     <div className="overflow-hidden rounded-xl border border-[var(--vendra-line)] bg-neutral-950 text-neutral-100 shadow-[var(--vendra-shadow-lg)]">
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 text-[0.65rem] text-neutral-400">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5 text-xs text-neutral-400">
         <span className="flex gap-1.5" aria-hidden="true">
           <i className="size-2 rounded-full bg-rose-400/70" />
           <i className="size-2 rounded-full bg-amber-300/70" />
@@ -1016,7 +904,7 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
         const Tag = customer.href ? 'a' : 'div'
         return (
           <Tag
-            className="group flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
+            className="group relative flex items-center gap-2.5 text-[var(--vendra-fg-subtle)] transition-colors hover:text-[var(--vendra-fg)]"
             key={customer.name}
             title={customer.name}
             {...(customer.href
@@ -1055,12 +943,27 @@ export function LogoWall({ customers }: { customers: Customer[] }) {
               <span className="text-lg font-bold tracking-tight">
                 {customer.lead}
               </span>
+              {/* Four legibility penalties used to compound here: 0.6rem
+                  (9.6px measured), 0.22em tracking, uppercase, and `opacity-80`
+                  on top of an already-subtle inherited colour. Measured in the
+                  browser that landed at 3.53:1 — under the 4.5:1 this needs —
+                  on the smallest text anywhere on the site.
+
+                  The opacity is what had to go rather than shrink: it was
+                  dimming an inherited colour that the token layer had already
+                  tuned, so the one value nobody could reason about was the one
+                  deciding the contrast. Size and tracking come back toward the
+                  `label` utility's numbers; the logotype still reads as a
+                  logotype, and now it reads. */}
               {customer.sub ? (
-                <span className="mt-1 text-[0.6rem] font-semibold tracking-[0.22em] uppercase opacity-80">
+                <span className="mt-1 text-[0.6875rem] font-semibold tracking-[0.14em] uppercase">
                   {customer.sub}
                 </span>
               ) : null}
             </span>
+            {/* Only the entries that actually link out get the mark — a
+                customer without an `href` renders as a plain <div>. */}
+            {customer.href ? <ExternalMark /> : null}
           </Tag>
         )
       })}
@@ -1094,6 +997,17 @@ export function Quickstart({
 /* Galleries                                                                  */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * One entry in a gallery, shared by `FeaturedProject` and `EditorialList`.
+ *
+ * The `Gallery` card grid and the `GalleryGroup` wrapper around it used to live
+ * here and are gone: nothing imported either one. Every gallery page — Examples,
+ * UI, Showcase — had already moved to the editorial list and the roadmap,
+ * because a grid of cards where most are disabled placeholders was the layout
+ * those pages were rewritten to stop using. The dead grid also still carried
+ * `opacity-75` on its "Planned" card, which put muted body text at roughly
+ * 4.1:1; it never shipped, and it is not left lying around to be adopted.
+ */
 export type GalleryItem = {
   title: string
   description: string
@@ -1102,77 +1016,11 @@ export type GalleryItem = {
   /** Marks an entry that has no destination yet. */
   planned?: boolean
   /**
-   * A capture of the thing the card describes. Drop the file in
+   * A capture of the thing the entry describes. Drop the file in
    * `public/shots/` and point at `/shots/<name>.png`; 1600×1000 (16:10 at 2x)
    * matches the frame, and anything else is cropped to it from the top.
-   * Cards without one keep the text-only layout.
    */
   shot?: Shot
-}
-
-/**
- * Card grid behind Examples, UI, and Showcase.
- *
- * An item without an `href` renders as a non-interactive card labelled
- * "Planned", so a gallery can be laid out before its contents exist without
- * shipping links that go nowhere — `check:links` would catch those anyway.
- *
- * A card with a `shot` leads with it. Capture a whole gallery or none of it:
- * the cards stretch to a shared height but their content is top-aligned, so a
- * single captured card in a row of three drops its title a frame's height below
- * its neighbours' and the row reads as broken rather than varied.
- */
-export function Gallery({ items }: { items: GalleryItem[] }) {
-  return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] gap-4">
-      {items.map(item => {
-        const body = (
-          <>
-            {item.shot ? (
-              <div className="mb-4">
-                <Screenshot shot={item.shot} />
-              </div>
-            ) : null}
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="text-base font-semibold tracking-tight">
-                {item.title}
-              </h3>
-              {item.tag ? (
-                <span className="inline-flex items-center whitespace-nowrap rounded-full border border-[var(--vendra-line-strong)] bg-[var(--vendra-muted)] px-2 py-0.5 text-xs font-medium text-[var(--vendra-fg-muted)]">
-                  {item.tag}
-                </span>
-              ) : null}
-            </div>
-            <p className="mt-2 text-sm leading-6 text-[var(--vendra-fg-muted)]">
-              {item.description}
-            </p>
-            {item.planned ? (
-              <span className="mt-3 self-start rounded-md border border-dashed border-[var(--vendra-line)] px-2 py-0.5 text-xs">
-                Planned
-              </span>
-            ) : null}
-          </>
-        )
-
-        return item.href ? (
-          <Link
-            key={item.title}
-            href={item.href}
-            className="flex flex-col rounded-xl border border-[var(--vendra-line)] px-5 py-4 transition hover:-translate-y-0.75 hover:border-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-sm)]"
-          >
-            {body}
-          </Link>
-        ) : (
-          <div
-            key={item.title}
-            className="flex flex-col rounded-xl border border-dashed border-[var(--vendra-line)] px-5 py-4 opacity-75"
-          >
-            {body}
-          </div>
-        )
-      })}
-    </div>
-  )
 }
 
 /** One available project, given enough space to show the work rather than a card. */
@@ -1193,7 +1041,9 @@ export function FeaturedProject({
       <div
         className={`relative transition-transform duration-300 group-hover:-translate-y-1 ${secondaryShot ? 'pb-12 md:pr-16' : ''}`}
       >
-        <Screenshot shot={item.shot} />
+        {/* The lead shot opens the page, so it is the LCP element rather than
+            something to defer. The inset secondary stays lazy. */}
+        <Screenshot shot={{ ...item.shot, priority: true }} />
         {secondaryShot ? (
           <div className="absolute right-0 bottom-0 w-[58%] shadow-[var(--vendra-shadow-lg)]">
             <Screenshot shot={secondaryShot} />
@@ -1290,29 +1140,6 @@ export function RoadmapList({
         </li>
       ))}
     </ul>
-  )
-}
-
-/** Grouped gallery, for Examples' by-category layout. */
-export function GalleryGroup({
-  groups
-}: {
-  groups: { title: string; description?: string; items: GalleryItem[] }[]
-}) {
-  return (
-    <div className="flex flex-col gap-12">
-      {groups.map(group => (
-        <div key={group.title}>
-          <h3 className="text-xl font-bold tracking-tight">{group.title}</h3>
-          {group.description ? (
-            <p className="mt-1.5 mb-5 text-[0.9375rem] leading-7 text-[var(--vendra-fg-muted)]">
-              {group.description}
-            </p>
-          ) : null}
-          <Gallery items={group.items} />
-        </div>
-      ))}
-    </div>
   )
 }
 
@@ -1448,7 +1275,14 @@ export function PricingTable({ plans }: { plans: Plan[] }) {
           key={plan.name}
           className={`relative flex flex-col rounded-2xl border p-6 ${plan.featured ? 'border-[var(--vendra-accent)] bg-[color-mix(in_srgb,var(--vendra-accent),transparent_95%)] shadow-[var(--vendra-glow-lg)]' : 'border-[var(--vendra-line)] bg-[var(--vendra-surface)]'}`}
         >
-          <h3 className="text-lg font-bold tracking-tight">{plan.name}</h3>
+          {/* `h2`, not `h3`. The band this table sits in has no title of its
+              own — deliberately, since the band above it is the draft notice —
+              so an `h3` here hung directly off the page `h1` with nothing at
+              level 2 between them. The measured outline ran h1 → h3 h3 h3 h3 →
+              h2 h2 h2 h2: a skipped level on the way in and a jump back up on
+              the way out. Each plan is a top-level chunk of this page, so
+              level 2 is also the honest description of it. */}
+          <h2 className="text-lg font-bold tracking-tight">{plan.name}</h2>
 
           {/* Above the price, because the allowance is what the tier sells and
               the figure is what it costs — and on this page the allowance is
@@ -1702,12 +1536,13 @@ export function TeamGrid({ members }: { members: TeamMember[] }) {
                   <a
                     key={link.href}
                     href={link.href}
-                    className={`inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] ${socialHover[link.label] ?? 'hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
+                    className={`relative inline-flex items-center gap-1.5 rounded-full border border-[var(--vendra-line)] px-2.5 py-1.5 text-xs font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] ${socialHover[link.label] ?? 'hover:border-[var(--vendra-accent)] hover:text-[var(--vendra-fg)]'}`}
                     rel="noreferrer"
                     target="_blank"
                   >
                     <SocialIcon label={link.label} />
                     {link.label}
+                    <ExternalMark />
                   </a>
                 ))}
               </div>
