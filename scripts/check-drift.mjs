@@ -67,16 +67,13 @@ if (existsSync(openapiPath)) {
     problems.push('Could not parse any endpoints from openapi.yaml')
   }
 
-  const docPath = 'app/docs/api/provisioner/page.mdx'
-  const doc = read(docPath)
+  const docPath = 'data/generated-contracts.json'
+  const reference = JSON.parse(read(docPath))
 
-  // The canonical API reference has a <DefList> whose terms read
-  // `GET /v1/capabilities`. Matching the method prefix keeps prose mentions of
-  // a path from counting as documentation of the endpoint itself.
+  // The API page renders this generated snapshot. Comparing the snapshot here
+  // catches a contract change before stale generated data reaches a build.
   const documented = new Set(
-    [
-      ...doc.matchAll(/\b(?:GET|POST|PUT|PATCH|DELETE)\s+(\/\S*?)(?=['"`\s])/g)
-    ].map(m => m[1])
+    (reference.provisioner?.endpoints ?? []).map(endpoint => endpoint.path)
   )
 
   compare({
