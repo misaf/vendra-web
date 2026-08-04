@@ -1,0 +1,132 @@
+---
+description: "Validated, copy-ready examples for controller configuration, secrets, property configuration, provisioning, health checks, and SSH tunnels."
+---
+
+# Copy-ready examples
+
+<Lede>
+  Start from these complete shapes, replace every angle-bracket placeholder,
+  and keep secrets in the environment file. The JSON examples are checked
+  against the sibling schemas by the documentation test suite.
+</Lede>
+
+## Controller configuration
+
+```yaml filename="controller.example.yaml"
+state_dir: /var/lib/vendra
+base_domain: example.com
+network: traefik-public
+listen: :8080
+health_timeout: 2m
+certificate_mode: acme
+acme_email: ops@example.com
+images:
+  platform: ghcr.io/your-org/platform@sha256:<platform-digest>
+  website: ghcr.io/your-org/web@sha256:<website-digest>
+  storefront: ghcr.io/your-org/storefront@sha256:<storefront-digest>
+  provisioner: ghcr.io/your-org/controller@sha256:<provisioner-digest>
+```
+
+## Protected environment
+
+```dotenv filename="controller.example.env"
+APP_KEY=<php-artisan-key-generate-show-output>
+DB_PASSWORD=<long-random-database-password>
+VENDRA_PROVISIONER_TOKEN=<long-random-provisioner-token>
+CONSOLE_OPERATOR_USERNAME=platform-owner
+CONSOLE_OPERATOR_EMAIL=owner@example.com
+CONSOLE_OPERATOR_PASSWORD=<long-random-console-password>
+```
+
+Install it without exposing values through command history:
+
+```bash
+sudo install -d -m 0755 /etc/vendra
+sudo install -o root -g root -m 0600 controller.example.env /etc/vendra/controller.env
+sudo install -o root -g root -m 0644 controller.example.yaml /etc/vendra/controller.yaml
+```
+
+## Property configuration
+
+```json filename="property.example.json"
+{
+  "slug": "acme",
+  "theme": "default",
+  "domain": "shop.example.com",
+  "siteUrl": "https://shop.example.com",
+  "name": { "en": "Acme Flowers", "fa": "گل آکمه" },
+  "businessType": "Florist",
+  "priceCurrency": "IRR",
+  "address": { "locality": "Tehran", "country": "IR" },
+  "contact": {
+    "mobilePhone": "09120000000",
+    "officePhone": "02100000000",
+    "email": "hello@example.com",
+    "hoursOpen": "08:00",
+    "hoursClose": "21:00",
+    "mapQuery": "35.7,51.4"
+  },
+  "social": {
+    "whatsappPhone": "+989120000000",
+    "telegramUsername": "acme",
+    "instagramUsername": "acme"
+  }
+}
+```
+
+## Provisioning request
+
+Generate the encoded value from the same JSON object; never maintain two
+independent copies of the property identity:
+
+```bash
+jq -n \
+  --arg image 'ghcr.io/your-org/storefront@sha256:<storefront-digest>' \
+  --argjson configuration "$(jq -c . property.example.json)" \
+  --arg configuration_base64 "$(base64 < property.example.json | tr -d '\n')" \
+  '{
+    template: "vendra-storefront-florist",
+    image: $image,
+    tenant_id: 42,
+    slug: $configuration.slug,
+    domain: $configuration.domain,
+    theme: $configuration.theme,
+    configuration: $configuration,
+    configuration_base64: $configuration_base64
+  }' > storefront-request.json
+
+curl --fail-with-body http://127.0.0.1:8080/v1/storefronts \
+  -H "Authorization: Bearer $VENDRA_PROVISIONER_TOKEN" \
+  -H 'Content-Type: application/json' \
+  --data-binary @storefront-request.json
+```
+
+The successful response shape is:
+
+```json filename="storefront-response.example.json"
+{
+  "status": "ready",
+  "reference": "acme",
+  "image_digest": "sha256:<resolved-storefront-digest>"
+}
+```
+
+## Health verification
+
+```bash
+curl --fail http://127.0.0.1:8080/health
+curl --fail https://api.example.com/up
+curl --fail https://shop.example.com/api/health
+curl --fail https://shop.example.com/en
+curl --fail https://shop.example.com/fa
+```
+
+## SSH tunnels
+
+```bash
+ssh -N -L 8080:127.0.0.1:8080 operator@example.com
+ssh -N -L 3306:127.0.0.1:3306 operator@example.com
+```
+
+<SourceStatus sources={['controller', 'storefront']} />
+

@@ -1,0 +1,52 @@
+---
+description: "Task-oriented documentation paths for platform developers, storefront developers, infrastructure operators, API integrators, and security reviewers."
+---
+
+# Paths by role
+
+<Lede>
+  Start with the pages that match the responsibility you hold today. These are
+  shortcuts through the existing reference—not separate documentation trees.
+</Lede>
+
+<FeatureGrid
+  items={[
+    {
+      href: '/docs/platform/development',
+      title: 'Platform developer',
+      description: 'Set up Laravel, understand package ownership, tenancy, and test conventions.',
+      meta: 'Platform · packages · tenancy'
+    },
+    {
+      href: '/docs/storefront',
+      title: 'Storefront developer',
+      description: 'Follow the data path, runtime property contract, localization, and build model.',
+      meta: 'Next.js · proxy · property schema'
+    },
+    {
+      href: '/docs/operations',
+      title: 'Infrastructure operator',
+      description: 'Deploy, observe, upgrade, back up, recover, and troubleshoot a host.',
+      meta: 'Controller · Docker · Traefik'
+    },
+    {
+      href: '/docs/api',
+      title: 'API integrator',
+      description: 'Choose the correct API boundary and understand tenancy and authentication.',
+      meta: 'JSON:API · provisioner v1'
+    },
+    {
+      href: '/docs/controller/security',
+      title: 'Security reviewer',
+      description: 'Review socket ownership, exposed ports, TLS, headers, and tenant-routing limits.',
+      meta: 'Trust boundaries · credentials'
+    }
+  ]}
+/>
+
+## Shared foundation
+
+Every role should read the [architecture](/docs/overview/architecture) and
+[repository boundaries](/docs/overview/repositories) pages before changing a
+cross-repository contract.
+

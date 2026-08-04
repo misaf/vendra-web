@@ -1,0 +1,59 @@
+---
+description: "A production-readiness checklist for DNS, TLS, credentials, backups, monitoring, storefront health, tenant isolation, and recovery testing."
+---
+
+# Production readiness
+
+<Lede>
+  Complete this checklist before directing customer traffic to a Vendra host.
+  A healthy Compose stack is necessary, but it is not sufficient evidence that
+  the deployment is safe or recoverable.
+</Lede>
+
+## Infrastructure
+
+- [ ] Docker Engine and Compose v2 are installed and versioned.
+- [ ] The controller binary and every image are pinned to a recorded compatibility set.
+- [ ] `api`, `admin`, `console`, `reseller`, and `*.admin` DNS records resolve correctly.
+- [ ] Every customer storefront domain resolves to the public edge.
+- [ ] Only ports 80 and 443 are public; MySQL and the Traefik dashboard remain on loopback.
+
+## Certificates and secrets
+
+- [ ] `certificate_mode: acme` is configured with a monitored email address.
+- [ ] Every public hostname presents a trusted certificate.
+- [ ] `/etc/vendra/controller.env` is root-owned with mode `0600`.
+- [ ] The provisioner token and Console operator credentials are long, explicit, and unique.
+- [ ] No secret uses a `NEXT_PUBLIC_*` name or appears in committed YAML.
+
+## Data safety
+
+- [ ] Database, media, `/etc/vendra`, ACME state, and the compatibility set are backed up.
+- [ ] Backup retention and off-host storage meet the required recovery point objective.
+- [ ] A restore has been rehearsed and its recovery time recorded.
+- [ ] Laravel deployment records—not generated Compose files—are treated as authoritative.
+
+## End-to-end verification
+
+- [ ] `vendra stack status` and `vendra stack ps` report healthy services.
+- [ ] The storefront `/api/health` readiness endpoint succeeds.
+- [ ] English and Persian storefront routes render correctly, including RTL.
+- [ ] Products, blog, and FAQ data belong to the intended tenant.
+- [ ] Browser requests stay on the storefront origin and use `/api/proxy/*`.
+- [ ] Monitoring alerts on failed health checks, queue backlog, certificate renewal, and backup failure.
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/operations/compatibility',
+      title: 'Compatibility sets',
+      description: 'Record exactly which artifacts were tested together.'
+    },
+    {
+      href: '/docs/operations/recovery',
+      title: 'Backup and recovery',
+      description: 'Rehearse the restore procedure before the first incident.'
+    }
+  ]}
+/>
+
