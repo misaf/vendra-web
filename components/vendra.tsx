@@ -16,8 +16,11 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 
-const eyebrowClass =
-  'text-xs font-semibold tracking-[0.16em] text-[var(--vendra-fg-subtle)] uppercase'
+/* The shared eyebrow. `label` is the site-wide utility defined in
+   `globals.css` — mono, uppercase, one tracking value — so a docs eyebrow and
+   a marketing eyebrow are the same object rather than two that happen to
+   resemble each other. Only the colour is added here. */
+const eyebrowClass = 'label text-[var(--vendra-fg-subtle)]'
 
 /* -------------------------------------------------------------------------- */
 /* Page furniture                                                             */
