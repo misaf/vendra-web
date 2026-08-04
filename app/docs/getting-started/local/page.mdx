@@ -16,7 +16,7 @@ import { Callout } from 'nextra/components'
 ```bash
 docker build -t vendra-controller:local ./vendra-controller
 docker build -t vendra-storefront-florist:local ./vendra-storefront-florist
-docker build -f vendra/docker/Dockerfile -t vendra-platform:local ./vendra
+docker build -f vendra-platform/docker/Dockerfile -t vendra-platform:local ./vendra-platform
 ```
 
 ## 2. Configure the controller
@@ -44,7 +44,7 @@ exists in a registry. Production still pins by digest.
   flags. Without this key it tries to pull the storefront image and the
   deployment lands in `storefront_deployments` as `failed` with a bare
   `provisioning failed`. The registry error appears only in
-  `docker logs platform-provisioner-1`.
+  `vendra stack logs provisioner`.
 </Callout>
 
 Image names must match what you built **exactly**. A registry-shaped name such
@@ -60,42 +60,42 @@ vendra stack up --no-pull --config ./controller.local.yaml
 sudo vendra stack hosts --write --config ./controller.local.yaml
 ```
 
-## 4. Trust the local authority, on both origins
+## 4. Accept the storefront certificate
 
-A storefront spans two origins, and accepting the warning on the page you are
-looking at does not cover the other one.
+Open `https://<slug>.vendra.test` and accept its certificate warning. Browser
+data reads stay on that origin and pass through `/api/proxy/*`; the storefront
+container connects to `api.vendra.test` and trusts the generated authority
+through `NODE_EXTRA_CA_CERTS`.
 
 <Steps
   items={[
     {
-      title: 'Accept https://api.vendra.test',
-      body: 'Do this one first — it is the one people miss.'
+      title: 'Accept https://<slug>.vendra.test',
+      body: 'This is the only browser-facing certificate required for normal storefront use.'
     },
     {
-      title: 'Accept https://<slug>.vendra.test',
-      body: 'The storefront origin itself.'
+      title: 'Verify /api/proxy requests',
+      body: 'They should stay on the storefront origin and return API data through the container.'
     }
   ]}
 />
 
 <Callout type="error">
-  A storefront whose API origin was never accepted looks like it worked. The
-  page renders from the server, which already trusts the authority through
-  `NODE_EXTRA_CA_CERTS`, so it returns 200 with every data section empty and the
-  server logs nothing at all. The failing requests are the browser's own `fetch`
-  calls, visible only in the network panel. An empty product grid is more often
-  an untrusted certificate than a data problem.
+  Do not work around server-side API certificate failures by disabling TLS
+  verification. Confirm that the property container mounts `certificates/` and
+  receives `NODE_EXTRA_CA_CERTS=/certs/ca.pem`.
 </Callout>
 
-This needs no administrator rights — a browser exception is stored in your own
-profile. Chrome sometimes needs a hard reload before it retries requests that
-already failed.
+Accepting the storefront warning needs no administrator rights — the exception
+is stored in your browser profile. Chrome sometimes needs a hard reload before
+retrying requests that already failed.
 
 The exception survives. Certificates are re-signed from a persistent authority
 (`certificates/ca.pem`), so it holds across `vendra property render`, and
-accepting `api.vendra.test` once covers every property added later. Only
-deleting `ca.pem` or `state_dir` invalidates it. It is per browser profile, so a
-new profile or a teammate's machine repeats the two clicks.
+the browser exception for a property survives re-renders. Only deleting
+`ca.pem` or `state_dir` invalidates it. Exceptions are per browser profile and
+per hostname, so a new property, profile, or teammate must accept its own
+storefront hostname.
 
 ### Optional: trust the authority outright
 
