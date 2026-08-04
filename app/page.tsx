@@ -14,6 +14,7 @@ import { PostList } from '../components/collection'
 import { customers } from '../lib/customers'
 import { blogRoot, getPosts } from '../lib/blog'
 import { basePath, siteDescription } from '../lib/site'
+import { MarketingPage } from '../components/page-wrapper'
 
 export const metadata: Metadata = {
   title: 'Vendra — commerce systems that stay understandable',
@@ -44,18 +45,18 @@ export default async function Landing() {
   }
 
   return (
-    <>
+    <MarketingPage>
       <LandingHero
         eyebrow="Storefront · Platform · Controller"
-        title={
-          <>
-            {'Build commerce systems that stay '}
-            <span className="bg-[linear-gradient(110deg,var(--vendra-accent),var(--vendra-accent-2))] bg-clip-text text-transparent">
-              understandable
-            </span>
-            {' at scale.'}
-          </>
-        }
+        // Set in one colour. The emphasised word used to carry a violet-to-
+        // emerald gradient clipped to the glyphs, which is the single most
+        // reproduced element on developer landing pages and the one thing here
+        // that would have looked identical on a competitor's site. It also
+        // spent both brand hues on decoration, in a palette whose whole rule is
+        // that a colour means "this belongs to that system" — so the headline
+        // was quietly claiming the sentence belonged to the storefront and the
+        // platform at once. The emphasis it was doing is now the figure's job.
+        title="Build commerce systems that stay understandable at scale."
         actions={[
           {
             href: '/docs/getting-started',
@@ -92,7 +93,7 @@ export default async function Landing() {
       >
         <FeatureSplit
           accent="storefront"
-          index="01"
+          code="S"
           eyebrow="Storefront · Presentation"
           title="One storefront image, shaped for each property"
           media={<Screenshot shot={storefrontShot} />}
@@ -117,7 +118,7 @@ export default async function Landing() {
         <FeatureSplit
           accent="platform"
           flip
-          index="02"
+          code="P"
           eyebrow="Platform · Business state"
           title="Domain packages behind operator-focused panels"
           media={<OperatorPanelPreview />}
@@ -141,7 +142,7 @@ export default async function Landing() {
 
         <FeatureSplit
           accent="controller"
-          index="03"
+          code="C"
           eyebrow="Controller · Runtime state"
           title="Operations speak in commands and health states"
           media={<ControllerConsole />}
@@ -240,6 +241,6 @@ export default async function Landing() {
           { href: '/docs/overview/architecture', label: 'View architecture' }
         ]}
       />
-    </>
+    </MarketingPage>
   )
 }
