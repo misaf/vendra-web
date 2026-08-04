@@ -41,10 +41,11 @@ export default function SignupPage() {
           <div>
             {/* The aside beside this one has always been headed; the form had
                 nothing, so the outline ran h1 → "What this is" and the form
-                itself sat under no heading. See the same note on `/contact`. */}
-            <h2 className="label text-[var(--vendra-fg-subtle)]">
-              Join the list
-            </h2>
+                itself sat under no heading. The step is `text-lg` rather than
+                the `label` utility these carried — see the longer note on
+                `/contact`, which made the same two changes for the same
+                reasons. */}
+            <h2 className="text-lg font-bold tracking-tight">Join the list</h2>
             <div className="mt-5">
               {contactEndpoint ? (
                 <SignupForm />
@@ -68,9 +69,7 @@ export default function SignupPage() {
           </div>
 
           <aside>
-            <h2 className="label text-[var(--vendra-fg-subtle)]">
-              What this is
-            </h2>
+            <h2 className="text-lg font-bold tracking-tight">What this is</h2>
             <ul className="mt-4 m-0 list-none border-t border-[var(--vendra-line)] p-0 text-[0.9375rem] leading-6">
               {[
                 [
