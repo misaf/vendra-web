@@ -6,6 +6,7 @@ import {
   Section
 } from '../../components/marketing'
 import { basePath } from '../../lib/site'
+import { MarketingPage } from '../../components/page-wrapper'
 
 export const metadata: Metadata = {
   title: 'Showcase',
@@ -69,8 +70,9 @@ export default function ShowcasePage() {
   if (!featured?.href || !featured.shot) return null
 
   return (
-    <>
+    <MarketingPage>
       <Section
+        titleAs="h1"
         eyebrow="Showcase"
         title={'Work that exists, shown as\u00a0it\u00a0is'}
         lede="First-party surfaces today; customer case studies as their owners approve publication. No invented projects and no placeholder screenshots."
@@ -102,7 +104,7 @@ export default function ShowcasePage() {
         align="center"
         size="lg"
         title="Building something on Vendra?"
-        lede="We would like to feature it—with your permission, a real image, and a short account of what you built."
+        lede="We would like to feature it — with your permission, a real image, and a short account of what you built."
         tone="accent"
         actions={[
           {
@@ -113,6 +115,6 @@ export default function ShowcasePage() {
           }
         ]}
       />
-    </>
+    </MarketingPage>
   )
 }
