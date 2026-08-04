@@ -5,6 +5,7 @@ import { contactEndpoint } from '../lib/site'
 import {
   FieldError,
   Honeypot,
+  NoScriptNotice,
   fieldClass,
   hintClass,
   labelClass,
@@ -188,13 +189,20 @@ export function ContactForm() {
   }
 
   return (
-    <form
-      className="flex flex-col gap-5"
-      noValidate
-      onSubmit={onSubmit}
-      ref={formRef}
-    >
-      {/* `noValidate` turns off the browser's own bubbles so the inline
+    <>
+      <NoScriptNotice>
+        The direct channels beside this one are plain links and work without it
+        — they reach the same two people.
+      </NoScriptNotice>
+
+      <form
+        className="flex flex-col gap-5"
+        data-js-form
+        noValidate
+        onSubmit={onSubmit}
+        ref={formRef}
+      >
+        {/* `noValidate` turns off the browser's own bubbles so the inline
           messages above are the only ones, rather than two validation systems
           disagreeing in two visual languages. The `type` and `autocomplete`
           attributes stay: they are what give a phone the right keyboard and
@@ -208,124 +216,125 @@ export function ContactForm() {
           message are all of them; the subject select is not marked, because it
           opens on a valid choice and can never be empty. */}
 
-      <div>
-        <label className={labelClass} htmlFor={fieldId('name')}>
-          Your name
-        </label>
-        <input
-          aria-describedby={errors.name ? errorId('name') : undefined}
-          aria-invalid={errors.name ? true : undefined}
-          autoComplete="name"
-          className={`mt-1.5 ${fieldClass(!!errors.name)}`}
-          id={fieldId('name')}
-          name="name"
-          onBlur={revalidate}
-          required
-          type="text"
-        />
-        <FieldError id={errorId('name')}>{errors.name}</FieldError>
-      </div>
+        <div>
+          <label className={labelClass} htmlFor={fieldId('name')}>
+            Your name
+          </label>
+          <input
+            aria-describedby={errors.name ? errorId('name') : undefined}
+            aria-invalid={errors.name ? true : undefined}
+            autoComplete="name"
+            className={`mt-1.5 ${fieldClass(!!errors.name)}`}
+            id={fieldId('name')}
+            name="name"
+            onBlur={revalidate}
+            required
+            type="text"
+          />
+          <FieldError id={errorId('name')}>{errors.name}</FieldError>
+        </div>
 
-      <div>
-        <label className={labelClass} htmlFor={fieldId('email')}>
-          Email
-        </label>
-        <span className={hintClass} id={hintId('email')}>
-          The address we reply to. Nothing else is sent here.
-        </span>
-        <input
-          aria-describedby={
-            errors.email
-              ? `${hintId('email')} ${errorId('email')}`
-              : hintId('email')
-          }
-          aria-invalid={errors.email ? true : undefined}
-          autoComplete="email"
-          className={`mt-1.5 ${fieldClass(!!errors.email)}`}
-          id={fieldId('email')}
-          inputMode="email"
-          name="email"
-          onBlur={revalidate}
-          required
-          type="email"
-        />
-        <FieldError id={errorId('email')}>{errors.email}</FieldError>
-      </div>
+        <div>
+          <label className={labelClass} htmlFor={fieldId('email')}>
+            Email
+          </label>
+          <span className={hintClass} id={hintId('email')}>
+            The address we reply to. Nothing else is sent here.
+          </span>
+          <input
+            aria-describedby={
+              errors.email
+                ? `${hintId('email')} ${errorId('email')}`
+                : hintId('email')
+            }
+            aria-invalid={errors.email ? true : undefined}
+            autoComplete="email"
+            className={`mt-1.5 ${fieldClass(!!errors.email)}`}
+            id={fieldId('email')}
+            inputMode="email"
+            name="email"
+            onBlur={revalidate}
+            required
+            type="email"
+          />
+          <FieldError id={errorId('email')}>{errors.email}</FieldError>
+        </div>
 
-      <div>
-        <label className={labelClass} htmlFor={fieldId('subject')}>
-          What is this about?
-        </label>
-        <select
-          className={`mt-1.5 ${fieldClass(false)}`}
-          defaultValue={subjects[0]}
-          id={fieldId('subject')}
-          name="subject"
-        >
-          {subjects.map(subject => (
-            <option key={subject} value={subject}>
-              {subject}
-            </option>
-          ))}
-        </select>
-      </div>
+        <div>
+          <label className={labelClass} htmlFor={fieldId('subject')}>
+            What is this about?
+          </label>
+          <select
+            className={`mt-1.5 ${fieldClass(false)}`}
+            defaultValue={subjects[0]}
+            id={fieldId('subject')}
+            name="subject"
+          >
+            {subjects.map(subject => (
+              <option key={subject} value={subject}>
+                {subject}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <div>
-        <label className={labelClass} htmlFor={fieldId('message')}>
-          Message
-        </label>
-        <span className={hintClass} id={hintId('message')}>
-          If it is about a deployment, the more concrete the better — what you
-          ran, what happened, and what you expected.
-        </span>
-        <textarea
-          aria-describedby={
-            errors.message
-              ? `${hintId('message')} ${errorId('message')}`
-              : hintId('message')
-          }
-          aria-invalid={errors.message ? true : undefined}
-          className={`mt-1.5 min-h-40 resize-y ${fieldClass(!!errors.message)}`}
-          id={fieldId('message')}
-          name="message"
-          onBlur={revalidate}
-          required
-          rows={6}
-        />
-        <FieldError id={errorId('message')}>{errors.message}</FieldError>
-      </div>
+        <div>
+          <label className={labelClass} htmlFor={fieldId('message')}>
+            Message
+          </label>
+          <span className={hintClass} id={hintId('message')}>
+            If it is about a deployment, the more concrete the better — what you
+            ran, what happened, and what you expected.
+          </span>
+          <textarea
+            aria-describedby={
+              errors.message
+                ? `${hintId('message')} ${errorId('message')}`
+                : hintId('message')
+            }
+            aria-invalid={errors.message ? true : undefined}
+            className={`mt-1.5 min-h-40 resize-y ${fieldClass(!!errors.message)}`}
+            id={fieldId('message')}
+            name="message"
+            onBlur={revalidate}
+            required
+            rows={6}
+          />
+          <FieldError id={errorId('message')}>{errors.message}</FieldError>
+        </div>
 
-      <Honeypot id={fieldId('company')} />
+        <Honeypot id={fieldId('company')} />
 
-      {/* The live region is always in the DOM rather than mounted on failure:
+        {/* The live region is always in the DOM rather than mounted on failure:
           a region that appears at the same moment its text does is frequently
           missed by screen readers, which need it present to observe it. */}
-      <div
-        aria-live="polite"
-        className={
-          status.state === 'error'
-            ? 'rounded-lg border border-red-600/40 bg-red-500/8 p-4 text-[0.9375rem] leading-6 text-red-800 dark:border-red-400/40 dark:text-red-300'
-            : 'sr-only'
-        }
-        ref={statusRef}
-        tabIndex={-1}
-      >
-        {status.state === 'error' ? status.message : ''}
-        {sending ? 'Sending your message…' : ''}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)] disabled:cursor-not-allowed disabled:opacity-70"
-          disabled={sending}
-          type="submit"
+        <div
+          aria-live="polite"
+          className={
+            status.state === 'error'
+              ? 'rounded-lg border border-red-600/40 bg-red-500/8 p-4 text-[0.9375rem] leading-6 text-red-800 dark:border-red-400/40 dark:text-red-300'
+              : 'sr-only'
+          }
+          ref={statusRef}
+          tabIndex={-1}
         >
-          {sending ? 'Sending…' : 'Send message'}
-        </button>
-        <p className="text-[0.8125rem] text-[var(--vendra-fg-subtle)]">
-          We reply from a small team, usually within a couple of working days.
-        </p>
-      </div>
-    </form>
+          {status.state === 'error' ? status.message : ''}
+          {sending ? 'Sending your message…' : ''}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)] disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={sending}
+            type="submit"
+          >
+            {sending ? 'Sending…' : 'Send message'}
+          </button>
+          <p className="text-[0.8125rem] text-[var(--vendra-fg-subtle)]">
+            We reply from a small team, usually within a couple of working days.
+          </p>
+        </div>
+      </form>
+    </>
   )
 }
