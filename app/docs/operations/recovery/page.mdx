@@ -1,0 +1,100 @@
+---
+description: "Authoritative backup scope and the ordered procedure for recovering a Vendra host."
+---
+
+import { Callout } from 'nextra/components'
+
+# Backup and recovery
+
+<Lede>
+  Protect the authoritative business and controller state, then restore the host
+  in dependency order before replaying storefront deployments.
+</Lede>
+
+## Backup scope
+
+<DefList
+  items={[
+    {
+      term: 'Laravel database and media',
+      tag: { tone: 'red', label: 'Authoritative' },
+      description: 'Cannot be reconstructed from anything else.'
+    },
+    {
+      term: '/etc/vendra/controller.yaml + secrets',
+      tag: { tone: 'red', label: 'Authoritative' },
+      description: 'Host desired state and protected environment values.'
+    },
+    {
+      term: 'Controller ACME state',
+      tag: { tone: 'amber', label: 'Continuity' },
+      description: 'Certificate and account continuity across rebuilds.'
+    },
+    {
+      term: 'Image digests + binary version',
+      tag: { tone: 'amber', label: 'Continuity' },
+      description: 'The tested compatibility set you are running.'
+    },
+    {
+      term: 'properties.yml',
+      tag: { tone: 'neutral', label: 'Optional' },
+      description: 'A non-secret property inventory; it is not authoritative.'
+    }
+  ]}
+/>
+
+Generated Compose manifests and runtime property directories can be recreated.
+
+<Callout type="warning">
+  The safe property registry cannot recreate encoded property configuration by
+  itself. Laravel's deployment records remain authoritative—back up the
+  database, not just the registry.
+</Callout>
+
+## Recovery procedure
+
+<Steps
+  items={[
+    {
+      title: 'Restore authoritative state',
+      body: 'Restore the database, media, controller configuration, secrets, and ACME state.'
+    },
+    {
+      title: 'Install the matching controller binary',
+      body: 'Use the version that produced the restored state and manifests.'
+    },
+    {
+      title: 'Converge the platform stack',
+      body: 'Run vendra stack up, then verify platform health before continuing.'
+    },
+    {
+      title: 'Reconcile storefront deployments',
+      body: 'Replay the fleet from Laravel\'s authoritative deployment records.'
+    },
+    {
+      title: 'Verify end to end',
+      body: 'Check domains, certificates, tenant-specific API data, and both locales.'
+    }
+  ]}
+/>
+
+Run reconciliation inside the platform container:
+
+```bash
+php artisan storefront:reconcile --sync
+```
+
+<NextSteps
+  items={[
+    {
+      href: '/docs/operations/troubleshooting',
+      title: 'Troubleshooting',
+      description: 'Diagnose unhealthy services after restoration.'
+    },
+    {
+      href: '/docs/controller/security',
+      title: 'Controller security',
+      description: 'Review the socket, network, dashboard, and TLS boundaries.'
+    }
+  ]}
+/>
