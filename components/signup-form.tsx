@@ -1,10 +1,12 @@
 'use client'
 
 import { useId, useRef, useState } from 'react'
+import Link from 'next/link'
 import { contactEndpoint } from '../lib/site'
 import {
   FieldError,
   Honeypot,
+  NoScriptNotice,
   fieldClass,
   hintClass,
   labelClass,
@@ -140,147 +142,163 @@ export function SignupForm({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <form
-      className={compact ? 'flex flex-col gap-3' : 'flex flex-col gap-5'}
-      noValidate
-      onSubmit={onSubmit}
-      ref={formRef}
-    >
-      <div className={compact ? 'flex flex-wrap items-start gap-3' : undefined}>
-        <div className={compact ? 'min-w-56 flex-1' : undefined}>
-          <label className={labelClass} htmlFor={emailId}>
-            Email
-          </label>
-          {compact ? null : (
-            <span className={hintClass} id={hintId}>
-              Where we write when sign-up opens. Nothing else is sent here.
-            </span>
-          )}
-          <input
-            aria-describedby={
-              compact
-                ? error
-                  ? errorId
-                  : undefined
-                : error
-                  ? `${hintId} ${errorId}`
-                  : hintId
-            }
-            aria-invalid={error ? true : undefined}
-            autoComplete="email"
-            className={`mt-1.5 ${fieldClass(!!error)}`}
-            id={emailId}
-            inputMode="email"
-            name="email"
-            onBlur={revalidate}
-            placeholder={compact ? 'you@example.com' : undefined}
-            required
-            type="email"
-          />
-          {/* Rendered here in both shapes. In the full form this used to sit
+    <>
+      {/* The compact widget is embedded in `/pro` beside the tiers, where there
+          is no direct-channel column to point at, so both shapes send the reader
+          to `/contact` — a page whose own channels are plain links. */}
+      <NoScriptNotice>
+        {/* `next/link`, not a bare <a>: this site can be served under a base
+            path, and Link is what applies it. A hardcoded "/contact" 404s on a
+            project-page deployment. */}
+        <Link href="/contact">Get in touch</Link> instead — that page works
+        without it.
+      </NoScriptNotice>
+
+      <form
+        className={compact ? 'flex flex-col gap-3' : 'flex flex-col gap-5'}
+        data-js-form
+        noValidate
+        onSubmit={onSubmit}
+        ref={formRef}
+      >
+        <div
+          className={compact ? 'flex flex-wrap items-start gap-3' : undefined}
+        >
+          <div className={compact ? 'min-w-56 flex-1' : undefined}>
+            <label className={labelClass} htmlFor={emailId}>
+              Email
+            </label>
+            {compact ? null : (
+              <span className={hintClass} id={hintId}>
+                Where we write when sign-up opens. Nothing else is sent here.
+              </span>
+            )}
+            <input
+              aria-describedby={
+                compact
+                  ? error
+                    ? errorId
+                    : undefined
+                  : error
+                    ? `${hintId} ${errorId}`
+                    : hintId
+              }
+              aria-invalid={error ? true : undefined}
+              autoComplete="email"
+              className={`mt-1.5 ${fieldClass(!!error)}`}
+              id={emailId}
+              inputMode="email"
+              name="email"
+              onBlur={revalidate}
+              placeholder={compact ? 'you@example.com' : undefined}
+              required
+              type="email"
+            />
+            {/* Rendered here in both shapes. In the full form this used to sit
               below the whole email row instead — a sibling of the field group,
               separated from the input by the form's own `gap-5` and sitting
               directly above the next field's label. At that distance an error
               reads as a note about the field under it rather than the one above
               it, which is the field it is not about. The two optional fields
               carry no error of their own, so nothing else moves. */}
-          <FieldError id={errorId}>{error}</FieldError>
+            <FieldError id={errorId}>{error}</FieldError>
+          </div>
+
+          {compact ? (
+            <button
+              className="mt-[1.6rem] inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={sending}
+              type="submit"
+            >
+              {sending ? 'Joining…' : 'Join the list'}
+            </button>
+          ) : null}
+        </div>
+
+        {compact ? null : (
+          <>
+            <div>
+              <label className={labelClass} htmlFor={`${id}-name`}>
+                Your name{' '}
+                <span className="font-normal text-[var(--vendra-fg-subtle)]">
+                  (optional)
+                </span>
+              </label>
+              <input
+                autoComplete="name"
+                className={`mt-1.5 ${fieldClass(false)}`}
+                id={`${id}-name`}
+                name="name"
+                type="text"
+              />
+            </div>
+
+            <div>
+              <label className={labelClass} htmlFor={`${id}-scale`}>
+                How many sites are you thinking about?{' '}
+                <span className="font-normal text-[var(--vendra-fg-subtle)]">
+                  (optional)
+                </span>
+              </label>
+              <span className={hintClass} id={`${id}-scale-hint`}>
+                Plans are counted in concurrent websites, so this tells us which
+                tier to talk to you about.
+              </span>
+              <select
+                aria-describedby={`${id}-scale-hint`}
+                className={`mt-1.5 ${fieldClass(false)}`}
+                defaultValue={scales[3]}
+                id={`${id}-scale`}
+                name="scale"
+              >
+                {scales.map(scale => (
+                  <option key={scale} value={scale}>
+                    {scale}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </>
+        )}
+
+        <Honeypot id={`${id}-company`} />
+
+        {/* Present from the first render rather than mounted on failure: a live
+          region that appears at the same moment its text does is frequently
+          missed, because there was nothing there to be observed. */}
+        <div
+          aria-live="polite"
+          className={
+            status.state === 'error'
+              ? 'rounded-lg border border-red-600/40 bg-red-500/8 p-4 text-[0.9375rem] leading-6 text-red-800 dark:border-red-400/40 dark:text-red-300'
+              : 'sr-only'
+          }
+          ref={statusRef}
+          tabIndex={-1}
+        >
+          {status.state === 'error' ? status.message : ''}
+          {sending ? 'Sending…' : ''}
         </div>
 
         {compact ? (
-          <button
-            className="mt-[1.6rem] inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] disabled:cursor-not-allowed disabled:opacity-70"
-            disabled={sending}
-            type="submit"
-          >
-            {sending ? 'Joining…' : 'Join the list'}
-          </button>
-        ) : null}
-      </div>
-
-      {compact ? null : (
-        <>
-          <div>
-            <label className={labelClass} htmlFor={`${id}-name`}>
-              Your name{' '}
-              <span className="font-normal text-[var(--vendra-fg-subtle)]">
-                (optional)
-              </span>
-            </label>
-            <input
-              autoComplete="name"
-              className={`mt-1.5 ${fieldClass(false)}`}
-              id={`${id}-name`}
-              name="name"
-              type="text"
-            />
-          </div>
-
-          <div>
-            <label className={labelClass} htmlFor={`${id}-scale`}>
-              How many sites are you thinking about?{' '}
-              <span className="font-normal text-[var(--vendra-fg-subtle)]">
-                (optional)
-              </span>
-            </label>
-            <span className={hintClass} id={`${id}-scale-hint`}>
-              Plans are counted in concurrent websites, so this tells us which
-              tier to talk to you about.
-            </span>
-            <select
-              aria-describedby={`${id}-scale-hint`}
-              className={`mt-1.5 ${fieldClass(false)}`}
-              defaultValue={scales[3]}
-              id={`${id}-scale`}
-              name="scale"
-            >
-              {scales.map(scale => (
-                <option key={scale} value={scale}>
-                  {scale}
-                </option>
-              ))}
-            </select>
-          </div>
-        </>
-      )}
-
-      <Honeypot id={`${id}-company`} />
-
-      {/* Present from the first render rather than mounted on failure: a live
-          region that appears at the same moment its text does is frequently
-          missed, because there was nothing there to be observed. */}
-      <div
-        aria-live="polite"
-        className={
-          status.state === 'error'
-            ? 'rounded-lg border border-red-600/40 bg-red-500/8 p-4 text-[0.9375rem] leading-6 text-red-800 dark:border-red-400/40 dark:text-red-300'
-            : 'sr-only'
-        }
-        ref={statusRef}
-        tabIndex={-1}
-      >
-        {status.state === 'error' ? status.message : ''}
-        {sending ? 'Sending…' : ''}
-      </div>
-
-      {compact ? (
-        <p className="text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
-          Sign-up is not open yet — this is the list we write to when it is.
-        </p>
-      ) : (
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)] disabled:cursor-not-allowed disabled:opacity-70"
-            disabled={sending}
-            type="submit"
-          >
-            {sending ? 'Joining…' : 'Join the early-access list'}
-          </button>
-          <p className="text-[0.8125rem] text-[var(--vendra-fg-subtle)]">
-            One message when sign-up opens. No newsletter.
+          <p className="text-[0.8125rem] leading-6 text-[var(--vendra-fg-subtle)]">
+            Sign-up is not open yet — this is the list we write to when it is.
           </p>
-        </div>
-      )}
-    </form>
+        ) : (
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-[var(--vendra-accent-strong)] bg-[var(--vendra-accent-strong)] px-5 text-sm font-semibold text-[var(--vendra-on-accent)] shadow-[var(--vendra-glow-sm)] transition hover:border-[var(--vendra-accent)] hover:bg-[var(--vendra-accent)] hover:shadow-[var(--vendra-glow-md)] disabled:cursor-not-allowed disabled:opacity-70"
+              disabled={sending}
+              type="submit"
+            >
+              {sending ? 'Joining…' : 'Join the early-access list'}
+            </button>
+            <p className="text-[0.8125rem] text-[var(--vendra-fg-subtle)]">
+              One message when sign-up opens. No newsletter.
+            </p>
+          </div>
+        )}
+      </form>
+    </>
   )
 }
