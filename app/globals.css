@@ -96,12 +96,27 @@
  * which had drifted to four different tracking values and three sizes. The
  * colour stays on the element, because a tier label carries its tier's hue and
  * a section eyebrow does not. */
+/* 0.75rem and 0.08em, up from 0.6875rem and 0.1em.
+ *
+ * The old numbers were a caption's numbers, and this utility stopped being a
+ * caption a while ago: an audit counted 32 elements using it on the landing
+ * page alone, and the text in them is not chrome. `30 packages`, `Healthy`,
+ * `2 locales`, `same-origin proxy` and `controller api` are the hero figure's
+ * entire technical claim, and the `SlotMeter` caption is where `/pro` states
+ * each plan's website allowance — the one number that separates the tiers.
+ *
+ * Uppercase mono at wide tracking is the least legible combination on the
+ * site, so it is the last place that should be running below 12px. Contrast
+ * was never the problem here (measured 5.35–8.51 across these); size and case
+ * were. The tracking comes in with the size because the two trade against each
+ * other — 0.1em at 12px opens the words further apart than 0.1em at 11px did,
+ * and the label would read as five separate things rather than one phrase. */
 @utility label {
   font-family: var(--x-font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.4;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   font-variant-ligatures: none;
 }
@@ -369,6 +384,41 @@ main:not([data-surface='marketing']) h1:not([data-display]) {
   font-size: 2.5rem;
   line-height: 1.1;
   letter-spacing: -0.03em;
+}
+
+/* Inline links in marketing prose.
+ *
+ * The exclusion above is what makes this necessary. `data-surface="marketing"`
+ * opts those pages out of Nextra's prose styling, which is right for headings —
+ * every one of them is composed by a component that picked its own step — but
+ * it also opted out the link treatment, and nothing replaced it. Measured on
+ * `/pro`: an inline link resolved to exactly the parent's colour, no underline,
+ * and the same weight. It was not a subtle link, it was an invisible one.
+ *
+ * That went unnoticed because until the contact and early-access pages there
+ * were no inline links on the marketing surface at all — every link there was a
+ * button, a card, or a nav item carrying its own styling. The first sentence
+ * with a link in it exposed the gap.
+ *
+ * Scoped to `p a` deliberately. Every link on these pages that is *not* prose
+ * is a composed element with its own treatment — `Actions` buttons, `Gallery`
+ * cards, `EditorialList` rows, the `LogoWall` logotypes — and none of them sits
+ * in a paragraph. Widening this to `a` would repaint all of them.
+ *
+ * Colour plus underline rather than colour alone: colour by itself fails
+ * WCAG 1.4.1 for anyone who cannot distinguish it from the body text around
+ * it. `--vendra-accent-text` is the step measured for use as text on both
+ * themes, not the vivid fill. */
+main[data-surface='marketing'] p a {
+  color: var(--vendra-accent-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 150ms ease;
+}
+
+main[data-surface='marketing'] p a:hover {
+  color: var(--vendra-fg);
 }
 
 /* One rule per section: a hairline above the heading. Nextra's own underline
