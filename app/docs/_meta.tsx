@@ -1,10 +1,10 @@
 export default {
   index: 'Documentation',
   'getting-started': 'Getting Started',
-  overview: 'Overview',
-  operations: 'Operations',
+  overview: 'Concepts',
   platform: 'Platform',
   controller: 'Controller',
   storefront: 'Storefront',
-  api: 'APIs'
+  api: 'API Reference',
+  operations: 'Operations'
 }

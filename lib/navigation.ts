@@ -72,9 +72,9 @@ export const navGroups: NavGroup[] = [
   {
     label: 'Product',
     items: [
-      docsSection('storefront'),
       docsSection('platform'),
-      docsSection('controller')
+      docsSection('controller'),
+      docsSection('storefront')
     ]
   }
 ]
