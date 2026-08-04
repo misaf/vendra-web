@@ -64,7 +64,7 @@ function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
         <Chevron className="transition-transform duration-150 group-open:rotate-180" />
       </summary>
       <div className="absolute top-[calc(100%+0.65rem)] left-1/2 z-40 flex min-w-48 -translate-x-1/2 flex-col rounded-xl border border-[var(--vendra-line)] bg-[var(--vendra-surface-raised)] p-2 shadow-[var(--vendra-shadow-md)] backdrop-blur-xl">
-        <div className="px-2.5 pt-1.5 pb-2 text-[0.65rem] font-bold tracking-[0.1em] text-[var(--vendra-fg-subtle)] uppercase">
+        <div className="px-2.5 pt-1.5 pb-2 label text-[var(--vendra-fg-subtle)]">
           {group.label}
         </div>
         {group.items.map(item => {
@@ -191,7 +191,7 @@ export function TopNavigation({
         >
           {groups.map(group => (
             <div key={group.label}>
-              <div className="px-2.5 pt-1.5 pb-1 text-[0.65rem] font-bold tracking-[0.1em] text-[var(--vendra-fg-subtle)] uppercase">
+              <div className="px-2.5 pt-1.5 pb-1 label text-[var(--vendra-fg-subtle)]">
                 {group.label}
               </div>
               {group.items.map(item => {
