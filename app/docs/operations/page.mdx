@@ -1,5 +1,5 @@
 ---
-description: "Daily health checks, backup scope, and the ordered recovery outline for a Vendra host."
+description: "Daily health checks and entry points for backup, recovery, upgrades, and troubleshooting."
 ---
 
 import { Callout } from 'nextra/components'
@@ -7,8 +7,8 @@ import { Callout } from 'nextra/components'
 # Operations runbook
 
 <Lede>
-  Day-to-day checks, what must be backed up, and the order to restore things in
-  when a host is lost.
+  Day-to-day health checks and the operational procedures for maintaining a
+  Vendra host.
 </Lede>
 
 ## Daily checks
@@ -34,72 +34,15 @@ import { Callout } from 'nextra/components'
   not serving correctly.
 </Callout>
 
-## Backup scope
-
-<DefList
-  items={[
-    {
-      term: 'Laravel database and media',
-      tag: { tone: 'red', label: 'Authoritative' },
-      description: 'Cannot be reconstructed from anything else.'
-    },
-    {
-      term: '/etc/vendra/controller.yaml + secrets',
-      tag: { tone: 'red', label: 'Authoritative' },
-      description: 'Host desired state and protected environment values.'
-    },
-    {
-      term: 'Controller ACME state',
-      tag: { tone: 'amber', label: 'Continuity' },
-      description: 'Certificate and account continuity across rebuilds.'
-    },
-    {
-      term: 'Image digests + binary version',
-      tag: { tone: 'amber', label: 'Continuity' },
-      description: 'The tested compatibility set you are running.'
-    }
-  ]}
-/>
-
-Generated Compose manifests can be recreated.
-
-<Callout type="warning">
-  The safe property registry cannot recreate encoded property configuration by
-  itself. Laravel’s deployment records remain authoritative — back up the
-  database, not just the registry.
-</Callout>
-
-## Recovery outline
-
-<Steps
-  items={[
-    {
-      title: 'Restore state',
-      body: 'Database, media, configuration, secrets, and ACME state.'
-    },
-    {
-      title: 'Install the matching vendra binary',
-      body: 'Match the version that produced the state you restored.'
-    },
-    {
-      title: 'Run vendra stack up',
-      body: 'Then verify platform health before going further.'
-    },
-    {
-      title: 'Reconcile storefront deployments from Laravel',
-      body: 'This replays the fleet from authoritative records.'
-    },
-    {
-      title: 'Verify end to end',
-      body: 'Domains, certificates, tenant-specific API data, and both locales.'
-    }
-  ]}
-/>
-
 ## More
 
 <FeatureGrid
   items={[
+    {
+      href: '/docs/operations/recovery',
+      title: 'Backup and recovery',
+      description: 'Protect authoritative state and restore a lost host.'
+    },
     {
       href: '/docs/operations/upgrades',
       title: 'Upgrades and releases',
