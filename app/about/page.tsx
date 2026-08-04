@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Section, TeamGrid } from '../../components/marketing'
 import { team } from '../../lib/team'
+import { MarketingPage } from '../../components/page-wrapper'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -10,8 +11,9 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
+    <MarketingPage>
       <Section
+        titleAs="h1"
         eyebrow="About"
         title="Built by the people who answer for it"
         lede="The same names appear on the commits, in the technical writing, and in the conversations around a deployment."
@@ -36,6 +38,6 @@ export default function AboutPage() {
           { href: '/blog', label: 'Read the blog' }
         ]}
       />
-    </>
+    </MarketingPage>
   )
 }
