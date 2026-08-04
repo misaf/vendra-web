@@ -22,7 +22,8 @@ npm run property:config <slug> -- --json > /tmp/<slug>.json
 
 The configuration requires identity, localized name, business type, currency,
 address, contact, and social fields. `ogImage` may be empty. The controller
-validates the complete shape before creating a container.
+preflights identity and required boot fields; the storefront readiness endpoint
+applies the complete schema before the deployment can report healthy.
 
 ## 2. Render and start manually
 
