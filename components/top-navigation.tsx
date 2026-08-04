@@ -73,16 +73,19 @@ function NavMenu({ group, pathname }: { group: NavGroup; pathname: string }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`group/item flex items-center justify-between gap-6 rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
+              className={`group/item flex min-h-11 items-center justify-between gap-6 rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
               aria-current={current ? 'page' : undefined}
             >
               <span className="inline-flex items-center gap-2">
                 {/* `text-xs`, not the `text-[0.65rem]` this carried. That step
                     is 10.4px — the smallest type anywhere on the site, and an
-                    ad-hoc value outside the scale besides. `OperatorPanelPreview`
-                    was moved off the identical value for the identical reason;
-                    this was the last copy of it left. A 12px glyph still sits
-                    comfortably inside the 24px box. */}
+                    ad-hoc value outside the scale besides. Three components had
+                    drifted onto it independently: `OperatorPanelPreview` in
+                    `components/marketing.tsx`, this badge, and `FeatureGrid`'s
+                    icon in `components/vendra.tsx`, which is the sort of thing a
+                    value nobody can name off a scale does. All three are on
+                    `text-xs` now. A 12px glyph still sits comfortably inside the
+                    24px box. */}
                 <i
                   className="grid size-6 place-items-center rounded-md border border-[var(--vendra-line)] bg-[var(--vendra-surface)] font-mono text-xs font-bold text-[var(--vendra-accent-text)] not-italic"
                   aria-hidden="true"
@@ -198,11 +201,19 @@ export function TopNavigation({
           approximate — this menu now begins on the same breakpoint the
           hamburger ends on, so the three ranges meet edge to edge and there is
           no width at which the site has no way to navigate. */}
+      {/* `min-h-11` on the trigger and on every row of the panel below it, where
+          the rest of the navigation stays at `min-h-9`. The distinction is
+          which pointer reaches them: the full nav is `xl:flex` and is only ever
+          driven by a mouse, but this menu exists for the 48–80rem band, which is
+          a tablet held in the hand. 36px is a comfortable mouse target and a
+          missed tap — and a missed tap in a navigation menu opens the wrong page
+          rather than doing nothing, so the reader pays for it twice. 44px is the
+          touch figure the site already uses on every form control and button. */}
       <details
         className="group relative hidden md:block xl:hidden"
         ref={compactRef}
       >
-        <summary className="inline-flex min-h-9 cursor-pointer list-none items-center gap-2 rounded-lg border border-[var(--vendra-line)] px-3 text-sm font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)] [&::-webkit-details-marker]:hidden">
+        <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-lg border border-[var(--vendra-line)] px-3 text-sm font-semibold text-[var(--vendra-fg-muted)] transition hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)] [&::-webkit-details-marker]:hidden">
           Menu
           <Chevron className="transition-transform duration-150 group-open:rotate-180" />
         </summary>
@@ -221,7 +232,7 @@ export function TopNavigation({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
+                    className={`flex min-h-11 items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
                     aria-current={current ? 'page' : undefined}
                   >
                     {item.label}
@@ -237,7 +248,7 @@ export function TopNavigation({
                 <Link
                   key={section.href}
                   href={section.href}
-                  className={`flex items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] font-semibold text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
+                  className={`flex min-h-11 items-center rounded-lg px-2.5 py-2 text-sm transition-colors ${current ? 'bg-[var(--vendra-muted)] font-semibold text-[var(--vendra-fg)]' : 'text-[var(--vendra-fg-muted)] hover:bg-[var(--vendra-muted)] hover:text-[var(--vendra-fg)]'}`}
                   aria-current={current ? 'page' : undefined}
                 >
                   {section.label}
